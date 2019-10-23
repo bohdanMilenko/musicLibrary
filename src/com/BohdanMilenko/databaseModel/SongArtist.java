@@ -1,6 +1,6 @@
 package com.BohdanMilenko.databaseModel;
 
-public class SongArtist {
+public class SongArtist implements MusicLibrary{
 
     private String trackName;
     private String artistName;
@@ -14,7 +14,8 @@ public class SongArtist {
         this.trackName = trackName;
     }
 
-    public String getArtistName() {
+
+    public String getArtist() {
         return artistName;
     }
 
@@ -22,7 +23,8 @@ public class SongArtist {
         this.artistName = artistName;
     }
 
-    public String getAlbumName() {
+
+    public String getAlbum() {
         return albumName;
     }
 

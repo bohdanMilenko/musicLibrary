@@ -1,6 +1,6 @@
 package com.BohdanMilenko.databaseModel;
 
-public class Album {
+public class Album implements MusicLibrary {
 
     private int id;
     private String name;
@@ -22,6 +22,7 @@ public class Album {
         this.name = name;
     }
 
+
     public int getArtistID() {
         return artistID;
     }
@@ -29,4 +30,6 @@ public class Album {
     public void setArtistID(int artistID) {
         this.artistID = artistID;
     }
+
+
 }

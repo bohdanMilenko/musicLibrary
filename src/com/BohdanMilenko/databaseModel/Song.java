@@ -1,6 +1,6 @@
 package com.BohdanMilenko.databaseModel;
 
-public class Song {
+public class Song implements MusicLibrary{
 
     private int id;
     private int track;
@@ -38,4 +38,5 @@ public class Song {
     public void setName(String name) {
         this.name = name;
     }
+
 }
