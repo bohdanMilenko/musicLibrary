@@ -1,0 +1,2 @@
+DB_NAME=music.db
+CONNECTION_STRING=jdbc:sqlite:C:\\Drive D\\Java Root\\Java Directory\\JDBCmusic\\
