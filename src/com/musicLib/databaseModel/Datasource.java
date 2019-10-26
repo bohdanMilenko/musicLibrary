@@ -1,13 +1,15 @@
-package com.BohdanMilenko.databaseModel;
+package com.musicLib.databaseModel;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class Datasource {
-
-    private static final String DB_NAME = "music.db";
-    private static final String CONNECTION_STRING = "jdbc:sqlite:C:\\Drive D\\Java Root\\Java Directory\\JDBCmusic\\" + DB_NAME;
 
     private static final String TABLE_ALBUMS = "albums";
     private static final String COLUMN_ALBUMS_ID = "_id";
@@ -87,8 +89,28 @@ public class Datasource {
     private PreparedStatement insertSong;
     private PreparedStatement queryArtists;
     private PreparedStatement queryAlbums;
+
+    private Map<String,String> connectionProperties;
+    private String DB_NAME;
+    private String CONNECTION_STRING;
+
+    private void assignProperties(){
+        System.out.println("Inside method");
+        PropertiesLoader propertiesLoader = new PropertiesLoader();
+        if( !propertiesLoader.getProperties().isEmpty()){
+            connectionProperties = propertiesLoader.getProperties();
+            DB_NAME = connectionProperties.get("DB_NAME");
+            CONNECTION_STRING = connectionProperties.get("CONNECTION_STRING") + DB_NAME;
+
+        }
+    }
+
+
     // Open-close connection
     public boolean openDB() {
+        assignProperties();
+        System.out.println(DB_NAME);
+        System.out.println(CONNECTION_STRING);
         try {
             conn = DriverManager.getConnection(CONNECTION_STRING);
             insertArtist = conn.prepareStatement(INSERT_ARTIST, Statement.RETURN_GENERATED_KEYS);
@@ -278,7 +300,7 @@ public class Datasource {
     }
 
 
-    public int getCountMinMax(String tableName) {
+    public int getCountMinMaxInSongsTable(String tableName) {
         String query = "SELECT COUNT(*), MIN(" + COLUMN_SONGS_ID + "), MAX (" + COLUMN_SONGS_ID + ") FROM " + tableName;
 
         try (Statement statement = conn.createStatement();
@@ -392,7 +414,7 @@ public class Datasource {
             } else {
                 throw new SQLException(("Issue creating songs' entity"));
             }
-        }catch (SQLException e){
+        }catch (Exception e){
             System.out.println("Performing rollback " + e.getMessage());
             e.printStackTrace();
             try {
@@ -406,6 +428,7 @@ public class Datasource {
             }catch (SQLException e){
                 System.out.println("Issue with setting conn to true " + e.getMessage());
                 e.printStackTrace();
+
             }
         }
 

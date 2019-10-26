@@ -1,4 +1,4 @@
-package com.BohdanMilenko.databaseModel;
+package com.musicLib.databaseModel;
 
 public class Song implements MusicLibrary{
 

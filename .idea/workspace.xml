@@ -2,23 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c9198ac1-028d-4181-8934-f2c3729c6957" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/MusicLibrary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/music.db" beforeDir="false" afterPath="$PROJECT_DIR$/music.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music.db-journal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Album.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Album.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Artist.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Artist.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Datasource.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Datasource.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Song.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Song.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/SongArtist.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/SongArtist.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/BohdanMilenko/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Album.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Album.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Artist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Artist.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Datasource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Datasource.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Song.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Song.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/SongArtist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/SongArtist.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Album.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Artist.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Datasource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/Song.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/BohdanMilenko/databaseModel/SongArtist.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Album.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Album.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Artist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Artist.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Datasource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Datasource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/MusicLibrary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/MusicLibrary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/Song.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Song.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/BohdanMilenko/databaseModel/SongArtist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/SongArtist.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,6 +32,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="FxmlFile" />
         <option value="Class" />
       </list>
     </option>
@@ -50,14 +50,14 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../SQLite3 Driver/sqlite-jdbc-3.27.2.1.jar!/" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../FinanceTracker" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
   </component>
@@ -75,7 +75,7 @@
   </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="com.BohdanMilenko.Main" />
+      <option name="MAIN_CLASS_NAME" value="com.musicLib.Main" />
       <module name="JDBCmusic" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <RunnerSettings RunnerId="Run" />
@@ -107,7 +107,10 @@
       <workItem from="1571524661287" duration="1476000" />
       <workItem from="1571615713182" duration="5532000" />
       <workItem from="1571705652114" duration="4329000" />
-      <workItem from="1571781120409" duration="8242000" />
+      <workItem from="1571781120409" duration="8838000" />
+      <workItem from="1571869039528" duration="2751000" />
+      <workItem from="1571968491462" duration="3219000" />
+      <workItem from="1572048653162" duration="7084000" />
     </task>
     <servers />
   </component>

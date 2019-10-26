@@ -1,10 +1,10 @@
-package com.BohdanMilenko.databaseModel;
+package com.musicLib.databaseModel;
 
-public class Album implements MusicLibrary {
+public class Artist implements MusicLibrary {
 
     private int id;
     private String name;
-    private int artistID;
+
 
     public int getId() {
         return id;
@@ -20,15 +20,6 @@ public class Album implements MusicLibrary {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-
-    public int getArtistID() {
-        return artistID;
-    }
-
-    public void setArtistID(int artistID) {
-        this.artistID = artistID;
     }
 
 
