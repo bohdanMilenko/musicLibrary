@@ -1,6 +1,6 @@
 package com.musicLib.databaseModel;
 
-public class SongArtist implements MusicLibrary{
+public class SongArtist {
 
     private String trackName;
     private String artistName;

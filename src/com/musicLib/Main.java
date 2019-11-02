@@ -1,132 +1,80 @@
 package com.musicLib;
 
-import com.musicLib.databaseModel.*;
+import com.musicLib.Repository.ArtistsRepository;
+import com.musicLib.Repository.SongsRepository;
+import com.musicLib.databaseModel.SongArtist;
 
-import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Scanner;
 
 
 public class Main {
 
-    private static Scanner scanner = new Scanner((System.in));
+
+
     public static void main(String[] args) {
 
 
-        Datasource datasource = new Datasource();
-        if(!datasource.openDB()){
-            System.out.println("Issue with opening a DB");
-        }
-//       List<MusicLibrary> artists = datasource.queryArtists(Datasource.ORDER_ASC);;
-//
+        SongsRepository songsRepository = new SongsRepository();
+        ArtistsRepository artistsRepository = new ArtistsRepository();
+
+//       List<Artist> artists = artistsRepository.queryArtistsTry();;
 //       if(artists == null){
 //           System.out.println("No artists in the database");
 //       } else {
-//           for (MusicLibrary artist : artists) {
-//               System.out.println( (Artist) artist.getId() + " " + artist.getName());
+//           for (Artist artist : artists) {
+//               System.out.println( artist.getId() + " " + artist.getName());
 //           }
 //       }
-
-       List<String> albums = datasource.queryAlbumsForArtists("Iron Maiden", Datasource.ORDER_ASC);
-
-       if(albums == null){
-           System.out.println("No albums found");
-       } else {
-           for( String album : albums){
-               System.out.println(album);
-           }
-       }
-
-        System.out.println("Please input the song name: ");
-        String songName = getUserInput();
-        System.out.println(songName);
-        int order = ordering();
-        List<MusicLibrary> songArtistList = datasource.queryArtistBySong(songName, order);
-        if(!songArtistList.isEmpty()) {
-            // Getting 0 only to print out which song User queries. List of all the possible artists is printed after
-            SongArtist queeredSong = (SongArtist) songArtistList.get(0);
-            System.out.println("Such artists has song: " + queeredSong.getTrackName());
-            printResultSet(songArtistList);
-        }else {
-            System.out.println("No such song!");
-        }
-        System.out.println();
-
-        datasource.getCountMinMaxInSongsTable("songs");
-
-        datasource.createArtistsListView();
-        System.out.println("Please input the song name: ");
-
-        String newSong = getUserInput();
-        System.out.println(newSong);
-        List<MusicLibrary> songArtistList2 =  datasource.queryBySongTitleView(newSong);
-        printResultSet(songArtistList2);
-        System.out.println();
-
-        datasource.insertSong("Humble", "Kendrick Lamar", "DAMN", 1);
-
-        scanner.close();
-        datasource.closeDB();
-    }
-
-    private static String getUserInput() {
-        String songName = "";
-
-        try {
-            if (scanner.hasNextLine()) {
-                songName = scanner.nextLine();
-            } else {
-                songName = scanner.nextLine();
-            }
-            return songName;
-        } catch (InputMismatchException e) {
-            System.out.println("Please enter a valid input");
-            return songName;
-//        Commented out as code does not work otherwise
-//        }finally {
-//            scanner.close();
+//
+//       List<String> albums =  songsRepository.queryAlbumsForArtists("Iron Maiden");
+//       if(albums == null){
+//           System.out.println("No albums found");
+//       } else {
+//           for( String album : albums){
+//               System.out.println(album);
+//           }
+//       }
+//
+//        System.out.println("Please input the song name: ");
+//        String songName =UserInput.getUserInput();
+//        System.out.println(songName);
+//        List<SongArtist> songArtistList = songsRepository.queryArtistBySong(songName);
+//        if(!songArtistList.isEmpty()) {
+//            // Getting 0 only to print out which song User queries. List of all the possible artists is printed after
+//            SongArtist queeredSong =  songArtistList.get(0);
+//            System.out.println("Such artists has song: " + queeredSong.getTrackName());
+//            printResultSet(songArtistList);
+//        }else {
+//            System.out.println("No such song!");
 //        }
-        }
+//        System.out.println();
+//
+//        songsRepository.getCountMinMaxInSongsTable("songs");
+//
+//        songsRepository.createArtistsListView();
+//
+//        System.out.println("Please input the song name: ");
+//        String newSong = UserInput.getUserInput();
+//        System.out.println(newSong);
+//        List<SongArtist> songArtistList2 =  songsRepository.queryBySongTitleView(newSong);
+//        printResultSet(songArtistList2);
+//        System.out.println();
+
+
+        songsRepository.insertSong("Humble", "Kendrick Lamar", "DAMN", 1);
+
+
     }
 
-    private static void printResultSet(List<MusicLibrary> anyListToPrint){
+
+    private static void printResultSet(List<SongArtist> anyListToPrint){
         if(!anyListToPrint.isEmpty()){
-            for( MusicLibrary  loopingInstance : anyListToPrint){
-                SongArtist loopingInstance2 = (SongArtist)loopingInstance;
-                System.out.println( "Artist: " +  loopingInstance2.getArtist() + " from album: " + loopingInstance2.getAlbum());
+            for( SongArtist  loopingInstance : anyListToPrint){
+                System.out.println( "Artist: " +  loopingInstance.getArtist() + " from album: " + loopingInstance.getAlbum());
             }
         } else {
             System.out.println("No songs found");
         }
     }
 
-    private static int ordering() {
-        System.out.println("How would you like the query sorted?\n" +
-                "1 - Ascending\n" +
-                "2 - Descending\n" +
-                "3 - No Sorting");
-        int order;
-        int option;
-        try {
-                option = scanner.nextInt();
-                scanner.nextLine();
-        } catch (InputMismatchException e) {
-            System.out.println("Please enter 1, 2 or 3:");
-            scanner.nextLine();
-            option = scanner.nextInt();
-            scanner.nextLine();
-        }
-
-        switch (option){
-            case 1:
-                    order = Datasource.ORDER_ASC;
-                    break;
-            case 2:
-                    order = Datasource.ORDER_DESC;
-                    break;
-            default:
-                order = Datasource.ORDER_NONE;
-        }
-        return order;
-    }
 }

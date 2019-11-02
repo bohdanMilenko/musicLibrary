@@ -1,11 +1,12 @@
 package com.musicLib.databaseModel;
 
-public class Song implements MusicLibrary{
+public class Song {
 
     private int id;
     private int track;
     private int albumID;
     private String name;
+
 
     public int getId() {
         return id;
