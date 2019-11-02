@@ -53,7 +53,7 @@ public class SongsRepository {
             + " FROM " + TABLE_ARTIST_SONG_VIEW + " WHERE " + COLUMN_SONGS_TITLE + "= ?";
 
     private static final String QUERY_SONG = " SELECT " +  COLUMN_SONGS_ID + " FROM " + TABLE_SONGS
-            + " WHERE " + COLUMN_SONGS_ALBUM + " = ? , AND " + COLUMN_SONGS_TITLE + " = ?";
+            + " WHERE " + COLUMN_SONGS_ALBUM + " = ?  AND " + COLUMN_SONGS_TITLE + " = ?";
 
     private static final String INSERT_SONG = " INSERT INTO " + TABLE_SONGS +
             " (" + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM + ") VALUES(?,?,?)";
@@ -229,7 +229,8 @@ public class SongsRepository {
             int artistId =  artistsRepository.insertArtist(artist);
             int albumId =  albumRepository.insertAlbum(album, artistId );
             querySongIfExists = sessionManager.getPreparedStatement(QUERY_SONG);
-            querySongIfExists.setString(albumId,title);
+            querySongIfExists.setInt(1,albumId);
+            querySongIfExists.setString(2, title);
             ResultSet rs = querySongIfExists.executeQuery();
             if(rs.next()) {
                 throw new SQLException("Such song already exists!");
@@ -251,6 +252,7 @@ public class SongsRepository {
             try {
                 if(conn != null){
                     conn.rollback();
+                    System.out.println("Rolling back");
                 }
             }catch (SQLException e2){
                 System.out.println("Unable to rollback " + e2.getMessage());

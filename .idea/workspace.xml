@@ -2,30 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c9198ac1-028d-4181-8934-f2c3729c6957" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/musicLib/Repository/AlbumRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/musicLib/Repository/MetaData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/musicLib/Repository/SongsRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/musicLib/Repository/UserInput.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/musicLib/util/SessionManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/DAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/SongDAOImplementation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/music.db" beforeDir="false" afterPath="$PROJECT_DIR$/music.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/META-INF/JDBCmusic.kotlin_module" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/Album.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/Album.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/Artist.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/Artist.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/Datasource.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/MusicLibrary.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/PropertiesLoader.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/Song.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/Song.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/SongArtist.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/databaseModel/SongArtist.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/musicLib/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Album.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Album.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Artist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Artist.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Datasource.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/databaseModel/MusicLibrary.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/databaseModel/PropertiesLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/util/PropertiesLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Song.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/Song.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/databaseModel/SongArtist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/SongArtist.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/Repository/SongsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/Repository/SongsRepository.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -42,9 +25,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="FxmlFile" />
         <option value="package-info" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -143,6 +126,7 @@
       <workItem from="1572571751845" duration="21000" />
       <workItem from="1572571823096" duration="40000" />
       <workItem from="1572653342535" duration="254000" />
+      <workItem from="1572654334668" duration="4214000" />
     </task>
     <servers />
   </component>
