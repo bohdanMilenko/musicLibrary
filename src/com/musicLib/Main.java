@@ -11,10 +11,7 @@ import java.util.List;
 
 public class Main {
 
-
-
     public static void main(String[] args) {
-
 
         SongsRepository songsRepository = new SongsRepository();
         ArtistsRepository artistsRepository = new ArtistsRepository();
@@ -64,6 +61,10 @@ public class Main {
 
 
         songsRepository.insertSong("DAMN", "Kendrick Lamar", "DAMN", 1);
+
+//        Another way to get path
+//        Path path = FileSystems.getDefault().getPath("music.db");
+//        System.out.println(path.toUri());
 
 
     }

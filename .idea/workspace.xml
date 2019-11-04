@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c9198ac1-028d-4181-8934-f2c3729c6957" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/DAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/musicLib/databaseModel/SongDAOImplementation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music.db" beforeDir="false" afterPath="$PROJECT_DIR$/music.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/musicLib/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/Repository/SongsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/Repository/SongsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/util/PropertiesLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/util/PropertiesLoader.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -127,6 +124,7 @@
       <workItem from="1572571823096" duration="40000" />
       <workItem from="1572653342535" duration="254000" />
       <workItem from="1572654334668" duration="4214000" />
+      <workItem from="1572826582060" duration="1928000" />
     </task>
     <servers />
   </component>
