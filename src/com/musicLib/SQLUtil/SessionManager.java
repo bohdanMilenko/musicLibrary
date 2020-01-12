@@ -1,4 +1,4 @@
-package com.musicLib.util;
+package com.musicLib.SQLUtil;
 
 import java.sql.*;
 import java.util.Map;

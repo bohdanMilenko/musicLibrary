@@ -1,8 +1,8 @@
 package com.musicLib;
 
-import com.musicLib.Repository.ArtistsRepository;
-import com.musicLib.Repository.SongsRepository;
-import com.musicLib.Repository.UserInput;
+import com.musicLib.SQLightRepository.ArtistsRepository;
+import com.musicLib.SQLightRepository.SongsRepository;
+import com.musicLib.SQLightRepository.UserInput;
 import com.musicLib.databaseModel.Artist;
 import com.musicLib.databaseModel.SongArtist;
 

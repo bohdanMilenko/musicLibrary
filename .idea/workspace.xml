@@ -2,10 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c9198ac1-028d-4181-8934-f2c3729c6957" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/com/musicLib/MongoUtil/SessionManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBCmusic/com/musicLib/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JDBCmusic.iml" beforeDir="false" afterPath="$PROJECT_DIR$/JDBCmusic.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MongoUtil/SessionManager.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/musicLib/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/musicLib/util/PropertiesLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/util/PropertiesLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/MongoDBRepisotory/SongsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/MongoDBRepisotory/SongsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/SQLUtil/PropertiesLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/SQLUtil/PropertiesLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/SQLUtil/SessionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/SQLUtil/SessionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/AlbumRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/AlbumRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/ArtistsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/ArtistsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/MetaData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/MetaData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/SongsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/SongsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/UserInput.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/musicLib/SQLightRepository/UserInput.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,7 +43,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1SJL9102N5PtLLcxR4obumvfwJ8" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="PropertiesComponent">
     <property name="Downloaded.Files.Path.Enabled" value="false" />
     <property name="Repository.Attach.Annotations" value="false" />
@@ -42,14 +54,14 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../MongoDB Driver/mongodb-driver-core-3.4.3.jar!/" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
@@ -125,6 +137,17 @@
       <workItem from="1572653342535" duration="254000" />
       <workItem from="1572654334668" duration="4214000" />
       <workItem from="1572826582060" duration="1928000" />
+      <workItem from="1573343559795" duration="1967000" />
+      <workItem from="1573606546476" duration="610000" />
+      <workItem from="1575856405961" duration="673000" />
+      <workItem from="1575935937971" duration="912000" />
+      <workItem from="1576033110801" duration="607000" />
+      <workItem from="1576115514556" duration="607000" />
+      <workItem from="1576200849155" duration="1201000" />
+      <workItem from="1576260470918" duration="970000" />
+      <workItem from="1576440747266" duration="668000" />
+      <workItem from="1578447636642" duration="971000" />
+      <workItem from="1578793266200" duration="2545000" />
     </task>
     <servers />
   </component>

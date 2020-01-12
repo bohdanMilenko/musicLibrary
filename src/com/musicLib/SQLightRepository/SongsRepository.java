@@ -1,14 +1,14 @@
-package com.musicLib.Repository;
+package com.musicLib.SQLightRepository;
 
 import com.musicLib.databaseModel.SongArtist;
-import com.musicLib.util.SessionManager;
+import com.musicLib.SQLUtil.SessionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.musicLib.Repository.MetaData.*;
-import static com.musicLib.Repository.UserInput.orderResultSet;
+import static com.musicLib.SQLightRepository.MetaData.*;
+import static com.musicLib.SQLightRepository.UserInput.orderResultSet;
 
 public class SongsRepository {
 
