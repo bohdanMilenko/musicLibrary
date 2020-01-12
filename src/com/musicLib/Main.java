@@ -1,15 +1,19 @@
 package com.musicLib;
 
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.musicLib.MongoUtil.SessionManagerMongo;
+import org.bson.Document;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        MongoClient mongoClient = SessionManagerMongo.getMongoClient();
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
-        db.getCollection("Songs");
-        System.out.println(db.listCollectionNames().toString());
+        MongoCollection<Document> listDbs =  db.getCollection("Songs");
+        System.out.println(listDbs.count());
 
 
 //        SongsRepository songsRepository = new SongsRepository();

@@ -12,9 +12,11 @@ public class SessionManagerMongo {
     private static final MongoClient mongoClient = new MongoClient();
     private static final String databaseName = loadMongoProperties();
 
+    public static MongoClient getMongoClient(){
+        return mongoClient;
+    }
 
     public static MongoDatabase getDbFromPropertyFile(){
-        System.out.println(databaseName);
         return mongoClient.getDatabase(databaseName);
     }
 
