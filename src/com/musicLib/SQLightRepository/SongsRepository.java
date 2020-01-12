@@ -13,10 +13,8 @@ import static com.musicLib.Repository.UserInput.orderResultSet;
 public class SongsRepository {
 
     private PreparedStatement queryArtistBySong;
-
-    private  PreparedStatement insertSong;
+    private PreparedStatement insertSong;
     private PreparedStatement querySongIfExists;
-
 
 
     private SessionManager sessionManager = new SessionManager();
@@ -97,7 +95,6 @@ public class SongsRepository {
     }
 
     //Queries
-
 
     public List<String> queryAlbumsForArtists(String artist) {
         StringBuilder sb = new StringBuilder("SELECT ");
