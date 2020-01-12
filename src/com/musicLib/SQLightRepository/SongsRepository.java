@@ -1,7 +1,7 @@
 package com.musicLib.SQLightRepository;
 
 import com.musicLib.databaseModel.SongArtist;
-import com.musicLib.SQLUtil.SessionManager;
+import com.musicLib.SQLUtil.SessionManagerSQLite;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class SongsRepository {
     private PreparedStatement querySongIfExists;
 
 
-    private SessionManager sessionManager = new SessionManager();
+    private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
     private ArtistsRepository artistsRepository = new ArtistsRepository();
     private AlbumRepository albumRepository = new AlbumRepository();
 
@@ -111,7 +111,7 @@ public class SongsRepository {
         Statement statement = null;
         ResultSet resultSet = null;
         try {
-            Connection conn = sessionManager.getConnection();
+            Connection conn = SessionManagerSQLite.getConnection();
             statement = conn.createStatement();
             resultSet = statement.executeQuery(sb.toString());
             List<String> albums = new ArrayList<>();
@@ -128,7 +128,7 @@ public class SongsRepository {
             e.printStackTrace();
             return null;
         } finally {
-            SessionManager.closeSession(resultSet, statement);
+            SessionManagerSQLite.closeSession(resultSet, statement);
         }
     }
 
@@ -140,7 +140,7 @@ public class SongsRepository {
         orderingQuery(sb, sortingOrder, TABLE_ARTISTS, COLUMN_ARTISTS_NAME);
 
         System.out.println(" SQL Statement: " + sb.toString());
-        try (Connection conn = sessionManager.getConnection();
+        try (Connection conn = SessionManagerSQLite.getConnection();
              Statement statement = conn.createStatement();
              ResultSet resultSet = statement.executeQuery(sb.toString())) {
             while (resultSet.next()) {
@@ -165,7 +165,7 @@ public class SongsRepository {
     public int getCountMinMaxInSongsTable(String tableName) {
         String query = "SELECT COUNT(*), MIN(" + COLUMN_SONGS_ID + "), MAX (" + COLUMN_SONGS_ID + ") FROM " + tableName;
 
-        try (Connection conn = sessionManager.getConnection();
+        try (Connection conn = SessionManagerSQLite.getConnection();
              Statement statement = conn.createStatement();
              ResultSet rs = statement.executeQuery(query)) {
 
@@ -184,7 +184,7 @@ public class SongsRepository {
     }
 
     public boolean createArtistsListView() {
-        try (Connection conn = sessionManager.getConnection();
+        try (Connection conn = SessionManagerSQLite.getConnection();
              Statement statement = conn.createStatement()) {
             statement.execute(CREATE_ARTIST_FOR_SONG_VIEW);
             return true;
@@ -197,9 +197,9 @@ public class SongsRepository {
 
     public List<SongArtist> queryBySongTitleView(String songName) {
         List<SongArtist> listForReturn = new ArrayList<>();
-        try (Connection conn = sessionManager.getConnection();
+        try (Connection conn = SessionManagerSQLite.getConnection();
         ) {
-            queryArtistBySong = sessionManager.getPreparedStatement(QUERY_VIEW_ARTISTS_LIST_PREP);
+            queryArtistBySong = SessionManagerSQLite.getPreparedStatement(QUERY_VIEW_ARTISTS_LIST_PREP);
             queryArtistBySong.setString(1, songName);
             ResultSet rs = queryArtistBySong.executeQuery();
             while (rs.next()) {
@@ -220,12 +220,12 @@ public class SongsRepository {
     public void insertSong(String title, String artist, String album, int trackNumber){
         Connection conn = null;
         int rowsAffected;
-        try{conn = sessionManager.getConnection();
+        try{conn = SessionManagerSQLite.getConnection();
             conn.setAutoCommit(false);
-            insertSong = sessionManager.getPreparedStatement(INSERT_SONG);
+            insertSong = SessionManagerSQLite.getPreparedStatement(INSERT_SONG);
             int artistId =  artistsRepository.insertArtist(artist);
             int albumId =  albumRepository.insertAlbum(album, artistId );
-            querySongIfExists = sessionManager.getPreparedStatement(QUERY_SONG);
+            querySongIfExists = SessionManagerSQLite.getPreparedStatement(QUERY_SONG);
             querySongIfExists.setInt(1,albumId);
             querySongIfExists.setString(2, title);
             ResultSet rs = querySongIfExists.executeQuery();

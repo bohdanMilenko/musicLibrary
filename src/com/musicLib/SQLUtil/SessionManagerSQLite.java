@@ -3,7 +3,7 @@ package com.musicLib.SQLUtil;
 import java.sql.*;
 import java.util.Map;
 
-public class SessionManager {
+public class SessionManagerSQLite {
 
     private Map<String,String> connectionProperties;
     private String DB_NAME;

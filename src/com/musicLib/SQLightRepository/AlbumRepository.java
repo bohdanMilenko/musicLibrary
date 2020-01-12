@@ -1,6 +1,6 @@
 package com.musicLib.SQLightRepository;
 
-import com.musicLib.SQLUtil.SessionManager;
+import com.musicLib.SQLUtil.SessionManagerSQLite;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +12,7 @@ public class AlbumRepository {
 
     private PreparedStatement queryAlbums;
     private  PreparedStatement insertAlbum;
-    private SessionManager sessionManager = new SessionManager();
+    private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
 
     private static final String QUERY_ALBUMS = "SELECT " + COLUMN_ALBUMS_ID + " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_NAME + "= ?";
@@ -21,8 +21,8 @@ public class AlbumRepository {
 
 
     int insertAlbum(String name, int artistId) throws SQLException {
-        insertAlbum = sessionManager.getPreparedStatement(INSERT_ALBUM);
-        queryAlbums = sessionManager.getPreparedStatement(QUERY_ALBUMS);
+        insertAlbum = SessionManagerSQLite.getPreparedStatement(INSERT_ALBUM);
+        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
         queryAlbums.setString(1,name);
         ResultSet rs = queryAlbums.executeQuery();
         if(rs.next()){

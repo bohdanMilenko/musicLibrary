@@ -1,7 +1,7 @@
 package com.musicLib.SQLightRepository;
 
 import com.musicLib.databaseModel.Artist;
-import com.musicLib.SQLUtil.SessionManager;
+import com.musicLib.SQLUtil.SessionManagerSQLite;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class ArtistsRepository {
 
     private PreparedStatement insertArtist;
     private  PreparedStatement queryArtists;
-    private SessionManager sessionManager = new SessionManager();
+    private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
 
     private static final String INSERT_ARTIST = "INSERT INTO " + TABLE_ARTISTS +
             " (" + COLUMN_ARTISTS_NAME + ") VALUES(?)";
@@ -30,7 +30,7 @@ public class ArtistsRepository {
         Connection conn;
         Statement statement = null;
         ResultSet resultSet = null;
-        try { conn = sessionManager.getConnection();
+        try { conn = SessionManagerSQLite.getConnection();
             statement = conn.createStatement();
             resultSet = statement.executeQuery(QUERY_ARTISTS);
             while (resultSet.next()) {
@@ -51,7 +51,7 @@ public class ArtistsRepository {
     public List<Artist> queryArtistsTry() {
         List<Artist> artists2 = new ArrayList<>();
         //No need to close as it is Try with resources;
-        try (Connection conn = sessionManager.getConnection();
+        try (Connection conn = SessionManagerSQLite.getConnection();
              Statement statement = conn.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_ARTISTS);) {
             while (resultSet.next()) {
@@ -70,14 +70,14 @@ public class ArtistsRepository {
     }
 
     int insertArtist(String name) throws SQLException {
-        queryArtists = sessionManager.getPreparedStatement(QUERY_ARTISTS_PREP);
+        queryArtists = SessionManagerSQLite.getPreparedStatement(QUERY_ARTISTS_PREP);
         queryArtists.setString(1, name);
         ResultSet rs = queryArtists.executeQuery();
         if (rs.next()) {
             System.out.println("Artist already exists in db: id is " + rs.getInt(1));
             return rs.getInt(1);
         } else {
-            insertArtist = sessionManager.getPreparedStatement(INSERT_ARTIST);
+            insertArtist = SessionManagerSQLite.getPreparedStatement(INSERT_ARTIST);
             insertArtist.setString(1, name);
             int affectedRows = insertArtist.executeUpdate();
             if (affectedRows != 1) {
