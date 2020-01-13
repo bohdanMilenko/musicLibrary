@@ -2,7 +2,10 @@ package com.musicLib;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.musicLib.MongoDBRepisotory.AlbumRepositoryMongo;
+import com.musicLib.MongoDBRepisotory.MetaDataMongo;
 import com.musicLib.MongoUtil.SessionManagerMongo;
 import org.bson.Document;
 
@@ -11,9 +14,20 @@ public class Main {
     public static void main(String[] args) {
 
         MongoClient mongoClient = SessionManagerMongo.getMongoClient();
+
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
-        MongoCollection<Document> listDbs =  db.getCollection("Songs");
-        System.out.println(listDbs.count());
+        AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
+        albumRepositoryMongo.insertNewArtist(db.getCollection("Songs"),"Iron Maiden", 1975, "Heavy Metal");
+
+
+        MongoCollection songsDatabase = db.getCollection("Songs");
+        MongoCursor databases = mongoClient.listDatabaseNames().iterator();
+        while (databases.hasNext()){
+            System.out.println(databases.next());
+        }
+        MongoCursor cursor = songsDatabase.find(new Document(MetaDataMongo.ARTIST_NAME, "Iron Maiden")).iterator();
+        Document foundRecord = (Document) cursor.next();
+        System.out.println(foundRecord.get(MetaDataMongo.ARTIST_NAME));
 
 
 //        SongsRepository songsRepository = new SongsRepository();
