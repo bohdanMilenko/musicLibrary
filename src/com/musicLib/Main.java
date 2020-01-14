@@ -4,10 +4,13 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.musicLib.MongoDBRepisotory.AlbumRepositoryMongo;
+import com.musicLib.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.MongoDBRepisotory.MetaDataMongo;
+import com.musicLib.MongoDatabaseModel.ArtistRecordMongo;
 import com.musicLib.MongoUtil.SessionManagerMongo;
 import org.bson.Document;
+
+import java.util.List;
 
 public class Main {
 
@@ -16,11 +19,17 @@ public class Main {
         MongoClient mongoClient = SessionManagerMongo.getMongoClient();
 
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
-        AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
-        albumRepositoryMongo.insertNewArtist(db.getCollection("Songs"),"Iron Maiden", 1975, "Heavy Metal");
+        ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
+        //artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"),"Iron Maiden", 1975, "Heavy Metal");
+
 
 
         MongoCollection songsDatabase = db.getCollection("Songs");
+        List<ArtistRecordMongo> list = artistRepositoryMongo.queryArtistByName(songsDatabase,"Iron Maiden");
+        for(ArtistRecordMongo record : list){
+            System.out.println(record.toString());
+        }
+
         MongoCursor databases = mongoClient.listDatabaseNames().iterator();
         while (databases.hasNext()){
             System.out.println(databases.next());

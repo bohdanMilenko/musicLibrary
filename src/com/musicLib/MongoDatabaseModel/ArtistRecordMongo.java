@@ -1,12 +1,11 @@
 package com.musicLib.MongoDatabaseModel;
 
-import java.time.LocalDate;
 import java.util.List;
 
-public class MongoArtistRecord {
+public class ArtistRecordMongo {
 
     private String artistName;
-    private LocalDate dateFounded;
+    private int dateFounded;
     private String genre;
     private List<AlbumMongo> album;
 
@@ -18,11 +17,11 @@ public class MongoArtistRecord {
         this.artistName = artistName;
     }
 
-    public LocalDate getDateFounded() {
+    public int getDateFounded() {
         return dateFounded;
     }
 
-    public void setDateFounded(LocalDate dateFounded) {
+    public void setDateFounded(int dateFounded) {
         this.dateFounded = dateFounded;
     }
 
@@ -40,5 +39,10 @@ public class MongoArtistRecord {
 
     public void setAlbum(List<AlbumMongo> album) {
         this.album = album;
+    }
+
+    @Override
+    public String toString() {
+        return artistName + " was founded in " + dateFounded;
     }
 }
