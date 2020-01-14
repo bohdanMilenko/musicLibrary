@@ -33,7 +33,7 @@ public class ArtistRepositoryMongo {
         try (MongoCursor<Document> cursor = collection.find(new org.bson.Document(MetaDataMongo.ARTIST_NAME, artistName)).iterator()) {
             while (cursor.hasNext()) {
                 Document retrievedDocument = cursor.next();
-                ArtistRecordMongo tempRecord = createArtistRecord(retrievedDocument);
+                ArtistRecordMongo tempRecord = createArtistRecord( retrievedDocument);
                 Document artistAlbumsDocument = (Document) retrievedDocument.get(MetaDataMongo.ARTIST_ALBUMS);
                 if (artistAlbumsDocument != null) {
                     AlbumMongo tempAlbum = createAlbumRecord(artistAlbumsDocument);
@@ -49,21 +49,20 @@ public class ArtistRepositoryMongo {
         try (MongoCursor<Document> cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document retrievedDocument = cursor.next();
-                ArtistRecordMongo tempRecord = createArtistRecord(retrievedDocument);
+                ArtistRecordMongo tempRecord = createArtistRecord( retrievedDocument);
                 listToReturn.add(tempRecord);
             }
         }
         return listToReturn;
     }
 
-    private ArtistRecordMongo createArtistRecord(Document retrievedDocument) {
+    private ArtistRecordMongo createArtistRecord( Document retrievedDocument) {
         ArtistRecordMongo tempRecord = new ArtistRecordMongo();
         tempRecord.setArtistName((String) retrievedDocument.get(MetaDataMongo.ARTIST_NAME));
         tempRecord.setDateFounded((int) retrievedDocument.get(MetaDataMongo.ARTIST_YEAR_FOUNDED));
         tempRecord.setGenre((String) retrievedDocument.get(MetaDataMongo.ARTIST_GENRE));
         Document artistAlbums = (Document) retrievedDocument.get(MetaDataMongo.ARTIST_ALBUMS);
         if (artistAlbums != null) {
-            MongoCursor
             List<AlbumMongo> albumMongoList = new ArrayList<>();
             AlbumMongo tempAlbum = createAlbumRecord(artistAlbums);
             albumMongoList.add(tempAlbum);
