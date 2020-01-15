@@ -12,14 +12,19 @@ import java.util.List;
 
 public class ArtistRepositoryMongo {
 
-    public org.bson.Document insertNewArtist(MongoCollection<Document> collection, String artistName, int yearFounded, String genre) {
-        org.bson.Document recordToInsert = null;
-        try (MongoCursor<Document> cursor = collection.find(new org.bson.Document(MetaDataMongo.ARTIST_NAME, artistName)).iterator()) {
+
+    /**
+     * Use this method to insert new Artist.
+     * @throws DuplicatedRecordException - in case such Artist already exists
+     */
+    public Document insertNewArtist(MongoCollection<Document> collection, String artistName, int yearFounded, String genre) throws  DuplicatedRecordException {
+        Document recordToInsert = null;
+        try (MongoCursor<Document> cursor = collection.find(new Document(MetaDataMongo.ARTIST_NAME, artistName)).iterator()) {
             if (cursor.hasNext()) {
                 throw new DuplicatedRecordException("Such artist is already present in db");
             }
         }
-        recordToInsert = new org.bson.Document();
+        recordToInsert = new Document();
         recordToInsert.append(MetaDataMongo.ARTIST_NAME, artistName)
                 .append(MetaDataMongo.ARTIST_YEAR_FOUNDED, yearFounded)
                 .append(MetaDataMongo.ARTIST_GENRE, genre);

@@ -4,6 +4,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.musicLib.ExceptionsMongoRep.ArtistNotFoundException;
+import com.musicLib.ExceptionsMongoRep.DuplicatedRecordException;
 import com.musicLib.MongoDBRepisotory.AlbumRepositoryMongo;
 import com.musicLib.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.MongoDBRepisotory.MetaDataMongo;
@@ -21,11 +23,35 @@ public class Main {
 
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
         ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
-        //artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"),"Iron Maiden", 1975, "Heavy Metal");
-
-
 
         MongoCollection songsDatabase = db.getCollection("Songs");
+        try {
+            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Iron Maiden", 1975, "Heavy Metal");
+        }catch (DuplicatedRecordException e){
+            System.out.println("Such record already exists: " + e);
+        }
+
+        try {
+            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Anthrax", 1981, "Thrash Metal");
+        }catch (DuplicatedRecordException e){
+            System.out.println("Such record already exists: " + e);
+        }
+
+        try {
+            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "AC/DC", 1973, "Rock and Roll");
+        }catch (DuplicatedRecordException e){
+            System.out.println("Such record already exists: " + e);
+        }
+
+        try {
+            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Led Zeppelin", 1968, "Blues Rock");
+        }catch (DuplicatedRecordException e){
+            System.out.println("Such record already exists: " + e);
+        }
+
+
+
+
         List<ArtistRecordMongo> list = artistRepositoryMongo.queryArtistByName(songsDatabase,"Iron Maiden");
         for(ArtistRecordMongo record : list){
             System.out.println(record.toString());
@@ -34,15 +60,41 @@ public class Main {
         System.out.println();
 
         AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
-        Document insertedNewAlbum =  albumRepositoryMongo.insertNewAlbum(songsDatabase,"Iron Maiden","Piece of Mind",9,1983);
-        System.out.println(insertedNewAlbum.toJson());
+        try {
+            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Anthrax", "Piece of Mind", 9, 1983);
+            System.out.println(insertedNewAlbum.toJson());
+        }catch (ArtistNotFoundException e){
+            System.out.println("There is no such artist: " + e);
+        }catch (DuplicatedRecordException e2){
+            System.out.println("Such album exists");
+            e2.printStackTrace();
+        }
 
+
+        try {
+            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Led Zeppelin", "Led Zeppelin 2", 9, 1969);
+            System.out.println(insertedNewAlbum.toJson());
+        }catch (ArtistNotFoundException e){
+            System.out.println("There is no such artist: " + e);
+        }catch (DuplicatedRecordException e2){
+            System.out.println("Such album exists");
+            e2.printStackTrace();
+        }
+
+        try{
+            albumRepositoryMongo.updateAlbumName(songsDatabase,"Led Zeppelin", "Led Zeppelin 2", "Led Zeppelin 4");
+        }catch (ArtistNotFoundException e){
+            System.out.println("There is no such artist: " + e);
+        }
+
+        List<ArtistRecordMongo> allRecords = artistRepositoryMongo.queryAllArtists(songsDatabase);
+        allRecords.forEach(k -> System.out.println(k.toString()));
 
         MongoCursor databases = mongoClient.listDatabaseNames().iterator();
         while (databases.hasNext()){
             System.out.println(databases.next());
         }
-        MongoCursor cursor = songsDatabase.find(new Document(MetaDataMongo.ARTIST_NAME, "Iron Maiden")).iterator();
+        MongoCursor cursor = songsDatabase.find(new Document(MetaDataMongo.ARTIST_NAME,"Iron Maiden" )).iterator();
         Document foundRecord = (Document) cursor.next();
         System.out.println(foundRecord.get(MetaDataMongo.ARTIST_NAME));
 

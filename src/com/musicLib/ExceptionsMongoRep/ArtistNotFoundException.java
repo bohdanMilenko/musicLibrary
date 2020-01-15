@@ -1,6 +1,6 @@
 package com.musicLib.ExceptionsMongoRep;
 
-public class ArtistNotFoundException extends RuntimeException {
+public class ArtistNotFoundException extends Exception {
 
     public ArtistNotFoundException(String message) {
         super(message);

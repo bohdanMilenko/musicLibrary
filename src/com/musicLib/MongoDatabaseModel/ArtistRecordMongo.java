@@ -1,5 +1,6 @@
 package com.musicLib.MongoDatabaseModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistRecordMongo {
@@ -7,7 +8,7 @@ public class ArtistRecordMongo {
     private String artistName;
     private int dateFounded;
     private String genre;
-    private List<AlbumMongo> album;
+    private List<AlbumMongo> album = new ArrayList<>();
 
     public String getArtistName() {
         return artistName;
