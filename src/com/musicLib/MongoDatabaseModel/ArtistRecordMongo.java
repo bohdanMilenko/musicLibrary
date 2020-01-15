@@ -41,8 +41,15 @@ public class ArtistRecordMongo {
         this.album = album;
     }
 
+    private String getAllAlbumNames() {
+        StringBuilder sb = new StringBuilder();
+        album.forEach(album -> sb.append(album.toString()).append("\n"));
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
-        return artistName + " was founded in " + dateFounded;
+        String returnString = artistName + " was founded in " + dateFounded + "\nAlbums are: ";
+        return returnString + getAllAlbumNames();
     }
 }

@@ -40,4 +40,9 @@ public class AlbumMongo {
     public void setSongMongoList(List<SongMongo> songMongoList) {
         this.songMongoList = songMongoList;
     }
+
+    @Override
+    public String toString() {
+        return albumName;
+    }
 }

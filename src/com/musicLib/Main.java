@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.musicLib.MongoDBRepisotory.AlbumRepositoryMongo;
 import com.musicLib.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.MongoDBRepisotory.MetaDataMongo;
 import com.musicLib.MongoDatabaseModel.ArtistRecordMongo;
@@ -29,6 +30,13 @@ public class Main {
         for(ArtistRecordMongo record : list){
             System.out.println(record.toString());
         }
+
+        System.out.println();
+
+        AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
+        Document insertedNewAlbum =  albumRepositoryMongo.insertNewAlbum(songsDatabase,"Iron Maiden","Piece of Mind",9,1983);
+        System.out.println(insertedNewAlbum.toJson());
+
 
         MongoCursor databases = mongoClient.listDatabaseNames().iterator();
         while (databases.hasNext()){
