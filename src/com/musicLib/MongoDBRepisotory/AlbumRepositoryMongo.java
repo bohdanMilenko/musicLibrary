@@ -10,6 +10,7 @@ import com.musicLib.ExceptionsMongoRep.DuplicatedRecordException;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AlbumRepositoryMongo {
@@ -21,9 +22,9 @@ public class AlbumRepositoryMongo {
         //The method below returns may throw an exception. Should I handle it here or do it at the place of the call??
         findByArtistName(collection, artistName);
         if(findByArtistAlbumName(collection,artistName,albumName).isEmpty()) {
-            collection.updateOne(Filters.eq(MetaDataMongo.ARTIST_NAME, artistName), Updates.combine(Updates.set(MetaDataMongo.ALBUM_NAME, albumName),
+            collection.updateOne(Filters.eq(MetaDataMongo.ARTIST_NAME, artistName),  Updates.combine(Arrays.asList( Updates.set(MetaDataMongo.ALBUM_NAME, albumName),
                     Updates.set(MetaDataMongo.ALBUM_SONGS_NUMBER, numberOfSongs),
-                    Updates.set(MetaDataMongo.ALBUM_YEAR_RELEASED, yearReleased)));
+                    Updates.set(MetaDataMongo.ALBUM_YEAR_RELEASED, yearReleased))));
             artistRecord = findByArtistName(collection, artistName);
             return artistRecord;
         }else {

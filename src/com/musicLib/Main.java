@@ -19,6 +19,11 @@ public class Main {
 
     public static void main(String[] args) {
 
+        /**
+         * Issues: Cannot add a second album to the artist, as albums are not in the List []. Adding new album results in overriding
+         * 
+         */
+
         MongoClient mongoClient = SessionManagerMongo.getMongoClient();
 
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
@@ -81,6 +86,16 @@ public class Main {
             e2.printStackTrace();
         }
 
+        try {
+            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Anthrax", "For All Kings", 12, 2016);
+            System.out.println(insertedNewAlbum.toJson());
+        }catch (ArtistNotFoundException e){
+            System.out.println("There is no such artist: " + e);
+        }catch (DuplicatedRecordException e2){
+            System.out.println("Such album exists");
+            e2.printStackTrace();
+        }
+
         try{
             albumRepositoryMongo.updateAlbumName(songsDatabase,"Led Zeppelin", "Led Zeppelin 2", "Led Zeppelin 4");
         }catch (ArtistNotFoundException e){
@@ -88,7 +103,11 @@ public class Main {
         }
 
         List<ArtistRecordMongo> allRecords = artistRepositoryMongo.queryAllArtists(songsDatabase);
-        allRecords.forEach(k -> System.out.println(k.toString()));
+        //allRecords.forEach(k -> System.out.println(k.toString()));
+
+        ArtistRecordMongo anthrax = allRecords.get(3);
+        System.out.println(anthrax.getArtistName());
+        System.out.println(anthrax.getAlbum().get(0).getAlbumName());
 
         MongoCursor databases = mongoClient.listDatabaseNames().iterator();
         while (databases.hasNext()){

@@ -80,7 +80,6 @@ public class ArtistRepositoryMongo {
         AlbumMongo tempAlbum = new AlbumMongo();
         tempAlbum.setAlbumName((String) documentWithAlbums.get(MetaDataMongo.ALBUM_NAME));
         tempAlbum.setAlbumName((String) documentWithAlbums.get(MetaDataMongo.ALBUM_NAME));
-        tempAlbum.setAlbumName((String) documentWithAlbums.get(MetaDataMongo.ALBUM_NAME));
         return tempAlbum;
     }
 
