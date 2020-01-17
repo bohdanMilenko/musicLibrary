@@ -26,12 +26,12 @@ public class Album {
 
     }
 
-    public List<Song> getSongs() {
-        return songs;
+    public int getId() {
+        return id;
     }
 
-    public void setSongs(List<Song> songs) {
-        this.songs = songs;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -56,5 +56,13 @@ public class Album {
 
     public void setArtist(Artist artist) {
         this.artist = artist;
+    }
+
+    public List<Song> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
     }
 }
