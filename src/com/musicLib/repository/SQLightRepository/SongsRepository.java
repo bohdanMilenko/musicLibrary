@@ -1,4 +1,4 @@
-package com.musicLib.SQLightRepository;
+package com.musicLib.repository.SQLightRepository;
 
 import com.musicLib.databaseModel.SongArtist;
 import com.musicLib.SQLUtil.SessionManagerSQLite;
@@ -7,8 +7,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.musicLib.SQLightRepository.MetaData.*;
-import static com.musicLib.SQLightRepository.UserInput.orderResultSet;
+import static com.musicLib.repository.SQLightRepository.MetaData.*;
+import static com.musicLib.repository.SQLightRepository.UserInput.orderResultSet;
 
 public class SongsRepository {
 

@@ -1,16 +1,60 @@
-package com.musicLib.MongoDBRepisotory;
+package com.musicLib.repository.MongoDBRepisotory;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.musicLib.ExceptionsMongoRep.DuplicatedRecordException;
 import com.musicLib.MongoDatabaseModel.AlbumMongo;
 import com.musicLib.MongoDatabaseModel.ArtistRecordMongo;
+import com.musicLib.entities.Artist;
+import com.musicLib.repository.ArtistRepository;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtistRepositoryMongo {
+public class ArtistRepositoryMongo implements ArtistRepository {
+
+    @Override
+    public boolean insert(Artist artist){
+        //TODO Crate functionality to write to the db
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -32,6 +76,9 @@ public class ArtistRepositoryMongo {
         System.out.println("Inserted a record");
         return recordToInsert;
     }
+
+
+
 
     public List<ArtistRecordMongo> queryArtistByName(MongoCollection<Document> collection, String artistName) {
         List<ArtistRecordMongo> listToReturn = new ArrayList<>();

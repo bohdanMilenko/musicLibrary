@@ -1,4 +1,4 @@
-package com.musicLib.SQLightRepository;
+package com.musicLib.repository.SQLightRepository;
 
 import com.musicLib.SQLUtil.SessionManagerSQLite;
 
@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.musicLib.SQLightRepository.MetaData.*;
+import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
 public class AlbumRepository {
 

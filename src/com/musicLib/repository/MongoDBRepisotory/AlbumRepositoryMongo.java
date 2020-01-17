@@ -1,4 +1,4 @@
-package com.musicLib.MongoDBRepisotory;
+package com.musicLib.repository.MongoDBRepisotory;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;

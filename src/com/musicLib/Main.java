@@ -6,9 +6,9 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.musicLib.ExceptionsMongoRep.ArtistNotFoundException;
 import com.musicLib.ExceptionsMongoRep.DuplicatedRecordException;
-import com.musicLib.MongoDBRepisotory.AlbumRepositoryMongo;
-import com.musicLib.MongoDBRepisotory.ArtistRepositoryMongo;
-import com.musicLib.MongoDBRepisotory.MetaDataMongo;
+import com.musicLib.repository.MongoDBRepisotory.AlbumRepositoryMongo;
+import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
+import com.musicLib.repository.MongoDBRepisotory.MetaDataMongo;
 import com.musicLib.MongoDatabaseModel.ArtistRecordMongo;
 import com.musicLib.MongoUtil.SessionManagerMongo;
 import org.bson.Document;
@@ -21,7 +21,7 @@ public class Main {
 
         /**
          * Issues: Cannot add a second album to the artist, as albums are not in the List []. Adding new album results in overriding
-         * 
+         *
          */
 
         MongoClient mongoClient = SessionManagerMongo.getMongoClient();

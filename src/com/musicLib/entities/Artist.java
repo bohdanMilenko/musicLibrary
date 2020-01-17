@@ -1,10 +1,10 @@
-package com.musicLib.databaseModel;
+package com.musicLib.entities;
 
-public class Album {
+public class Artist {
 
     private int id;
     private String name;
-    private int artistID;
+
 
     public int getId() {
         return id;
@@ -20,14 +20,6 @@ public class Album {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getArtistID() {
-        return artistID;
-    }
-
-    public void setArtistID(int artistID) {
-        this.artistID = artistID;
     }
 
 

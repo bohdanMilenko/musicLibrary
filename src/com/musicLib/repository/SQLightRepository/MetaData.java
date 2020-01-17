@@ -1,4 +1,4 @@
-package com.musicLib.SQLightRepository;
+package com.musicLib.repository.SQLightRepository;
 
 public class MetaData {
 

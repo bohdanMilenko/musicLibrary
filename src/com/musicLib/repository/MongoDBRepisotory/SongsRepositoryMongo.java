@@ -1,4 +1,4 @@
-package com.musicLib.MongoDBRepisotory;
+package com.musicLib.repository.MongoDBRepisotory;
 
 public class SongsRepositoryMongo {
 

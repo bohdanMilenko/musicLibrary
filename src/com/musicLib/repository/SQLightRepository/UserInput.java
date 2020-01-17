@@ -1,10 +1,10 @@
-package com.musicLib.SQLightRepository;
+package com.musicLib.repository.SQLightRepository;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import static com.musicLib.SQLightRepository.MetaData.*;
+import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
 public class UserInput {
 
