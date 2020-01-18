@@ -5,24 +5,24 @@ import com.musicLib.repository.ArtistRepository;
 
 import java.util.List;
 
-public class ArtistsService {
+public class ArtistService {
 
-    public ArtistsService() {
+    public ArtistService() {
     }
 
     public boolean add(ArtistRepository artistRepo, Artist artist) {
         return artistRepo.insert(artist);
     }
 
-    public List<Artist> queryAll(ArtistRepository artistRepo){
-        return  artistRepo.queryAllArtists();
+    public List<Artist> queryAll(ArtistRepository artistRepo) {
+        return artistRepo.queryAllArtists();
     }
 
-    public List<Artist> query(ArtistRepository artistRepo, String artist){
+    public List<Artist> query(ArtistRepository artistRepo, String artist) {
         return artistRepo.queryArtist(artist);
     }
 
-    public boolean delete(ArtistRepository artistRepo, String artistName){
+    public boolean delete(ArtistRepository artistRepo, String artistName) {
         return artistRepo.deleteArtist(artistName);
     }
 }
