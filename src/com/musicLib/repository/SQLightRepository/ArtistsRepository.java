@@ -1,7 +1,8 @@
 package com.musicLib.repository.SQLightRepository;
 
-import com.musicLib.databaseModel.Artist;
 import com.musicLib.SQLUtil.SessionManagerSQLite;
+import com.musicLib.entities.Artist;
+import com.musicLib.repository.ArtistRepository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,11 +12,62 @@ import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
 
 
-public class ArtistsRepository {
+public class ArtistsRepository implements ArtistRepository {
 
     private PreparedStatement insertArtist;
     private  PreparedStatement queryArtists;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
+
+
+
+
+    @Override
+    public boolean insert(com.musicLib.entities.Artist artist) {
+        return false;
+    }
+
+    @Override
+    public List<Artist> queryAllArtists() {
+        List<com.musicLib.entities.Artist> artists = new ArrayList<>();
+        Connection conn;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try { conn = SessionManagerSQLite.getConnection();
+            System.out.println("In method");
+            statement = conn.createStatement();
+            resultSet = statement.executeQuery(QUERY_ARTISTS);
+            while (resultSet.next()) {
+                System.out.println("Inside");
+                Artist artist = new Artist();
+                artist.setId(resultSet.getInt(1));
+                artist.setName(resultSet.getString(2));
+                artists.add(artist);
+            }
+            return artists;
+        } catch (SQLException e) {
+            System.out.println("Query was not performed " + e.getMessage());
+            e.printStackTrace();
+            return artists;
+        }
+    }
+
+    @Override
+    public List<com.musicLib.entities.Artist> queryArtist(String artistName) {
+        return null;
+    }
+
+    @Override
+    public boolean deleteArtist(String artistName) {
+        return false;
+    }
+
+
+
+
+
+
+
+
 
     private static final String INSERT_ARTIST = "INSERT INTO " + TABLE_ARTISTS +
             " (" + COLUMN_ARTISTS_NAME + ") VALUES(?)";
@@ -24,6 +76,7 @@ public class ArtistsRepository {
             + " WHERE " + COLUMN_ARTISTS_NAME + "= ?";
     private static final String QUERY_ARTISTS_PREP = "SELECT " + COLUMN_ARTISTS_ID + " FROM " + TABLE_ARTISTS
             + " WHERE " + COLUMN_ARTISTS_NAME + "= ?";
+
 
     public List<Artist> queryArtistsTable() {
         List<Artist> artists = new ArrayList<>();

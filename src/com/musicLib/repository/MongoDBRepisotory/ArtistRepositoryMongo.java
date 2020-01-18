@@ -20,42 +20,20 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         return true;
     }
 
+    @Override
+    public List<Artist> queryAllArtists() {
+        return null;
+    }
 
+    @Override
+    public List<Artist> queryArtist(String artistName) {
+        return null;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public boolean deleteArtist(String artistName) {
+        return false;
+    }
 
     /**
      * Use this method to insert new Artist.
