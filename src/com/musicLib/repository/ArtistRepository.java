@@ -8,9 +8,9 @@ public interface ArtistRepository {
 
     boolean insert(Artist artist);
 
-    List<Artist> getAllArtists();
+    List<Artist> queryAllArtists();
 
-    Artist queryArtist(String artistName);
+    List<Artist> queryArtist(String artistName);
 
     boolean deleteArtist(String artistName);
 
