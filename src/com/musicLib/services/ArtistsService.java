@@ -11,8 +11,9 @@ public class ArtistsService {
         this.artistRepo = artistRepo;
     }
 
-    public boolean add(Artist artist){
+    public boolean add(Artist artist) {
         return artistRepo.insert(artist);
     }
 
+    
 }
