@@ -2,7 +2,7 @@ package com.musicLib.repository.MongoDBRepisotory;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.musicLib.ExceptionsMongoRep.DuplicatedRecordException;
+import com.musicLib.repositoryExceptions.DuplicatedRecordException;
 import com.musicLib.MongoDatabaseModel.AlbumMongo;
 import com.musicLib.MongoDatabaseModel.ArtistRecordMongo;
 import com.musicLib.entities.Artist;

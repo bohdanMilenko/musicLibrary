@@ -5,8 +5,8 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
-import com.musicLib.ExceptionsMongoRep.ArtistNotFoundException;
-import com.musicLib.ExceptionsMongoRep.DuplicatedRecordException;
+import com.musicLib.repositoryExceptions.ArtistNotFoundException;
+import com.musicLib.repositoryExceptions.DuplicatedRecordException;
 import org.bson.Document;
 
 import java.util.ArrayList;

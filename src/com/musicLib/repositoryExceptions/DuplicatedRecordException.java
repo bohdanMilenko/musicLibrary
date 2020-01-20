@@ -1,4 +1,4 @@
-package com.musicLib.ExceptionsMongoRep;
+package com.musicLib.repositoryExceptions;
 
 public class DuplicatedRecordException extends Exception{
 
