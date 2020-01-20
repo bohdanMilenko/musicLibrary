@@ -22,6 +22,7 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
     private PreparedStatement queryByArtistName;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
     private ArtistRepository artistRepository = new ArtistsRepository();
+    private SongsRepository songsRepository = new SongsRepository();
 
     private static final String QUERY_ALBUMS = "SELECT " + COLUMN_ALBUMS_ID + " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_NAME + "= ?";
@@ -78,16 +79,7 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
             queryByArtistName = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS_BY_ARTIST_NAME_PREP);
             queryByArtistName.setInt(1, artistId);
             ResultSet rs = queryByArtistName.executeQuery();
-            while (rs.next()) {
-                Album tempAlbum = new Album();
-                Artist tempArtist = new Artist();
-                tempAlbum.setId(rs.getInt(1));
-                tempAlbum.setName(rs.getString(2));
-                tempArtist.setName(artistName);
-                tempArtist.setId(rs.getInt(3));
-                tempAlbum.setArtist(tempArtist);
-                albumsToReturn.add(tempAlbum);
-            }
+            albumsToReturn = resultSetToAlbum(rs);
             return albumsToReturn;
         } else {
             return null;
@@ -95,12 +87,49 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
     }
 
     @Override
-    public boolean delete(String albumName, String artistName) {
+    public boolean delete(String albumName, String artistName) throws SQLException, ArtistNotFoundException {
+       List<Album> foundAlbums = queryByArtistName(artistName);
+       if(foundAlbums.size()==1) {
+           Album album = foundAlbums.get(0);
+           int artistId = album.getArtist().getId();
+           int albumId = album.getId();
+           songsRepository.deleteSongsFromAlbum(albumId);
+       }else {
+           throw new ArtistNotFoundException("0 or more than 1 artist found");
+       }
+
+
         return false;
     }
 
-    public boolean deleteByArtistName(String artist){
+    @Override
+    public List<Album> queryByAlbumName(String albumName) throws SQLException {
+        List<Album> returnList = new ArrayList<>();
+        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
+        queryAlbums.setString(1,albumName);
+        ResultSet rs = queryAlbums.executeQuery();
 
+
+    }
+
+    public boolean deleteByArtistName(String artist){
+        //TODO WRITE IMPLEMENTATION
+        return true;
+
+    }
+
+    private List<Album> resultSetToAlbum(ResultSet rs) throws SQLException{
+
+        while (rs.next()) {
+            Album tempAlbum = new Album();
+            Artist tempArtist = new Artist();
+            tempAlbum.setId(rs.getInt(1));
+            tempAlbum.setName(rs.getString(2));
+            tempArtist.setName(artistName);
+            tempArtist.setId(rs.getInt(3));
+            tempAlbum.setArtist(tempArtist);
+            albumsToReturn.add(tempAlbum);
+        }
 
     }
 
