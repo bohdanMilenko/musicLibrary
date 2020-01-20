@@ -4,7 +4,6 @@ import com.musicLib.SQLUtil.SessionManagerSQLite;
 import com.musicLib.entities.Artist;
 import com.musicLib.repository.ArtistRepository;
 
-import javax.lang.model.type.ArrayType;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,8 @@ public class ArtistsRepository implements ArtistRepository {
             " (" + COLUMN_ARTISTS_NAME + ") VALUES(?)";
 
     @Override
-    public boolean insert(com.musicLib.entities.Artist artist) {
+    public boolean insert(Artist artist) {
+        //TODO COMPLETE THIS METHOD! GET GENERATED KEYS AND SET THEM!
         return false;
     }
 
@@ -84,6 +84,8 @@ public class ArtistsRepository implements ArtistRepository {
         List<Artist> artistToDelete = queryArtist(artistName);
         if(artistToDelete.size()==1){
            albumRepository.deleteByArtistName(artistName);
+           //TODO FINISH THIS METHOD
+           return true;
         }else{
             throw new RuntimeException("More than one artist found with the same name");
         }

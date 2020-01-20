@@ -11,7 +11,7 @@ public interface AlbumRepository {
 
     boolean insert(Album album, String artistName) throws ArtistNotFoundException, DuplicatedRecordException, SQLException;
 
-    List<Album> queryByArtistName(String artistName);
+    List<Album> queryByArtistName(String artistName) throws SQLException;
 
     boolean delete(String albumName, String artistName);
 
