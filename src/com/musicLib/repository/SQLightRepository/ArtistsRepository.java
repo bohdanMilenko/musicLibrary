@@ -16,7 +16,7 @@ public class ArtistsRepository implements ArtistRepository {
     private PreparedStatement insertArtist;
     private PreparedStatement queryArtists;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
-    private AlbumRepository albumRepository = new AlbumRepository();
+    private static AlbumRepository albumRepository = new AlbumRepository();
 
 
     private static final String QUERY_ALL_ARTISTS = "SELECT " + COLUMN_ARTISTS_ID + "," + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS;

@@ -3,7 +3,6 @@ package com.musicLib.repository.SQLightRepository;
 import com.musicLib.SQLUtil.SessionManagerSQLite;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
-import com.musicLib.repository.ArtistRepository;
 import com.musicLib.repositoryExceptions.ArtistNotFoundException;
 import com.musicLib.repositoryExceptions.DuplicatedRecordException;
 
@@ -21,8 +20,8 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
     private PreparedStatement insertAlbum;
     private PreparedStatement queryByArtistName;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
-    private ArtistRepository artistRepository = new ArtistsRepository();
-    private SongsRepository songsRepository = new SongsRepository();
+    private static ArtistsRepository artistRepository = new ArtistsRepository();
+    private static SongsRepository songsRepository = new SongsRepository();
 
     private static final String QUERY_ALBUMS = "SELECT " + COLUMN_ALBUMS_ID + " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_NAME + "= ?";
@@ -40,9 +39,15 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
             + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " + TABLE_ARTISTS + "." + COLUMN_ALBUMS_ID
             + " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = \"";
 
-    private static final String QUERY_BY_ALBUM_NAME = "SELECT " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", "+
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", " + TABLE_ALBUMS
-
+    private static final String QUERY_BY_ALBUM_NAME_PREP= "SELECT " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", "
+            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " FROM " +
+            TABLE_ALBUMS + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " +
+            TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME  + " = ?";
+/*
+    SELECT albums._id , albums.name, albums.artist , artists._id , artists.name
+    FROM albums INNER JOIN artists ON albums.artist = artists._id WHERE artists.name = "ZZ Top"
+**/
 
     @Override
     public boolean insert(Album album, String artistName) throws ArtistNotFoundException, DuplicatedRecordException, SQLException {
@@ -98,15 +103,15 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
 
     @Override
     public boolean delete(String albumName, String artistName) throws SQLException, ArtistNotFoundException {
-       List<Album> foundAlbums = queryByArtistName(artistName);
-       if(foundAlbums.size()==1) {
-           Album album = foundAlbums.get(0);
-           int artistId = album.getArtist().getId();
-           int albumId = album.getId();
-           songsRepository.deleteSongsFromAlbum(albumId);
-       }else {
-           throw new ArtistNotFoundException("0 or more than 1 artist found");
-       }
+        List<Album> foundAlbums = queryByArtistName(artistName);
+        if (foundAlbums.size() == 1) {
+            Album album = foundAlbums.get(0);
+            int artistId = album.getArtist().getId();
+            int albumId = album.getId();
+            //songsRepository.deleteSongsFromAlbum(albumId);
+        } else {
+            throw new ArtistNotFoundException("0 or more than 1 artist found");
+        }
 
 
         return false;
@@ -115,27 +120,52 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
     @Override
     public List<Album> queryByAlbumName(String albumName) throws SQLException {
         List<Album> returnList = new ArrayList<>();
-        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
+        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_BY_ALBUM_NAME_PREP);
         queryAlbums.setString(1,albumName);
         ResultSet rs = queryAlbums.executeQuery();
-        returnList = resultSetToAlbum(rs, null);
-
-
+        returnList = resultSetToAlbum(rs);
+        return returnList;
     }
 
-    public boolean deleteByArtistName(String artist){
+    //    @Override
+//    public List<Album> queryByAlbumName(String albumName) throws SQLException {
+//        List<Album> returnList = new ArrayList<>();
+//        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
+//        queryAlbums.setString(1,albumName);
+//        ResultSet rs = queryAlbums.executeQuery();
+//        returnList = resultSetToAlbum(rs, null);
+//
+//
+//    }
+
+    private List<Album> resultSetToAlbum(ResultSet rs) throws SQLException {
+        List<Album> albumsToReturn = new ArrayList<>();
+        while (rs.next()) {
+            Album tempAlbum = new Album();
+            Artist tempArtist = new Artist();
+            tempAlbum.setId(rs.getInt(1));
+            tempAlbum.setName(rs.getString(2));
+            tempArtist.setId(rs.getInt(4));
+            tempArtist.setName(rs.getString(5));
+            tempAlbum.setArtist(tempArtist);
+            albumsToReturn.add(tempAlbum);
+        }
+        return albumsToReturn;
+    }
+
+    public boolean deleteByArtistName(String artist) {
         //TODO WRITE IMPLEMENTATION
         return true;
 
     }
 
-    private List<Album> resultSetToAlbum(ResultSet rs, String artistName) throws SQLException{
+    private List<Album> resultSetToAlbum(ResultSet rs, String artistName) throws SQLException {
         List<Album> albumsToReturn = new ArrayList<>();
         while (rs.next()) {
             Album tempAlbum = new Album();
+            Artist tempArtist = new Artist();
             tempAlbum.setId(rs.getInt(1));
             tempAlbum.setName(rs.getString(2));
-            Artist tempArtist = artistRepository.queryById()
             tempArtist.setName(artistName);
             tempArtist.setId(rs.getInt(3));
             tempAlbum.setArtist(tempArtist);
