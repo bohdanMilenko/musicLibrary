@@ -33,6 +33,16 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
             " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_ARTIST + "= ?";
 
+    private static final String QUERY_BY_SONG_NAME = "SELECT " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", "
+            + MetaData.TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", "
+            + TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME +
+            " FROM " + TABLE_SONGS + " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID
+            + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " + TABLE_ARTISTS + "." + COLUMN_ALBUMS_ID
+            + " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = \"";
+
+    private static final String QUERY_BY_ALBUM_NAME = "SELECT " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", "+
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", " + TABLE_ALBUMS
+
 
     @Override
     public boolean insert(Album album, String artistName) throws ArtistNotFoundException, DuplicatedRecordException, SQLException {
@@ -71,15 +81,15 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
 
     @Override
     public List<Album> queryByArtistName(String artistName) throws SQLException {
-        List<Album> albumsToReturn = new ArrayList<>();
+        List<Album> albumsToReturn;
         List<Artist> artists = artistRepository.queryArtist(artistName);
-        if (artists.size() > 0) {
+        if (artists.size() == 1) {
             Artist foundArtist = artists.get(0);
             int artistId = foundArtist.getId();
             queryByArtistName = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS_BY_ARTIST_NAME_PREP);
             queryByArtistName.setInt(1, artistId);
             ResultSet rs = queryByArtistName.executeQuery();
-            albumsToReturn = resultSetToAlbum(rs);
+            albumsToReturn = resultSetToAlbum(rs, artistName);
             return albumsToReturn;
         } else {
             return null;
@@ -108,6 +118,7 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
         queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
         queryAlbums.setString(1,albumName);
         ResultSet rs = queryAlbums.executeQuery();
+        returnList = resultSetToAlbum(rs, null);
 
 
     }
@@ -118,19 +129,19 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
 
     }
 
-    private List<Album> resultSetToAlbum(ResultSet rs) throws SQLException{
-
+    private List<Album> resultSetToAlbum(ResultSet rs, String artistName) throws SQLException{
+        List<Album> albumsToReturn = new ArrayList<>();
         while (rs.next()) {
             Album tempAlbum = new Album();
-            Artist tempArtist = new Artist();
             tempAlbum.setId(rs.getInt(1));
             tempAlbum.setName(rs.getString(2));
+            Artist tempArtist = artistRepository.queryById()
             tempArtist.setName(artistName);
             tempArtist.setId(rs.getInt(3));
             tempAlbum.setArtist(tempArtist);
             albumsToReturn.add(tempAlbum);
         }
-
+        return albumsToReturn;
     }
 
 

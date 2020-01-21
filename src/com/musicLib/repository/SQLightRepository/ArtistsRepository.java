@@ -27,6 +27,8 @@ public class ArtistsRepository implements ArtistRepository {
     private static final String QUERY_ARTIST_BY_NAME = "SELECT " + COLUMN_ARTISTS_ID + " FROM " + TABLE_ARTISTS
             + " WHERE " + COLUMN_ARTISTS_NAME + "= ?";
 
+    private static final String QUERY_ARTIST_BY_ID = "SELECT " + COLUMN_ARTISTS_ID +", " + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS
+            + " WHERE " + COLUMN_ARTISTS_ID + "= ?";
 
     private static final String INSERT_ARTIST = "INSERT INTO " + TABLE_ARTISTS +
             " (" + COLUMN_ARTISTS_NAME + ") VALUES(?)";
@@ -82,14 +84,26 @@ public class ArtistsRepository implements ArtistRepository {
     @Override
     public boolean deleteArtist(String artistName) {
         List<Artist> artistToDelete = queryArtist(artistName);
-        if(artistToDelete.size()==1){
-           albumRepository.deleteByArtistName(artistName);
-           //TODO FINISH THIS METHOD
-           return true;
-        }else{
+        if (artistToDelete.size() == 1) {
+            albumRepository.deleteByArtistName(artistName);
+            //TODO FINISH THIS METHOD
+            return true;
+        } else {
             throw new RuntimeException("More than one artist found with the same name");
         }
 
+    }
+
+    public Artist queryById(int id) throws SQLException {
+        PreparedStatement query = SessionManagerSQLite.getPreparedStatement(QUERY_ARTIST_BY_ID);
+        query.setInt(1,id);
+        ResultSet rs = query.executeQuery();
+        List<Artist> resultOfQuery = resultSetToArtist(rs);
+        if(resultOfQuery.size()==1){
+            Artist foundArtist = resultOfQuery.get(0);
+            return foundArtist;
+        }
+        return null;
     }
 
 
@@ -109,6 +123,7 @@ public class ArtistsRepository implements ArtistRepository {
             return null;
         }
     }
+
 
     int insertArtist(String name) throws SQLException {
         queryArtists = SessionManagerSQLite.getPreparedStatement(QUERY_ARTISTS_PREP);
