@@ -82,10 +82,10 @@ public class ArtistsRepository implements ArtistRepository {
     }
 
     @Override
-    public boolean deleteArtist(String artistName) {
+    public boolean deleteArtist(String artistName)  throws SQLException{
         List<Artist> artistToDelete = queryArtist(artistName);
         if (artistToDelete.size() == 1) {
-            albumRepository.deleteByArtistName(artistName);
+            albumRepository.deleteAlbumByArtistName(artistName);
             //TODO FINISH THIS METHOD
             return true;
         } else {

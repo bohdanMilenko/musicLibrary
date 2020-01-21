@@ -19,29 +19,35 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
     private PreparedStatement queryAlbums;
     private PreparedStatement insertAlbum;
     private PreparedStatement queryByArtistName;
+    private PreparedStatement deleteAlbumById;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
     private static ArtistsRepository artistRepository = new ArtistsRepository();
     private static SongsRepository songsRepository = new SongsRepository();
 
     private static final String QUERY_ALBUMS = "SELECT " + COLUMN_ALBUMS_ID + " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_NAME + "= ?";
+
     private static final String INSERT_ALBUM = " INSERT INTO " + TABLE_ALBUMS +
             " (" + COLUMN_ALBUMS_NAME + ", " + COLUMN_ALBUMS_ARTIST + ") VALUES(?,?)";
-    private static final String QUERY_ALBUMS_BY_ARTIST_NAME_PREP = "SELECT " + COLUMN_ALBUMS_ID + ", " + COLUMN_ALBUMS_NAME
+
+    private static final String QUERY_ALBUMS_BY_ARTIST_NAME = "SELECT " + COLUMN_ALBUMS_ID + ", " + COLUMN_ALBUMS_NAME
             + ", " + COLUMN_ALBUMS_ARTIST +
             " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_ARTIST + "= ?";
 
-
-    private static final String QUERY_BY_ALBUM_NAME_PREP = "SELECT " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", "
-            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " FROM " +
-            TABLE_ALBUMS + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " +
-            TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME  + " = ?";
-/*
+    /*
     SELECT albums._id , albums.name, albums.artist , artists._id , artists.name
     FROM albums INNER JOIN artists ON albums.artist = artists._id WHERE artists.name = "ZZ Top"
 **/
+    private static final String QUERY_BY_ALBUM_NAME = "SELECT " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", "
+            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " FROM " +
+            TABLE_ALBUMS + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " +
+            TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + " = ?";
+
+    public static final String DELETE_ALBUM_BY_ID = "DELETE FROM " + TABLE_ALBUMS +
+            " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + " =?";
+
 
     @Override
     public boolean insert(Album album, String artistName) throws ArtistNotFoundException, DuplicatedRecordException, SQLException {
@@ -86,7 +92,7 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
         if (artists.size() == 1) {
             Artist foundArtist = artists.get(0);
             int artistId = foundArtist.getId();
-            queryByArtistName = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS_BY_ARTIST_NAME_PREP);
+            queryByArtistName = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS_BY_ARTIST_NAME);
             queryByArtistName.setInt(1, artistId);
             ResultSet rs = queryByArtistName.executeQuery();
             albumsToReturn = resultSetToAlbum(rs, artistName);
@@ -115,8 +121,8 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
     @Override
     public List<Album> queryByAlbumName(String albumName) throws SQLException {
         List<Album> returnList = new ArrayList<>();
-        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_BY_ALBUM_NAME_PREP);
-        queryAlbums.setString(1,albumName);
+        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_BY_ALBUM_NAME);
+        queryAlbums.setString(1, albumName);
         ResultSet rs = queryAlbums.executeQuery();
         returnList = resultSetToAlbum(rs);
         return returnList;
@@ -138,10 +144,22 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
         return albumsToReturn;
     }
 
-    public boolean deleteByArtistName(String artist) {
-        //TODO WRITE IMPLEMENTATION
+    public boolean deleteAlbumByArtistName(String artist) throws SQLException {
+        List<Album> albumsToDelete = queryByArtistName(artist);
+        deleteRelatedSongs(albumsToDelete);
+        for(Album tempAlbum : albumsToDelete) {
+            deleteAlbumById = SessionManagerSQLite.getPreparedStatement(DELETE_ALBUM_BY_ID);
+            deleteAlbumById.setInt(1, tempAlbum.getId());
+            deleteAlbumById.executeUpdate();
+        }
         return true;
+    }
 
+    private void deleteRelatedSongs(List<Album> albumsToDelete) throws SQLException {
+        for (Album tempAlbum : albumsToDelete) {
+            int albumId = tempAlbum.getId();
+            songsRepository.deleteSongsByAlbumId(albumId);
+        }
     }
 
     private List<Album> resultSetToAlbum(ResultSet rs, String artistName) throws SQLException {

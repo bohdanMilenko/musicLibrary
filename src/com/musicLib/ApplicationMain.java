@@ -50,5 +50,8 @@ public class ApplicationMain {
         albumGoingToCalifornia.setArtist(ledZeppelin);
         System.out.println(albumService.add(albumRepository,"Led Zeppelin",albumGoingToCalifornia ));
 
+        albumService.delete
+                //TODO FINISH IMPLEMENTING DELETE IN ARTISTS;
+
     }
 }
