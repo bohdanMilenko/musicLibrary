@@ -39,6 +39,16 @@ public class AlbumService {
         return null;
     }
 
+    public List<Album> queryByAlbumName(AlbumRepository albumRepo, String albumName) {
+        try{
+            return albumRepo.queryByAlbumName(albumName);
+        }catch (SQLException e) {
+            System.out.println("Cannot perform query (Query Albums By Artist): " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean delete(AlbumRepository albumRepo, String artistName, String albumName) {
         try {
             return albumRepo.delete(albumName, artistName);

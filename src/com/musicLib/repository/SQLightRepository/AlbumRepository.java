@@ -32,14 +32,8 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
             " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_ARTIST + "= ?";
 
-    private static final String QUERY_BY_SONG_NAME = "SELECT " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", "
-            + MetaData.TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", "
-            + TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME +
-            " FROM " + TABLE_SONGS + " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID
-            + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " + TABLE_ARTISTS + "." + COLUMN_ALBUMS_ID
-            + " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = \"";
 
-    private static final String QUERY_BY_ALBUM_NAME_PREP= "SELECT " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
+    private static final String QUERY_BY_ALBUM_NAME_PREP = "SELECT " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
             TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", "
             + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " FROM " +
             TABLE_ALBUMS + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " +
@@ -51,8 +45,9 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
 
     @Override
     public boolean insert(Album album, String artistName) throws ArtistNotFoundException, DuplicatedRecordException, SQLException {
-        List<Artist> foundArtist = artistRepository.queryArtist(artistName);
-        if (foundArtist.size() == 1) {
+        List<Artist> foundArtistList = artistRepository.queryArtist(artistName);
+        foundArtistList.forEach(v -> System.out.println(v.getName()));
+        if (foundArtistList.size() == 1) {
             insertAlbum = SessionManagerSQLite.getPreparedStatement(INSERT_ALBUM);
             queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
             queryAlbums.setString(1, album.getName());
@@ -60,7 +55,7 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
             if (rs.next()) {
                 throw new DuplicatedRecordException("Such album already exists");
             }
-            Artist artist = album.getArtist();
+            Artist artist = foundArtistList.get(0);
             insertAlbum.setString(1, album.getName());
             insertAlbum.setInt(2, artist.getId());
             int affectedRows = insertAlbum.executeUpdate();
@@ -76,7 +71,7 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
                 throw new SQLException("Problem retrieving an _id (album)");
             }
 
-        } else if (foundArtist.size() > 1) {
+        } else if (foundArtistList.size() > 1) {
             throw new DuplicatedRecordException("More than one artist with identical name");
         } else {
             throw new ArtistNotFoundException("No Artist found. Cannot insert album without artist");
@@ -127,16 +122,6 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
         return returnList;
     }
 
-    //    @Override
-//    public List<Album> queryByAlbumName(String albumName) throws SQLException {
-//        List<Album> returnList = new ArrayList<>();
-//        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
-//        queryAlbums.setString(1,albumName);
-//        ResultSet rs = queryAlbums.executeQuery();
-//        returnList = resultSetToAlbum(rs, null);
-//
-//
-//    }
 
     private List<Album> resultSetToAlbum(ResultSet rs) throws SQLException {
         List<Album> albumsToReturn = new ArrayList<>();

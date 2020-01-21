@@ -24,7 +24,7 @@ public class ArtistsRepository implements ArtistRepository {
     private static final String QUERY_ARTISTS_PREP = "SELECT " + COLUMN_ARTISTS_ID + " FROM " + TABLE_ARTISTS
             + " WHERE " + COLUMN_ARTISTS_NAME + "= ?";
 
-    private static final String QUERY_ARTIST_BY_NAME = "SELECT " + COLUMN_ARTISTS_ID + " FROM " + TABLE_ARTISTS
+    private static final String QUERY_ARTIST_BY_NAME = "SELECT " + COLUMN_ARTISTS_ID + ", " + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS
             + " WHERE " + COLUMN_ARTISTS_NAME + "= ?";
 
     private static final String QUERY_ARTIST_BY_ID = "SELECT " + COLUMN_ARTISTS_ID +", " + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS

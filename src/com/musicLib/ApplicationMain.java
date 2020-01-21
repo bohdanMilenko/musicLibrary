@@ -6,9 +6,9 @@ import com.musicLib.repository.ArtistRepository;
 import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.repository.SQLightRepository.AlbumRepository;
 import com.musicLib.repository.SQLightRepository.ArtistsRepository;
+import com.musicLib.services.AlbumService;
 import com.musicLib.services.ArtistService;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +19,7 @@ public class ApplicationMain {
         ArtistRepository artistRepositoryMongo = new ArtistRepositoryMongo();
         ArtistRepository artistRepositorySQLite = new ArtistsRepository();
         ArtistService artistService = new ArtistService();
+        AlbumService albumService = new AlbumService();
 
         Artist artist = new Artist();
         artistService.add( artistRepositoryMongo,artist);
@@ -29,13 +30,25 @@ public class ApplicationMain {
 
         AlbumRepository albumRepository = new AlbumRepository();
         List<Album> albumList = new ArrayList<>();
-        try{
-            albumList = albumRepository.queryByAlbumName("Pulse");
-        }catch (SQLException e){
-            System.out.println("Cannot query Albums by name: " +e.getMessage());
-            e.printStackTrace();
-        }
+        albumList = albumService.queryByAlbumName(albumRepository, "Smth");
+
+        Artist drake = new Artist();
+        drake.setName("Drake");
+
+        Album albumDrake = new Album();
+        albumDrake.setName("Scorpion");
+        albumDrake.setArtist(drake);
+        System.out.println(albumService.add(albumRepository,"Drake",albumDrake ));
 
         albumList.forEach( v -> System.out.println( v.getName()));
+
+        Artist ledZeppelin = new Artist();
+        drake.setName("Led Zeppelin");
+
+        Album albumGoingToCalifornia = new Album();
+        albumGoingToCalifornia.setName("Going To California 4");
+        albumGoingToCalifornia.setArtist(ledZeppelin);
+        System.out.println(albumService.add(albumRepository,"Led Zeppelin",albumGoingToCalifornia ));
+
     }
 }
