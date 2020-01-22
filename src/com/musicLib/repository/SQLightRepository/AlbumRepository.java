@@ -123,6 +123,11 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
         return false;
     }
 
+    public Album queryByArtistAndAlbumName(String artistName, String albumName){
+        Album albumToReturn = new Album();
+
+    }
+
     @Override
     public List<Album> queryByAlbumName(String albumName) throws SQLException {
         List<Album> returnList = new ArrayList<>();

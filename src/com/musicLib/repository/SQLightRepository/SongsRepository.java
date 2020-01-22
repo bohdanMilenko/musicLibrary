@@ -5,6 +5,7 @@ import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
 import com.musicLib.repository.SongRepository;
+import com.sun.jdi.PrimitiveValue;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,8 +48,24 @@ public class SongsRepository implements SongRepository {
             "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID +
             " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + " = ?";
 
+    private static final String QUERY_BODY = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
+            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", " +
+            TABLE_SONGS + "." + COLUMN_SONGS_ID + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", " +
+            TABLE_SONGS + "." + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTISTS +
+            " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
+            "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
+
+
+    private static final String QUERY_BY_ARTIST_AND_ALBUM_NAME = QUERY_BY_ALBUM_ID + " AND "
+
     @Override
     public boolean insert(Song song, String artistName, String albumName) {
+        List<Artist> foundArtists = artistsRepository.queryArtist(artistName);
+        if(foundArtists.size()==1){
+            //TODO FINISHED HERE, WORKED WITH QUERIES AND CONDITIONS - TRIED TO GET A QUERY WITH MULTIPLE CONDITIONS
+        }
         return false;
     }
 
@@ -106,6 +123,34 @@ public class SongsRepository implements SongRepository {
             listToReturn.add(tempSong);
         }
         return listToReturn;
+    }
+
+
+    private String buildQueryWithStringCondition(String queryBody, String tableName, String columnName, String criteriaName){
+        StringBuilder sb = new StringBuilder(queryBody);
+        sb.append(" WHERE ").append(tableName).append(".").append(columnName).
+                append(" = ").append("\"").append(criteriaName).append("\"");
+        return sb.toString();
+    }
+
+    private String buildQueryWithIntCondition(String queryBody, String tableName, String columnName, int criteriaName){
+        StringBuilder sb = new StringBuilder(queryBody);
+        sb.append(" WHERE ").append(tableName).append(".").append(columnName).
+                append(" = ").append(criteriaName);
+        return sb.toString();
+    }
+
+    private String addStringCondition(String query, String tableName, String columnName, String criteriaName){
+        StringBuilder sb = new StringBuilder(query);
+        sb.append(" AND ").append(tableName).append(".").append(columnName).
+                append(" = ").append("\"").append(criteriaName).append("\"");
+        return sb.toString();
+    }
+    private String addIntCondition(String query, String tableName, String columnName, String criteriaName){
+        StringBuilder sb = new StringBuilder(query);
+        sb.append(" AND ").append(tableName).append(".").append(columnName).
+                append(" = ").append(criteriaName);
+        return sb.toString();
     }
 
 
