@@ -5,19 +5,11 @@ import com.musicLib.repository.SongRepository;
 
 import java.util.List;
 
-public class SongService {
+public interface SongService {
 
-    public boolean add(SongRepository songRepo, Song song, String artistName, String albumName) {
-        return songRepo.insert(song, artistName, albumName);
-    }
+    public boolean add(SongRepository songRepo, Song song, String artistName, String albumName);
 
-    public List<Song> queryBySongName(SongRepository songRepo, String songName) {
-        return songRepo.queryBySongName(songName);
-    }
+    public List<Song> queryBySongName(SongRepository songRepo, String songName);
 
-    public boolean delete(SongRepository songRepo, String artistName, String albumName, String songName) {
-        return songRepo.delete(artistName, albumName, songName);
-
-    }
-
+    public boolean delete(SongRepository songRepo, String artistName, String albumName, String songName);
 }
