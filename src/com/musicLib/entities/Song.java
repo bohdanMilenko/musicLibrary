@@ -4,12 +4,12 @@ public class Song {
 
     private int id;
     private int trackNumber;
-    private int albumId;
     private String name;
+    private Album album;
+    private Artist artist;
 
-    public Song(int trackNumber, int albumId, String name) {
+    public Song(int trackNumber, String name) {
         this.trackNumber = trackNumber;
-        this.albumId = albumId;
         this.name = name;
     }
 
@@ -32,12 +32,20 @@ public class Song {
         this.trackNumber = trackNumber;
     }
 
-    public int getAlbumId() {
-        return albumId;
+    public Album getAlbum() {
+        return album;
     }
 
-    public void setAlbumId(int albumId) {
-        this.albumId = albumId;
+    public void setAlbum(Album album) {
+        this.album = album;
+    }
+
+    public Artist getArtist() {
+        return artist;
+    }
+
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
 
     public String getName() {

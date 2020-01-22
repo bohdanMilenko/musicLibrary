@@ -1,8 +1,11 @@
 package com.musicLib.repository.SQLightRepository;
 
 import com.musicLib.SQLUtil.SessionManagerSQLite;
+import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.repository.ArtistRepository;
+import com.musicLib.repositoryExceptions.ArtistNotFoundException;
+import com.musicLib.repositoryExceptions.DuplicatedRecordException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ public class ArtistsRepository implements ArtistRepository {
     private PreparedStatement queryArtists;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
     private static AlbumRepository albumRepository = new AlbumRepository();
+    private static SongsRepository songRepository = new SongsRepository();
 
 
     private static final String QUERY_ALL_ARTISTS = "SELECT " + COLUMN_ARTISTS_ID + "," + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS;
@@ -27,7 +31,23 @@ public class ArtistsRepository implements ArtistRepository {
     private static final String QUERY_ARTIST_BY_NAME = "SELECT " + COLUMN_ARTISTS_ID + ", " + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS
             + " WHERE " + COLUMN_ARTISTS_NAME + "= ?";
 
-    private static final String QUERY_ARTIST_BY_ID = "SELECT " + COLUMN_ARTISTS_ID +", " + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS
+    private static final String QUERY_BY_ARTIST_NAME = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
+            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", "+
+            TABLE_SONGS + "." + COLUMN_SONGS_ID  + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE  + ", " +
+            TABLE_SONGS +"." + COLUMN_SONGS_TRACK +  " FROM " + TABLE_ARTISTS +
+            " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
+            "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS +"." + COLUMN_ARTISTS_ID +
+            " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = ?";
+    /*
+    SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
+    FROM artists INNER JOIN albums ON albums.artist = artists._id
+	INNER JOIN songs ON songs.album = albums._id
+	WHERE artists.name = "ZZ Top"
+     */
+
+    private static final String QUERY_ARTIST_BY_ID = "SELECT " + COLUMN_ARTISTS_ID + ", " + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS
             + " WHERE " + COLUMN_ARTISTS_ID + "= ?";
 
     private static final String INSERT_ARTIST = "INSERT INTO " + TABLE_ARTISTS +
@@ -40,10 +60,18 @@ public class ArtistsRepository implements ArtistRepository {
     }
 
     @Override
-    public List<Artist> queryAllArtists() {
+    public List<Artist> queryAllArtists() throws SQLException {
         ResultSet resultSet = getResultSet(QUERY_ALL_ARTISTS);
-        List<Artist> artists = resultSetToArtist(resultSet);
-        return artists;
+        List<Artist> artistsToReturn = resultSetToArtist(resultSet);
+        List<Album> albums;
+        if(artistsToReturn != null) {
+            for (Artist artist : artistsToReturn) {
+                albums = albumRepository.queryByArtistName(artist.getName());
+                artist.setAlbumList(albums);
+            }
+        }
+
+        return artistsToReturn;
     }
 
     @Override
@@ -82,24 +110,37 @@ public class ArtistsRepository implements ArtistRepository {
     }
 
     @Override
-    public boolean deleteArtist(String artistName)  throws SQLException{
+    public boolean deleteArtist(String artistName) throws SQLException, ArtistNotFoundException, DuplicatedRecordException {
         List<Artist> artistToDelete = queryArtist(artistName);
-        if (artistToDelete.size() == 1) {
-            albumRepository.deleteAlbumByArtistName(artistName);
-            //TODO FINISH THIS METHOD
-            return true;
-        } else {
-            throw new RuntimeException("More than one artist found with the same name");
+        int numberOfArtists = artistToDelete.size();
+        switch (numberOfArtists) {
+            case 1:
+                Artist artist = artistToDelete.get(0);
+                List<Album> artistsAlbums = artist.getAlbumList();
+                if (albumRepository.deleteAlbumByArtistName(artistName)) {
+                    artistsAlbums.forEach(v -> {
+                        try {
+                            songRepository.deleteSongsByAlbumId(v.getId());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+                return true;
+            case 0:
+                throw new ArtistNotFoundException("Such artist does not exist");
+            default:
+                throw new DuplicatedRecordException("Multiple artists with the same name");
         }
 
     }
 
     public Artist queryById(int id) throws SQLException {
-        PreparedStatement query = SessionManagerSQLite.getPreparedStatement(QUERY_ARTIST_BY_ID);
-        query.setInt(1,id);
+        PreparedStatement query = SessionManagerSQLite.getPreparedStatement(QUERY_ARTIST_BY_NAME);
+        query.setInt(1, id);
         ResultSet rs = query.executeQuery();
         List<Artist> resultOfQuery = resultSetToArtist(rs);
-        if(resultOfQuery.size()==1){
+        if (resultOfQuery.size() == 1) {
             Artist foundArtist = resultOfQuery.get(0);
             return foundArtist;
         }

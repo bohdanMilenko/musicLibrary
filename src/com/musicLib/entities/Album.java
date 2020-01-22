@@ -1,7 +1,5 @@
 package com.musicLib.entities;
 
-import com.musicLib.databaseModel.Song;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,7 +18,6 @@ public class Album {
         this.songs = songs;
     }
 
-    //TODO Create interface for service as well
 
     public Album(){
 

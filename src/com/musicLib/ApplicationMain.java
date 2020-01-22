@@ -50,8 +50,8 @@ public class ApplicationMain {
         albumGoingToCalifornia.setArtist(ledZeppelin);
         System.out.println(albumServiceImpl.add(albumRepository,"Led Zeppelin",albumGoingToCalifornia ));
 
-        albumServiceImpl.delete();
-                //TODO FINISH IMPLEMENTING DELETE IN ARTISTS;
+            artistServiceImpl.delete(artistRepositorySQLite, "Kendrick Lamar");
+
 
     }
 }

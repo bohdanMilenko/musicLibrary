@@ -2,11 +2,13 @@ package com.musicLib.services;
 
 import com.musicLib.entities.Artist;
 import com.musicLib.repository.ArtistRepository;
+import com.musicLib.repositoryExceptions.ArtistNotFoundException;
+import com.musicLib.repositoryExceptions.DuplicatedRecordException;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class ArtistServiceImpl implements ArtistService{
+public class ArtistServiceImpl implements ArtistService {
 
     public ArtistServiceImpl() {
     }
@@ -23,7 +25,20 @@ public class ArtistServiceImpl implements ArtistService{
         return artistRepo.queryArtist(artist);
     }
 
-    public boolean delete(ArtistRepository artistRepo, String artistName) throws SQLException {
-        return artistRepo.deleteArtist(artistName);
+    public boolean delete(ArtistRepository artistRepo, String artistName) {
+        try {
+            return artistRepo.deleteArtist(artistName);
+        } catch (ArtistNotFoundException e) {
+            System.out.println("There is no such artist to add an album: " + e.getMessage());
+            e.printStackTrace();
+        } catch (DuplicatedRecordException e2) {
+            System.out.println("Such album already exists: " + e2.getMessage());
+            e2.printStackTrace();
+        } catch (SQLException e3) {
+            System.out.println("Cannot perform query (Add Album): " + e3.getMessage());
+            e3.printStackTrace();
+        }
+        return false;
     }
 }
+

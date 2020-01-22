@@ -1,11 +1,15 @@
 package com.musicLib.repository.SQLightRepository;
 
 import com.musicLib.SQLUtil.SessionManagerSQLite;
+import com.musicLib.entities.Album;
+import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
 import com.musicLib.repository.SongRepository;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.musicLib.repository.SQLightRepository.MetaData.*;
@@ -20,11 +24,28 @@ public class SongsRepository implements SongRepository {
 
 
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
-    private ArtistsRepository artistsRepository = new ArtistsRepository();
-    private AlbumRepository albumRepository = new AlbumRepository();
+    private static ArtistsRepository artistsRepository = new ArtistsRepository();
+    private static AlbumRepository albumRepository = new AlbumRepository();
+    private PreparedStatement queryByAlbumId;
 
-    public static final String DELETE_SONGS_BY_ALBUM_ID = "DELETE FROM " + TABLE_SONGS +
+    private static final String DELETE_SONGS_BY_ALBUM_ID = "DELETE FROM " + TABLE_SONGS +
             " WHERE " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + "= ?";
+
+    /**
+     * SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
+     * FROM artists INNER JOIN albums ON albums.artist = artists._id
+     * INNER JOIN songs ON songs.album = albums._id
+     * WHERE albums._id = "?"
+     */
+    private static final String QUERY_BY_ALBUM_ID = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
+            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", " +
+            TABLE_SONGS + "." + COLUMN_SONGS_ID + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", " +
+            TABLE_SONGS + "." + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTISTS +
+            " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
+            "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID +
+            " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + " = ?";
 
     @Override
     public boolean insert(Song song, String artistName, String albumName) {
@@ -41,16 +62,51 @@ public class SongsRepository implements SongRepository {
         return false;
     }
 
-    public boolean deleteSongsByAlbumId(int albumId) throws SQLException {
+    public void deleteSongsByAlbumId(int albumId) throws SQLException {
         deleteQuery = SessionManagerSQLite.getPreparedStatement(DELETE_SONGS_BY_ALBUM_ID);
-        deleteQuery.setInt(1,albumId);
+        deleteQuery.setInt(1, albumId);
         deleteQuery.executeUpdate();
-        return true;
+    }
+
+    //TODO RETHINK THE CONCEPT OF HANDLING EXCEPTIONS ON THE LOWEST LEVEL POSSIBLE
+    public List<Song> queryByAlbumId(int albumId) throws SQLException {
+        List<Song> listToReturn;
+        queryByAlbumId = SessionManagerSQLite.getPreparedStatement(QUERY_BY_ALBUM_ID);
+        queryByAlbumId.setInt(1, albumId);
+        ResultSet rs = queryByAlbumId.executeQuery();
+        listToReturn = resultSetToSong(rs);
+        return listToReturn;
     }
 
 
+    /*TODO ISSUE: IT IS AN INFINITE CIRCLE AS MY OBJECTS CONTAIN OTHER OBJECTS, I.E. ARTIST -> ALBUM, ALBUM -> ARTIST, SONGLIST
+    SONG -> ARTIST, ALBUM (AND THEY SHOULD HAVE OTHER OBJECTS AGAIN) It means that they are refereeing to themselves. It is possible to have Objects
+    but without Lists inside
+    */
+    private List<Song> resultSetToSong(ResultSet rs) throws SQLException {
+        List<Song> listToReturn = new ArrayList<>();
+        while (rs.next()) {
+            Artist tempArtist = new Artist();
+            Album tempAlbum = new Album();
+            Song tempSong = new Song();
+            //artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
+            tempArtist.setId(rs.getInt(1));
+            tempArtist.setName(rs.getString(2));
 
+            tempAlbum.setId(rs.getInt(3));
+            tempAlbum.setName(rs.getString(4));
+            tempAlbum.setArtist(tempArtist);
 
+            tempSong.setId(rs.getInt(5));
+            tempSong.setName(rs.getString(6));
+            tempSong.setTrackNumber(rs.getInt(7));
+
+            tempSong.setAlbum(tempAlbum);
+            tempSong.setArtist(tempArtist);
+            listToReturn.add(tempSong);
+        }
+        return listToReturn;
+    }
 
 
     private static final String QUERY_BY_SONG_NAME = "SELECT " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", "
@@ -82,12 +138,11 @@ public class SongsRepository implements SongRepository {
     private static final String QUERY_VIEW_ARTISTS_LIST_PREP = "SELECT " + COLUMN_ARTISTS_NAME + ", " + COLUMN_SONGS_ALBUM + ", " + COLUMN_SONGS_TRACK
             + " FROM " + TABLE_ARTIST_SONG_VIEW + " WHERE " + COLUMN_SONGS_TITLE + "= ?";
 
-    private static final String QUERY_SONG = " SELECT " +  COLUMN_SONGS_ID + " FROM " + TABLE_SONGS
+    private static final String QUERY_SONG = " SELECT " + COLUMN_SONGS_ID + " FROM " + TABLE_SONGS
             + " WHERE " + COLUMN_SONGS_ALBUM + " = ?  AND " + COLUMN_SONGS_TITLE + " = ?";
 
     private static final String INSERT_SONG = " INSERT INTO " + TABLE_SONGS +
             " (" + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM + ") VALUES(?,?,?)";
-
 
 
     private static void orderingQuery(StringBuilder sb, int sortingOrder, String table, String column) {
