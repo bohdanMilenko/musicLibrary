@@ -39,4 +39,9 @@ public class Artist {
     public void setAlbumList(List<Album> albumList) {
         this.albumList = albumList;
     }
+
+    @Override
+    public String toString() {
+        return "Artist Name: " + name;
+    }
 }

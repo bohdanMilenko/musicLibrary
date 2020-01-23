@@ -55,4 +55,9 @@ public class Song {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "Song name: " + name + "\n" + "Track Number: " + trackNumber;
+    }
 }

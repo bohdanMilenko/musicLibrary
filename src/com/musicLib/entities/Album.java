@@ -62,4 +62,9 @@ public class Album {
     public void setSongs(List<Song> songs) {
         this.songs = songs;
     }
+
+    @Override
+    public String toString() {
+        return "Album Name: " + name +"\n" + "Artists id: " + id;
+    }
 }

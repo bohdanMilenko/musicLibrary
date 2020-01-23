@@ -110,6 +110,7 @@ public class SessionManagerSQLite {
     public PreparedStatement getPreparedStatement(String query){
         PreparedStatement preparedStatement;
         try {
+            getConnection();
             preparedStatement = conn.prepareStatement(query);
             if(preparedStatement!=null) {
                 return preparedStatement;

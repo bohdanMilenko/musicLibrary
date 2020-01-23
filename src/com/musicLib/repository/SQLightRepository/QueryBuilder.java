@@ -5,19 +5,13 @@ import static com.musicLib.repository.SQLightRepository.MetaData.ORDER_NONE;
 
 public class QueryBuilder {
 
-    public static StringBuilder buildQueryWithStringCondition(String queryBody, String criteriaTableName, String criteriaColumnName){
+    public static StringBuilder buildQueryWithCondition(String queryBody, String criteriaTableName, String criteriaColumnName){
         StringBuilder sb = new StringBuilder(queryBody);
         sb.append(" WHERE ").append(criteriaTableName).append(".").append(criteriaColumnName).
-                append(" = ").append("\"?\"");
+                append(" = ").append("?");
         return sb;
     }
 
-    public static StringBuilder buildQueryWithIntCondition(String queryBody, String criteriaTableName, String criteriaColumnName){
-        StringBuilder sb = new StringBuilder(queryBody);
-        sb.append(" WHERE ").append(criteriaTableName).append(".").append(criteriaColumnName).
-                append(" = ?");
-        return sb;
-    }
 
     public static StringBuilder addStringCondition(String query, String criteriaTableName, String criteriaColumnName){
         StringBuilder sb = new StringBuilder(query);

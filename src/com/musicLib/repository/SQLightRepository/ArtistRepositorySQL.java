@@ -14,13 +14,13 @@ import java.util.List;
 import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
 
-public class ArtistsRepository implements ArtistRepository {
+public class ArtistRepositorySQL implements ArtistRepository {
 
     private PreparedStatement insertArtist;
     private PreparedStatement queryArtists;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
-    private static AlbumRepository albumRepository = new AlbumRepository();
-    private static SongsRepository songRepository = new SongsRepository();
+    private static AlbumRepositorySQL albumRepositorySQL = new AlbumRepositorySQL();
+    private static SongRepositorySQL songRepository = new SongRepositorySQL();
 
 
     private static final String QUERY_ALL_ARTISTS = "SELECT " + COLUMN_ARTISTS_ID + "," + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS;
@@ -66,7 +66,7 @@ public class ArtistsRepository implements ArtistRepository {
         List<Album> albums;
         if(artistsToReturn != null) {
             for (Artist artist : artistsToReturn) {
-                albums = albumRepository.queryByArtistName(artist.getName());
+                albums = albumRepositorySQL.queryByArtistName(artist.getName());
                 artist.setAlbumList(albums);
             }
         }
@@ -117,7 +117,7 @@ public class ArtistsRepository implements ArtistRepository {
             case 1:
                 Artist artist = artistToDelete.get(0);
                 List<Album> artistsAlbums = artist.getAlbumList();
-                if (albumRepository.deleteAlbumByArtistName(artistName)) {
+                if (albumRepositorySQL.deleteAlbumByArtistName(artistName)) {
                     artistsAlbums.forEach(v -> {
                         try {
                             songRepository.deleteSongsByAlbumId(v.getId());

@@ -18,7 +18,13 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     public List<Artist> queryAll(ArtistRepository artistRepo) {
-        return artistRepo.queryAllArtists();
+        try {
+            return artistRepo.queryAllArtists();
+        } catch (SQLException e3) {
+            System.out.println("Cannot perform query (Add Album): " + e3.getMessage());
+            e3.printStackTrace();
+        }
+        return null;
     }
 
     public List<Artist> query(ArtistRepository artistRepo, String artist) {

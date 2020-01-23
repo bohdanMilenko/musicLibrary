@@ -14,7 +14,7 @@ import java.util.List;
 
 import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
-public class SongsRepository implements SongRepository {
+public class SongRepositorySQL implements SongRepository {
 
     private PreparedStatement queryArtistBySong;
     private PreparedStatement insertSong;
@@ -24,8 +24,8 @@ public class SongsRepository implements SongRepository {
 
 
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
-    private static ArtistsRepository artistsRepository = new ArtistsRepository();
-    private static AlbumRepository albumRepository = new AlbumRepository();
+    private static ArtistRepositorySQL artistRepositorySQL = new ArtistRepositorySQL();
+    private static AlbumRepositorySQL albumRepositorySQL = new AlbumRepositorySQL();
     private PreparedStatement queryByAlbumId;
     private PreparedStatement queryBySongName;
 
@@ -36,33 +36,22 @@ public class SongsRepository implements SongRepository {
      * SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
      * FROM artists INNER JOIN albums ON albums.artist = artists._id
      * INNER JOIN songs ON songs.album = albums._id
-     * WHERE albums._id = "?"
      */
-    private static final String QUERY_BY_ALBUM_ID = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
-            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", " +
-            TABLE_SONGS + "." + COLUMN_SONGS_ID + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", " +
-            TABLE_SONGS + "." + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTISTS +
-            " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
-            "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID +
-            " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + " = ?";
 
     private static final String QUERY_BODY = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
             + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", " +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", "  +
             TABLE_SONGS + "." + COLUMN_SONGS_ID + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", " +
             TABLE_SONGS + "." + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTISTS +
             " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
             TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
-            "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
-
+            " INNER JOIN " + TABLE_SONGS + " ON "+ TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
 
 
     @Override
     public boolean insert(Song song, String artistName, String albumName) {
-        List<Artist> foundArtists = artistsRepository.queryArtist(artistName);
-        if(foundArtists.size()==1){
+        List<Artist> foundArtists = artistRepositorySQL.queryArtist(artistName);
+        if (foundArtists.size() == 1) {
             //TODO FINISHED HERE, WORKED WITH QUERIES AND CONDITIONS - TRIED TO GET A QUERY WITH MULTIPLE CONDITIONS
         }
         return false;
@@ -71,10 +60,13 @@ public class SongsRepository implements SongRepository {
     @Override
     public List<Song> queryBySongName(String songName) throws SQLException {
         List<Song> returnList = new ArrayList<>();
-        StringBuilder sb = QueryBuilder.buildQueryWithStringCondition(QUERY_BODY,TABLE_SONGS,COLUMN_SONGS_TITLE);
+        StringBuilder sb = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_SONGS, COLUMN_SONGS_TITLE);
+        System.out.println(sb.toString());
         queryBySongName = SessionManagerSQLite.getPreparedStatement(sb.toString());
+        queryBySongName.setString(1,songName);
         ResultSet rs = queryBySongName.executeQuery();
-        return null;
+        returnList = resultSetToSong(rs);
+        return returnList;
     }
 
     @Override
@@ -91,7 +83,8 @@ public class SongsRepository implements SongRepository {
     //TODO RETHINK THE CONCEPT OF HANDLING EXCEPTIONS ON THE LOWEST LEVEL POSSIBLE
     public List<Song> queryByAlbumId(int albumId) throws SQLException {
         List<Song> listToReturn;
-        StringBuilder query = QueryBuilder.buildQueryWithIntCondition(QUERY_BODY,TABLE_ALBUMS,COLUMN_ALBUMS_ID);
+        StringBuilder query = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
+        System.out.println(query.toString());
         queryByAlbumId = SessionManagerSQLite.getPreparedStatement(query.toString());
         queryByAlbumId.setInt(1, albumId);
         ResultSet rs = queryByAlbumId.executeQuery();
@@ -113,7 +106,6 @@ public class SongsRepository implements SongRepository {
             //artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
             tempArtist.setId(rs.getInt(1));
             tempArtist.setName(rs.getString(2));
-
             tempAlbum.setId(rs.getInt(3));
             tempAlbum.setName(rs.getString(4));
             tempAlbum.setArtist(tempArtist);
@@ -124,13 +116,19 @@ public class SongsRepository implements SongRepository {
 
             tempSong.setAlbum(tempAlbum);
             tempSong.setArtist(tempArtist);
+
+            System.out.println("Artist id: " + rs.getInt(1));
+            System.out.println("Artist Name: " + rs.getString(2));
+            System.out.println("Album ID: " + rs.getInt(3));
+            System.out.println("Album Name: " + rs.getString(4));
+            System.out.println("Song ID: " + rs.getInt(5));
+            System.out.println("Song Name: " + rs.getString(6));
+            System.out.println("Track Number: " + rs.getInt(7));
+            System.out.println(rs.getString(2));
             listToReturn.add(tempSong);
         }
         return listToReturn;
     }
-
-
-
 
 
     private static final String QUERY_BY_SONG_NAME = "SELECT " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", "
@@ -167,8 +165,6 @@ public class SongsRepository implements SongRepository {
 
     private static final String INSERT_SONG = " INSERT INTO " + TABLE_SONGS +
             " (" + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM + ") VALUES(?,?,?)";
-
-
 
 
 //    static String getQueryArtistsTable(int sorting) {

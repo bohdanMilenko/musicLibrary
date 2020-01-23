@@ -15,15 +15,15 @@ import java.util.List;
 
 import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
-public class AlbumRepository implements com.musicLib.repository.AlbumRepository {
+public class AlbumRepositorySQL implements com.musicLib.repository.AlbumRepository {
 
     private PreparedStatement queryAlbums;
     private PreparedStatement insertAlbum;
     private PreparedStatement queryByArtistName;
     private PreparedStatement deleteAlbumById;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
-    private static ArtistsRepository artistRepository = new ArtistsRepository();
-    private static SongsRepository songsRepository = new SongsRepository();
+    private static ArtistRepositorySQL artistRepository = new ArtistRepositorySQL();
+    private static SongRepositorySQL songRepositorySQL = new SongRepositorySQL();
 
     private static final String QUERY_ALBUMS = "SELECT " + COLUMN_ALBUMS_ID + " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_NAME + "= ?";
@@ -98,7 +98,7 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
             ResultSet rs = queryByArtistName.executeQuery();
             albumsToReturn = resultSetToAlbum(rs, artistName);
             for (Album album : albumsToReturn) {
-                List<Song> songsList = songsRepository.queryByAlbumId(album.getId());
+                List<Song> songsList = songRepositorySQL.queryByAlbumId(album.getId());
                 album.setSongs(songsList);
             }
             return albumsToReturn;
@@ -123,10 +123,12 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
         return false;
     }
 
-    public Album queryByArtistAndAlbumName(String artistName, String albumName){
-        Album albumToReturn = new Album();
 
-    }
+    //TODO FINISH IMPLEMENTATION
+//    public Album queryByArtistAndAlbumName(String artistName, String albumName){
+//        Album albumToReturn = new Album();
+//
+//    }
 
     @Override
     public List<Album> queryByAlbumName(String albumName) throws SQLException {
@@ -171,7 +173,7 @@ public class AlbumRepository implements com.musicLib.repository.AlbumRepository 
     private void deleteRelatedSongs(List<Album> albumsToDelete) throws SQLException {
         for (Album tempAlbum : albumsToDelete) {
             int albumId = tempAlbum.getId();
-            songsRepository.deleteSongsByAlbumId(albumId);
+            songRepositorySQL.deleteSongsByAlbumId(albumId);
         }
     }
 
