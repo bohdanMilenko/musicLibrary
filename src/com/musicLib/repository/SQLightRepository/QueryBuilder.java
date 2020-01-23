@@ -1,31 +1,47 @@
 package com.musicLib.repository.SQLightRepository;
 
+import static com.musicLib.repository.SQLightRepository.MetaData.ORDER_DESC;
+import static com.musicLib.repository.SQLightRepository.MetaData.ORDER_NONE;
+
 public class QueryBuilder {
 
-    private static String buildQueryWithStringCondition(String queryBody, String tableName, String columnName, String criteriaName){
+    public static StringBuilder buildQueryWithStringCondition(String queryBody, String criteriaTableName, String criteriaColumnName){
         StringBuilder sb = new StringBuilder(queryBody);
-        sb.append(" WHERE ").append(tableName).append(".").append(columnName).
-                append(" = ").append("\"").append(criteriaName).append("\"");
-        return sb.toString();
+        sb.append(" WHERE ").append(criteriaTableName).append(".").append(criteriaColumnName).
+                append(" = ").append("\"?\"");
+        return sb;
     }
 
-    private static String buildQueryWithIntCondition(String queryBody, String tableName, String columnName, int criteriaName){
+    public static StringBuilder buildQueryWithIntCondition(String queryBody, String criteriaTableName, String criteriaColumnName){
         StringBuilder sb = new StringBuilder(queryBody);
-        sb.append(" WHERE ").append(tableName).append(".").append(columnName).
-                append(" = ").append(criteriaName);
-        return sb.toString();
+        sb.append(" WHERE ").append(criteriaTableName).append(".").append(criteriaColumnName).
+                append(" = ?");
+        return sb;
     }
 
-    private static String addStringCondition(String query, String tableName, String columnName, String criteriaName){
+    public static StringBuilder addStringCondition(String query, String criteriaTableName, String criteriaColumnName){
         StringBuilder sb = new StringBuilder(query);
-        sb.append(" AND ").append(tableName).append(".").append(columnName).
-                append(" = ").append("\"").append(criteriaName).append("\"");
-        return sb.toString();
+        sb.append(" AND ").append(criteriaTableName).append(".").append(criteriaColumnName).
+                append(" = ").append("\"?\"");
+        return sb;
     }
-    private static String addIntCondition(String query, String tableName, String columnName, String criteriaName){
+    public static StringBuilder addIntCondition(String query, String criteriaTableName, String criteriaColumnName){
         StringBuilder sb = new StringBuilder(query);
-        sb.append(" AND ").append(tableName).append(".").append(columnName).
-                append(" = ").append(criteriaName);
-        return sb.toString();
+        sb.append(" AND ").append(criteriaTableName).append(".").append(criteriaColumnName).
+                append(" = ?");
+        return sb;
+    }
+
+    public static void orderingQuery(StringBuilder sb, int sortingOrder, String table, String column) {
+        if (sortingOrder != ORDER_NONE) {
+            sb.append(" ORDER BY ");
+            sb.append(table).append(".").append(column);
+            sb.append(" COLLATE NOCASE ");
+            if (sortingOrder == ORDER_DESC) {
+                sb.append(" DESC");
+            } else {
+                sb.append(" ASC");
+            }
+        }
     }
 }

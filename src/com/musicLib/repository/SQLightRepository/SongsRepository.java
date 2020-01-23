@@ -5,7 +5,6 @@ import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
 import com.musicLib.repository.SongRepository;
-import com.sun.jdi.PrimitiveValue;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,6 +27,7 @@ public class SongsRepository implements SongRepository {
     private static ArtistsRepository artistsRepository = new ArtistsRepository();
     private static AlbumRepository albumRepository = new AlbumRepository();
     private PreparedStatement queryByAlbumId;
+    private PreparedStatement queryBySongName;
 
     private static final String DELETE_SONGS_BY_ALBUM_ID = "DELETE FROM " + TABLE_SONGS +
             " WHERE " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + "= ?";
@@ -58,7 +58,6 @@ public class SongsRepository implements SongRepository {
             "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
 
 
-    private static final String QUERY_BY_ARTIST_AND_ALBUM_NAME = QUERY_BY_ALBUM_ID + " AND "
 
     @Override
     public boolean insert(Song song, String artistName, String albumName) {
@@ -70,7 +69,11 @@ public class SongsRepository implements SongRepository {
     }
 
     @Override
-    public List<Song> queryBySongName(String songName) {
+    public List<Song> queryBySongName(String songName) throws SQLException {
+        List<Song> returnList = new ArrayList<>();
+        StringBuilder sb = QueryBuilder.buildQueryWithStringCondition(QUERY_BODY,TABLE_SONGS,COLUMN_SONGS_TITLE);
+        queryBySongName = SessionManagerSQLite.getPreparedStatement(sb.toString());
+        ResultSet rs = queryBySongName.executeQuery();
         return null;
     }
 
@@ -88,7 +91,8 @@ public class SongsRepository implements SongRepository {
     //TODO RETHINK THE CONCEPT OF HANDLING EXCEPTIONS ON THE LOWEST LEVEL POSSIBLE
     public List<Song> queryByAlbumId(int albumId) throws SQLException {
         List<Song> listToReturn;
-        queryByAlbumId = SessionManagerSQLite.getPreparedStatement(QUERY_BY_ALBUM_ID);
+        StringBuilder query = QueryBuilder.buildQueryWithIntCondition(QUERY_BODY,TABLE_ALBUMS,COLUMN_ALBUMS_ID);
+        queryByAlbumId = SessionManagerSQLite.getPreparedStatement(query.toString());
         queryByAlbumId.setInt(1, albumId);
         ResultSet rs = queryByAlbumId.executeQuery();
         listToReturn = resultSetToSong(rs);
@@ -126,32 +130,7 @@ public class SongsRepository implements SongRepository {
     }
 
 
-    private String buildQueryWithStringCondition(String queryBody, String tableName, String columnName, String criteriaName){
-        StringBuilder sb = new StringBuilder(queryBody);
-        sb.append(" WHERE ").append(tableName).append(".").append(columnName).
-                append(" = ").append("\"").append(criteriaName).append("\"");
-        return sb.toString();
-    }
 
-    private String buildQueryWithIntCondition(String queryBody, String tableName, String columnName, int criteriaName){
-        StringBuilder sb = new StringBuilder(queryBody);
-        sb.append(" WHERE ").append(tableName).append(".").append(columnName).
-                append(" = ").append(criteriaName);
-        return sb.toString();
-    }
-
-    private String addStringCondition(String query, String tableName, String columnName, String criteriaName){
-        StringBuilder sb = new StringBuilder(query);
-        sb.append(" AND ").append(tableName).append(".").append(columnName).
-                append(" = ").append("\"").append(criteriaName).append("\"");
-        return sb.toString();
-    }
-    private String addIntCondition(String query, String tableName, String columnName, String criteriaName){
-        StringBuilder sb = new StringBuilder(query);
-        sb.append(" AND ").append(tableName).append(".").append(columnName).
-                append(" = ").append(criteriaName);
-        return sb.toString();
-    }
 
 
     private static final String QUERY_BY_SONG_NAME = "SELECT " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", "
@@ -190,18 +169,7 @@ public class SongsRepository implements SongRepository {
             " (" + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM + ") VALUES(?,?,?)";
 
 
-    private static void orderingQuery(StringBuilder sb, int sortingOrder, String table, String column) {
-        if (sortingOrder != ORDER_NONE) {
-            sb.append(" ORDER BY ");
-            sb.append(table).append(".").append(column);
-            sb.append(" COLLATE NOCASE ");
-            if (sortingOrder == ORDER_DESC) {
-                sb.append(" DESC");
-            } else {
-                sb.append(" ASC");
-            }
-        }
-    }
+
 
 //    static String getQueryArtistsTable(int sorting) {
 //        StringBuilder sb = new StringBuilder("SELECT * FROM ");
