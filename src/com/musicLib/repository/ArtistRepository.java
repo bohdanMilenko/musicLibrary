@@ -15,6 +15,6 @@ public interface ArtistRepository {
 
     List<Artist> queryArtist(String artistName);
 
-    boolean deleteArtist(String artistName) throws SQLException, ArtistNotFoundException, DuplicatedRecordException;
+    boolean delete(String artistName) throws SQLException, ArtistNotFoundException, DuplicatedRecordException;
 
 }

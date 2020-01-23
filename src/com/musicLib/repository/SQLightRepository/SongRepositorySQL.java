@@ -40,12 +40,12 @@ public class SongRepositorySQL implements SongRepository {
 
     private static final String QUERY_BODY = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
             + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", "  +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " +
             TABLE_SONGS + "." + COLUMN_SONGS_ID + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", " +
             TABLE_SONGS + "." + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTISTS +
             " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
             TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
-            " INNER JOIN " + TABLE_SONGS + " ON "+ TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
+            " INNER JOIN " + TABLE_SONGS + " ON " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
 
 
     @Override
@@ -61,16 +61,28 @@ public class SongRepositorySQL implements SongRepository {
     public List<Song> queryBySongName(String songName) throws SQLException {
         List<Song> returnList = new ArrayList<>();
         StringBuilder sb = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_SONGS, COLUMN_SONGS_TITLE);
-        System.out.println(sb.toString());
         queryBySongName = SessionManagerSQLite.getPreparedStatement(sb.toString());
-        queryBySongName.setString(1,songName);
+        queryBySongName.setString(1, songName);
         ResultSet rs = queryBySongName.executeQuery();
         returnList = resultSetToSong(rs);
         return returnList;
     }
 
+    //TODO RETHINK THE CONCEPT OF HANDLING EXCEPTIONS ON THE LOWEST LEVEL POSSIBLE
+    public List<Song> queryByAlbumId(int albumId) throws SQLException {
+        List<Song> listToReturn;
+        StringBuilder query = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
+        queryByAlbumId = SessionManagerSQLite.getPreparedStatement(query.toString());
+        queryByAlbumId.setInt(1, albumId);
+        ResultSet rs = queryByAlbumId.executeQuery();
+        listToReturn = resultSetToSong(rs);
+        return listToReturn;
+    }
+
     @Override
     public boolean delete(String artistName, String albumName, String songName) {
+        //TODO IMPLEMENT
+
         return false;
     }
 
@@ -78,18 +90,6 @@ public class SongRepositorySQL implements SongRepository {
         deleteQuery = SessionManagerSQLite.getPreparedStatement(DELETE_SONGS_BY_ALBUM_ID);
         deleteQuery.setInt(1, albumId);
         deleteQuery.executeUpdate();
-    }
-
-    //TODO RETHINK THE CONCEPT OF HANDLING EXCEPTIONS ON THE LOWEST LEVEL POSSIBLE
-    public List<Song> queryByAlbumId(int albumId) throws SQLException {
-        List<Song> listToReturn;
-        StringBuilder query = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
-        System.out.println(query.toString());
-        queryByAlbumId = SessionManagerSQLite.getPreparedStatement(query.toString());
-        queryByAlbumId.setInt(1, albumId);
-        ResultSet rs = queryByAlbumId.executeQuery();
-        listToReturn = resultSetToSong(rs);
-        return listToReturn;
     }
 
 

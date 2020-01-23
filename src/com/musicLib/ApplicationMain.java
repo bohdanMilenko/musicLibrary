@@ -1,8 +1,6 @@
 package com.musicLib;
 
-import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
-import com.musicLib.entities.Song;
 import com.musicLib.repository.AlbumRepository;
 import com.musicLib.repository.ArtistRepository;
 import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
@@ -12,10 +10,6 @@ import com.musicLib.repository.SQLightRepository.SongRepositorySQL;
 import com.musicLib.repository.SongRepository;
 import com.musicLib.services.AlbumServiceImpl;
 import com.musicLib.services.ArtistServiceImpl;
-import com.musicLib.services.SongService;
-import com.musicLib.services.SongServiceImpl;
-
-import java.util.List;
 
 public class ApplicationMain {
 
@@ -58,13 +52,15 @@ public class ApplicationMain {
 //
 //            artistServiceImpl.delete(artistRepositorySQLite, "Kendrick Lamar");
 
-        SongService songService = new SongServiceImpl();
-        List<Song> foundSongs = songService.queryBySongName(songRepositorySQL, "Flaming Telepaths");
-        foundSongs.forEach(v -> System.out.println(v.getName()));
-        Artist tempArtist = foundSongs.get(0).getArtist();
-        Album tempAlbum = foundSongs.get(0).getAlbum();
+//        SongService songService = new SongServiceImpl();
+//        List<Song> foundSongs = songService.queryBySongName(songRepositorySQL, "Flaming Telepaths");
+//        foundSongs.forEach(v -> System.out.println(v.getName()));
+//        Artist tempArtist = foundSongs.get(0).getArtist();
+//        Album tempAlbum = foundSongs.get(0).getAlbum();
+//
+//        System.out.println(tempArtist.toString());
+//        System.out.println(tempAlbum.toString());
 
-        System.out.println(tempArtist.toString());
-        System.out.println(tempAlbum.toString());
+        System.out.println(artistServiceImpl.delete(artistRepositorySQLite,"Blue Öyster Cult"));
     }
 }

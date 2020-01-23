@@ -158,7 +158,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
         return albumsToReturn;
     }
 
-    public boolean deleteAlbumByArtistName(String artist) throws SQLException {
+    public boolean deleteAlbumsByArtistName(String artist) throws SQLException {
         List<Album> albumsToDelete = queryByArtistName(artist);
         deleteRelatedSongs(albumsToDelete);
         //TODO DELETE ALBUMS BY ARTIST ID

@@ -33,7 +33,7 @@ public class ArtistServiceImpl implements ArtistService {
 
     public boolean delete(ArtistRepository artistRepo, String artistName) {
         try {
-            return artistRepo.deleteArtist(artistName);
+            return artistRepo.delete(artistName);
         } catch (ArtistNotFoundException e) {
             System.out.println("There is no such artist to add an album: " + e.getMessage());
             e.printStackTrace();

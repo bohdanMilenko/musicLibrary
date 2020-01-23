@@ -18,6 +18,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
 
     private PreparedStatement insertArtist;
     private PreparedStatement queryArtists;
+    private PreparedStatement deleteQuery;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
     private static AlbumRepositorySQL albumRepositorySQL = new AlbumRepositorySQL();
     private static SongRepositorySQL songRepository = new SongRepositorySQL();
@@ -31,27 +32,32 @@ public class ArtistRepositorySQL implements ArtistRepository {
     private static final String QUERY_ARTIST_BY_NAME = "SELECT " + COLUMN_ARTISTS_ID + ", " + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS
             + " WHERE " + COLUMN_ARTISTS_NAME + "= ?";
 
+
+    /*
+  SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
+  FROM artists INNER JOIN albums ON albums.artist = artists._id
+  INNER JOIN songs ON songs.album = albums._id
+  WHERE artists.name = "ZZ Top"
+   */
     private static final String QUERY_BY_ARTIST_NAME = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
             + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", "+
-            TABLE_SONGS + "." + COLUMN_SONGS_ID  + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE  + ", " +
-            TABLE_SONGS +"." + COLUMN_SONGS_TRACK +  " FROM " + TABLE_ARTISTS +
+            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + ", " +
+            TABLE_SONGS + "." + COLUMN_SONGS_ID + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", " +
+            TABLE_SONGS + "." + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTISTS +
             " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
             TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
-            "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS +"." + COLUMN_ARTISTS_ID +
+            "INNER JOIN " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID +
             " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = ?";
-    /*
-    SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
-    FROM artists INNER JOIN albums ON albums.artist = artists._id
-	INNER JOIN songs ON songs.album = albums._id
-	WHERE artists.name = "ZZ Top"
-     */
+
 
     private static final String QUERY_ARTIST_BY_ID = "SELECT " + COLUMN_ARTISTS_ID + ", " + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS
             + " WHERE " + COLUMN_ARTISTS_ID + "= ?";
 
     private static final String INSERT_ARTIST = "INSERT INTO " + TABLE_ARTISTS +
             " (" + COLUMN_ARTISTS_NAME + ") VALUES(?)";
+
+    private static final String DELETE_ARTIST = "DELETE FROM " + TABLE_ARTISTS + " WHERE "
+            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = ?";
 
     @Override
     public boolean insert(Artist artist) {
@@ -64,7 +70,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
         ResultSet resultSet = getResultSet(QUERY_ALL_ARTISTS);
         List<Artist> artistsToReturn = resultSetToArtist(resultSet);
         List<Album> albums;
-        if(artistsToReturn != null) {
+        if (artistsToReturn != null) {
             for (Artist artist : artistsToReturn) {
                 albums = albumRepositorySQL.queryByArtistName(artist.getName());
                 artist.setAlbumList(albums);
@@ -110,22 +116,17 @@ public class ArtistRepositorySQL implements ArtistRepository {
     }
 
     @Override
-    public boolean deleteArtist(String artistName) throws SQLException, ArtistNotFoundException, DuplicatedRecordException {
+    public boolean delete(String artistName) throws SQLException, ArtistNotFoundException, DuplicatedRecordException {
         List<Artist> artistToDelete = queryArtist(artistName);
         int numberOfArtists = artistToDelete.size();
+        System.out.println(numberOfArtists);
         switch (numberOfArtists) {
             case 1:
                 Artist artist = artistToDelete.get(0);
+                System.out.println(artist.toString());
                 List<Album> artistsAlbums = artist.getAlbumList();
-                if (albumRepositorySQL.deleteAlbumByArtistName(artistName)) {
-                    artistsAlbums.forEach(v -> {
-                        try {
-                            songRepository.deleteSongsByAlbumId(v.getId());
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
+                albumRepositorySQL.deleteAlbumsByArtistName(artistName);
+                deleteArtist(artistName);
                 return true;
             case 0:
                 throw new ArtistNotFoundException("Such artist does not exist");
@@ -133,6 +134,13 @@ public class ArtistRepositorySQL implements ArtistRepository {
                 throw new DuplicatedRecordException("Multiple artists with the same name");
         }
 
+    }
+
+    private boolean deleteArtist(String artistName) throws SQLException{
+        deleteQuery = SessionManagerSQLite.getPreparedStatement(DELETE_ARTIST);
+        deleteQuery.setString(1,artistName);
+        deleteQuery.executeUpdate();
+        return true;
     }
 
     public Artist queryById(int id) throws SQLException {
@@ -166,6 +174,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
     }
 
 
+    //Old code - left as reference
     int insertArtist(String name) throws SQLException {
         queryArtists = SessionManagerSQLite.getPreparedStatement(QUERY_ARTISTS_PREP);
         queryArtists.setString(1, name);

@@ -31,7 +31,7 @@ public class ArtistRepositoryMongo implements ArtistRepository {
     }
 
     @Override
-    public boolean deleteArtist(String artistName) {
+    public boolean delete(String artistName) {
         return false;
     }
 
