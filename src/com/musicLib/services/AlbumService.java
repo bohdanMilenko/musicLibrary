@@ -11,7 +11,7 @@ public interface AlbumService {
 
     public List<Album> queryByArtist(AlbumRepository albumRepo, String artistName);
 
-    public List<Album> queryByAlbumName(AlbumRepository albumRepo, String albumName);
+    public List<Album> queryByName(AlbumRepository albumRepo, String albumName);
 
     public boolean delete(AlbumRepository albumRepo, String artistName, String albumName);
 }

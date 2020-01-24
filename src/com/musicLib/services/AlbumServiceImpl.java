@@ -2,8 +2,8 @@ package com.musicLib.services;
 
 import com.musicLib.entities.Album;
 import com.musicLib.repository.AlbumRepository;
-import com.musicLib.repositoryExceptions.ArtistNotFoundException;
-import com.musicLib.repositoryExceptions.DuplicatedRecordException;
+import com.musicLib.exceptions.ArtistNotFoundException;
+import com.musicLib.exceptions.DuplicatedRecordException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -31,7 +31,7 @@ public class AlbumServiceImpl implements AlbumService{
 
     public List<Album> queryByArtist(AlbumRepository albumRepo, String artistName) {
         try{
-            return albumRepo.queryByArtistName(artistName);
+            return albumRepo.queryAlbumsByArtistName(artistName);
         }catch (SQLException e) {
             System.out.println("Cannot perform query (Query Albums By Artist): " + e.getMessage());
             e.printStackTrace();
@@ -39,7 +39,7 @@ public class AlbumServiceImpl implements AlbumService{
         return null;
     }
 
-    public List<Album> queryByAlbumName(AlbumRepository albumRepo, String albumName) {
+    public List<Album> queryByName(AlbumRepository albumRepo, String albumName) {
         try{
             return albumRepo.queryByAlbumName(albumName);
         }catch (SQLException e) {
@@ -56,6 +56,7 @@ public class AlbumServiceImpl implements AlbumService{
             System.out.println("There is no such artist to add an album: " + e.getMessage());
             e.printStackTrace();
         }catch (SQLException e3){
+            throw new RuntimeException(e3);
             System.out.println("Cannot perform query (Add Album): " + e3.getMessage());
             e3.printStackTrace();
         }
