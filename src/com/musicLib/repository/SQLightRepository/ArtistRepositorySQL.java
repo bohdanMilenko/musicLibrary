@@ -4,8 +4,8 @@ import com.musicLib.SQLUtil.SessionManagerSQLite;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.repository.ArtistRepository;
-import com.musicLib.repositoryExceptions.ArtistNotFoundException;
-import com.musicLib.repositoryExceptions.DuplicatedRecordException;
+import com.musicLib.exceptions.ArtistNotFoundException;
+import com.musicLib.exceptions.DuplicatedRecordException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -72,8 +72,8 @@ public class ArtistRepositorySQL implements ArtistRepository {
         List<Album> albums;
         if (artistsToReturn != null) {
             for (Artist artist : artistsToReturn) {
-                albums = albumRepositorySQL.queryByArtistName(artist.getName());
-                artist.setAlbumList(albums);
+                albums = albumRepositorySQL.queryAlbumsByArtistName(artist.getName());
+                artist.setAlbums(albums);
             }
         }
 
@@ -124,7 +124,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
             case 1:
                 Artist artist = artistToDelete.get(0);
                 System.out.println(artist.toString());
-                List<Album> artistsAlbums = artist.getAlbumList();
+                List<Album> artistsAlbums = artist.getAlbums();
                 albumRepositorySQL.deleteAlbumsByArtistName(artistName);
                 deleteArtist(artistName);
                 return true;

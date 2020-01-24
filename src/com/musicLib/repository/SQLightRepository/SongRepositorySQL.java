@@ -16,18 +16,14 @@ import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
 public class SongRepositorySQL implements SongRepository {
 
-    private PreparedStatement queryArtistBySong;
-    private PreparedStatement insertSong;
-    private PreparedStatement querySongIfExists;
-
-    private PreparedStatement deleteQuery;
-
 
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
     private static ArtistRepositorySQL artistRepositorySQL = new ArtistRepositorySQL();
     private static AlbumRepositorySQL albumRepositorySQL = new AlbumRepositorySQL();
     private PreparedStatement queryByAlbumId;
     private PreparedStatement queryBySongName;
+    private PreparedStatement insertSong;
+    private PreparedStatement deleteQuery;
 
     private static final String DELETE_SONGS_BY_ALBUM_ID = "DELETE FROM " + TABLE_SONGS +
             " WHERE " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + "= ?";
@@ -47,15 +43,29 @@ public class SongRepositorySQL implements SongRepository {
             TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
             " INNER JOIN " + TABLE_SONGS + " ON " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
 
+    private static final String INSERT_SONG = " INSERT INTO " + TABLE_SONGS +
+            " (" + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM + ") VALUES(?,?,?)";
 
+
+    //Single responsibility - should work only with songs
     @Override
-    public boolean insert(Song song, String artistName, String albumName) {
-        List<Artist> foundArtists = artistRepositorySQL.queryArtist(artistName);
+    public boolean insert(Song song) throws SQLException {
+        Artist artist = song.getArtist();
+        List<Artist> foundArtists = artistRepositorySQL.queryArtist(artist.getName());
         if (foundArtists.size() == 1) {
-            //TODO FINISHED HERE, WORKED WITH QUERIES AND CONDITIONS - TRIED TO GET A QUERY WITH MULTIPLE CONDITIONS
+            Album album = song.getAlbum();
+            List<Album> foundAlbums = albumRepositorySQL.queryByAlbumName(album.getName());
+            if (foundAlbums.size() == 1) {
+                insertSong = SessionManagerSQLite.getPreparedStatement(INSERT_SONG);
+                insertSong.setString();
+                return true;
+            }else if(foundAlbums.size() == 0){
+                albumRepositorySQL.insert(album);
+            }
         }
         return false;
     }
+
 
     @Override
     public List<Song> queryBySongName(String songName) throws SQLException {
@@ -162,9 +172,6 @@ public class SongRepositorySQL implements SongRepository {
 
     private static final String QUERY_SONG = " SELECT " + COLUMN_SONGS_ID + " FROM " + TABLE_SONGS
             + " WHERE " + COLUMN_SONGS_ALBUM + " = ?  AND " + COLUMN_SONGS_TITLE + " = ?";
-
-    private static final String INSERT_SONG = " INSERT INTO " + TABLE_SONGS +
-            " (" + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM + ") VALUES(?,?,?)";
 
 
 //    static String getQueryArtistsTable(int sorting) {

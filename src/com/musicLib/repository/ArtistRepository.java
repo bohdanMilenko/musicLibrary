@@ -1,8 +1,8 @@
 package com.musicLib.repository;
 
 import com.musicLib.entities.Artist;
-import com.musicLib.repositoryExceptions.ArtistNotFoundException;
-import com.musicLib.repositoryExceptions.DuplicatedRecordException;
+import com.musicLib.exceptions.ArtistNotFoundException;
+import com.musicLib.exceptions.DuplicatedRecordException;
 
 import java.sql.SQLException;
 import java.util.List;

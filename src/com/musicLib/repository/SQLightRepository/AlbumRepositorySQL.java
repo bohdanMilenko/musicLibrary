@@ -4,8 +4,8 @@ import com.musicLib.SQLUtil.SessionManagerSQLite;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
-import com.musicLib.repositoryExceptions.ArtistNotFoundException;
-import com.musicLib.repositoryExceptions.DuplicatedRecordException;
+import com.musicLib.exceptions.ArtistNotFoundException;
+import com.musicLib.exceptions.DuplicatedRecordException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,10 +49,10 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     public static final String DELETE_ALBUM_BY_ID = "DELETE FROM " + TABLE_ALBUMS +
             " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + " =?";
 
-
+    //TODO INSTEAD OF THROWING AN ERROR, I NEED TO CHECK IF THIS ARTIST AND ALBUM EXIST. IF THEY DON'T I NEED TO CREATE THEM. conn.setAutoCommit(false)
     @Override
-    public boolean insert(Album album, String artistName) throws ArtistNotFoundException, DuplicatedRecordException, SQLException {
-        List<Artist> foundArtistList = artistRepository.queryArtist(artistName);
+    public boolean insert(Album album) throws ArtistNotFoundException, DuplicatedRecordException, SQLException {
+        List<Artist> foundArtistList = artistRepository.queryArtist(album.getArtist().getName());
         foundArtistList.forEach(v -> System.out.println(v.getName()));
         if (foundArtistList.size() == 1) {
             insertAlbum = SessionManagerSQLite.getPreparedStatement(INSERT_ALBUM);
@@ -87,7 +87,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     }
 
     @Override
-    public List<Album> queryByArtistName(String artistName) throws SQLException {
+    public List<Album> queryAlbumsByArtistName(String artistName) throws SQLException {
         List<Album> albumsToReturn;
         List<Artist> artists = artistRepository.queryArtist(artistName);
         if (artists.size() == 1) {
@@ -109,17 +109,15 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
 
     @Override
     public boolean delete(String albumName, String artistName) throws SQLException, ArtistNotFoundException {
-        List<Album> foundAlbums = queryByArtistName(artistName);
+        List<Album> foundAlbums = queryAlbumsByArtistName(artistName);
         if (foundAlbums.size() == 1) {
             Album album = foundAlbums.get(0);
             int artistId = album.getArtist().getId();
             int albumId = album.getId();
-            //songsRepository.deleteSongsFromAlbum(albumId);
+            songRepositorySQL.deleteSongsByAlbumId(albumId);
         } else {
             throw new ArtistNotFoundException("0 or more than 1 artist found");
         }
-
-
         return false;
     }
 
@@ -146,6 +144,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
         while (rs.next()) {
             Album tempAlbum = new Album();
             Artist tempArtist = new Artist();
+
             tempAlbum.setId(rs.getInt(1));
             tempAlbum.setName(rs.getString(2));
 
@@ -159,9 +158,8 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     }
 
     public boolean deleteAlbumsByArtistName(String artist) throws SQLException {
-        List<Album> albumsToDelete = queryByArtistName(artist);
+        List<Album> albumsToDelete = queryAlbumsByArtistName(artist);
         deleteRelatedSongs(albumsToDelete);
-        //TODO DELETE ALBUMS BY ARTIST ID
         for (Album tempAlbum : albumsToDelete) {
             deleteAlbumById = SessionManagerSQLite.getPreparedStatement(DELETE_ALBUM_BY_ID);
             deleteAlbumById.setInt(1, tempAlbum.getId());
