@@ -18,7 +18,6 @@ public class Album {
         this.songs = songs;
     }
 
-
     public Album(){
 
     }

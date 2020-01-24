@@ -6,7 +6,7 @@ public class Artist {
 
     private int id;
     private String name;
-    private List<Album> albumList;
+    private List<Album> albums;
 
 
     public Artist(String name) {
@@ -32,12 +32,12 @@ public class Artist {
         this.name = name;
     }
 
-    public List<Album> getAlbumList() {
-        return albumList;
+    public List<Album> getAlbums() {
+        return albums;
     }
 
-    public void setAlbumList(List<Album> albumList) {
-        this.albumList = albumList;
+    public void setAlbums(List<Album> albums) {
+        this.albums = albums;
     }
 
     @Override
