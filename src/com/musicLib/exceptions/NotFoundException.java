@@ -1,6 +1,7 @@
 package com.musicLib.exceptions;
 
-public class NotFoundException extends Exception {
+public class NotFoundException extends QueryException {
+
     public NotFoundException() {
     }
 
@@ -8,4 +9,11 @@ public class NotFoundException extends Exception {
         super(message);
     }
 
+    public NotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public NotFoundException(Throwable cause) {
+        super(cause);
+    }
 }
