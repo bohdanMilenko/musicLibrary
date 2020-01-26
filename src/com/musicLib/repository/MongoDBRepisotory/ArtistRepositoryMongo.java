@@ -15,7 +15,7 @@ import java.util.List;
 public class ArtistRepositoryMongo implements ArtistRepository {
 
     @Override
-    public boolean insert(Artist artist){
+    public boolean add(Artist artist){
         //TODO Crate functionality to write to the db
         return true;
     }
