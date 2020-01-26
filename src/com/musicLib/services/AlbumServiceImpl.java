@@ -1,65 +1,62 @@
 package com.musicLib.services;
 
 import com.musicLib.entities.Album;
-import com.musicLib.repository.AlbumRepository;
 import com.musicLib.exceptions.ArtistNotFoundException;
 import com.musicLib.exceptions.DuplicatedRecordException;
+import com.musicLib.exceptions.QueryException;
+import com.musicLib.repository.AlbumRepository;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class AlbumServiceImpl implements AlbumService{
+public class AlbumServiceImpl implements AlbumService {
+
+    private AlbumRepository albumRepo;
+    private ArtistService artistService;
+    private RecordValidator recordValidator;
+
+    public AlbumServiceImpl(AlbumRepository albumRepo, ArtistService artistService) {
+        this.albumRepo = albumRepo;
+        this.artistService = artistService;
+        this.recordValidator = new RecordValidator(artistService);;
+    }
 
     public AlbumServiceImpl() {
     }
 
-    public boolean add(AlbumRepository albumRepo, String artistName, Album album) {
-        try{
-            return albumRepo.insert(album, artistName);
-        }catch (ArtistNotFoundException e ){
-            System.out.println("There is no such artist to add an album: " + e.getMessage());
-            e.printStackTrace();
-        }catch (DuplicatedRecordException e2){
-            System.out.println("Such album already exists: " + e2.getMessage());
-            e2.printStackTrace();
-        }catch (SQLException e3){
-            System.out.println("Cannot perform query (Add Album): " + e3.getMessage());
-            e3.printStackTrace();
+    public boolean add(Album album) throws QueryException {
+        try {
+            return albumRepo.add(album);
+        } catch (ArtistNotFoundException e) {
+            throw new QueryException("Cannot find such artist in db", e);
+        } catch (DuplicatedRecordException e) {
+            throw new QueryException("Multiple albums with the same name, unable to define a correct one", e);
+        } catch (SQLException e) {
+            throw new QueryException("Issue with db connectivity", e);
         }
-        return false;
     }
 
-    public List<Album> queryByArtist(AlbumRepository albumRepo, String artistName) {
-        try{
+    public List<Album> getByArtistName(String artistName) throws QueryException {
+        try {
             return albumRepo.queryAlbumsByArtistName(artistName);
-        }catch (SQLException e) {
-            System.out.println("Cannot perform query (Query Albums By Artist): " + e.getMessage());
-            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new QueryException("Issue with db connectivity", e);
         }
-        return null;
     }
 
-    public List<Album> queryByName(AlbumRepository albumRepo, String albumName) {
-        try{
+    public List<Album> getByName(String albumName)throws QueryException {
+        try {
             return albumRepo.queryByAlbumName(albumName);
-        }catch (SQLException e) {
-            System.out.println("Cannot perform query (Query Albums By Artist): " + e.getMessage());
-            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new QueryException("Issue with db connectivity", e);
         }
-        return null;
     }
 
-    public boolean delete(AlbumRepository albumRepo, String artistName, String albumName) {
+    public boolean delete(String artistName, String albumName) throws QueryException {
         try {
             return albumRepo.delete(albumName, artistName);
-        }catch (ArtistNotFoundException e ){
-            System.out.println("There is no such artist to add an album: " + e.getMessage());
-            e.printStackTrace();
-        }catch (SQLException e3){
-            throw new RuntimeException(e3);
-            System.out.println("Cannot perform query (Add Album): " + e3.getMessage());
-            e3.printStackTrace();
+        } catch (ArtistNotFoundException e) {
+            throw new QueryException("Cannot find such artist in db", e);
         }
-        return false;
     }
 }

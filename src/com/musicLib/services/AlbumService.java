@@ -1,17 +1,17 @@
 package com.musicLib.services;
 
 import com.musicLib.entities.Album;
-import com.musicLib.repository.AlbumRepository;
+import com.musicLib.exceptions.QueryException;
 
 import java.util.List;
 
 public interface AlbumService {
 
-    public boolean add(AlbumRepository albumRepo, String artistName, Album album);
+    public boolean add(Album album) throws QueryException;
 
-    public List<Album> queryByArtist(AlbumRepository albumRepo, String artistName);
+    public List<Album> getByArtistName(String artistName) throws QueryException;
 
-    public List<Album> queryByName(AlbumRepository albumRepo, String albumName);
+    public List<Album> getByName(String albumName) throws QueryException;
 
-    public boolean delete(AlbumRepository albumRepo, String artistName, String albumName);
+    public boolean delete(String artistName, String albumName) throws QueryException;
 }
