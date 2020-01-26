@@ -1,6 +1,6 @@
 package com.musicLib.exceptions;
 
-public class QueryException extends Exception {
+public class QueryException extends ServiceException {
 
     public QueryException() {
     }
