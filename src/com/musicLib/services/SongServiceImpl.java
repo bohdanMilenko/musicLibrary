@@ -14,7 +14,7 @@ public class SongServiceImpl implements SongService {
     private SongRepository songRepo;
     private RecordValidator recordValidator;
 
-    public SongServiceImpl(SongRepository songRepo, AlbumService albumService, ArtistService artistService, RecordValidator recordValidator) {
+    public SongServiceImpl(SongRepository songRepo, ArtistService artistService, AlbumService albumService) {
         this.songRepo = songRepo;
         this.recordValidator = new RecordValidator(artistService, albumService);
     }

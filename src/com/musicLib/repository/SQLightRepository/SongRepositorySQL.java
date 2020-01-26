@@ -57,7 +57,7 @@ public class SongRepositorySQL implements SongRepository {
             List<Album> foundAlbums = albumRepositorySQL.queryByAlbumName(album.getName());
             if (foundAlbums.size() == 1) {
                 insertSong = SessionManagerSQLite.getPreparedStatement(INSERT_SONG);
-                insertSong.setString();
+                //insertSong.setString();
                 return true;
             }
         }
@@ -78,12 +78,31 @@ public class SongRepositorySQL implements SongRepository {
 
     public List<Song> queryByAlbumId(int albumId) throws SQLException {
         List<Song> listToReturn;
-        StringBuilder query = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
-        queryByAlbumId = SessionManagerSQLite.getPreparedStatement(query.toString());
+        //StringBuilder query = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
+        String query = buildQueryByAlbumID();
+        System.out.println(query);
+        queryByAlbumId = SessionManagerSQLite.getPreparedStatement(query);
         queryByAlbumId.setInt(1, albumId);
         ResultSet rs = queryByAlbumId.executeQuery();
         listToReturn = resultSetToSong(rs);
         return listToReturn;
+    }
+
+    /**
+     * SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
+     * FROM artists INNER JOIN albums ON albums.artist = artists._id
+     * INNER JOIN songs ON songs.album = albums._id
+     */
+    private String buildQueryByAlbumID(){
+        QueryBuilder qb = new QueryBuilder();
+        qb.startQuery(TABLE_ARTISTS,COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS,COLUMN_ARTISTS_NAME)
+            .addSelection(TABLE_ALBUMS,COLUMN_ALBUMS_ID).addSelection(TABLE_ALBUMS,COLUMN_ALBUMS_NAME)
+                .addSelection(TABLE_SONGS,COLUMN_SONGS_ID).addSelection(TABLE_SONGS,COLUMN_SONGS_TITLE)
+                .addSelection(TABLE_SONGS,COLUMN_SONGS_TRACK).queryFrom(TABLE_ARTISTS)
+                .innerJoinOn(TABLE_ALBUMS,COLUMN_ALBUMS_ARTIST,TABLE_ARTISTS,COLUMN_ARTISTS_ID)
+                .innerJoinOn(TABLE_SONGS,COLUMN_SONGS_ALBUM,TABLE_ALBUMS,COLUMN_ALBUMS_ID)
+                .specifyFirstCondition(TABLE_ALBUMS,COLUMN_ALBUMS_ID);
+        return qb.toString();
     }
 
     @Override

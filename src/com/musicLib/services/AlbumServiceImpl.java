@@ -57,6 +57,8 @@ public class AlbumServiceImpl implements AlbumService {
             return albumRepo.delete(albumName, artistName);
         } catch (ArtistNotFoundException e) {
             throw new QueryException("Cannot find such artist in db", e);
+        }catch (SQLException e) {
+            throw new QueryException("Issue with db connectivity", e);
         }
     }
 }
