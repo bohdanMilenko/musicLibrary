@@ -60,7 +60,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
             + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = ?";
 
     @Override
-    public boolean insert(Artist artist) {
+    public boolean add(Artist artist) {
         //TODO COMPLETE THIS METHOD! GET GENERATED KEYS AND SET THEM!
         return false;
     }

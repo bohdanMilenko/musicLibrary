@@ -6,6 +6,7 @@ import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
 import com.musicLib.exceptions.ArtistNotFoundException;
 import com.musicLib.exceptions.DuplicatedRecordException;
+import com.musicLib.exceptions.QueryException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,7 +52,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
 
     //TODO INSTEAD OF THROWING AN ERROR, I NEED TO CHECK IF THIS ARTIST AND ALBUM EXIST. IF THEY DON'T I NEED TO CREATE THEM. conn.setAutoCommit(false)
     @Override
-    public boolean insert(Album album) throws ArtistNotFoundException, DuplicatedRecordException, SQLException {
+    public boolean add(Album album) throws QueryException, SQLException {
         List<Artist> foundArtistList = artistRepository.queryArtist(album.getArtist().getName());
         foundArtistList.forEach(v -> System.out.println(v.getName()));
         if (foundArtistList.size() == 1) {
@@ -108,13 +109,13 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     }
 
     @Override
-    public boolean delete(String albumName, String artistName) throws SQLException, ArtistNotFoundException {
+    public boolean delete(String albumName, String artistName) throws SQLException, QueryException {
         List<Album> foundAlbums = queryAlbumsByArtistName(artistName);
         if (foundAlbums.size() == 1) {
             Album album = foundAlbums.get(0);
             int artistId = album.getArtist().getId();
             int albumId = album.getId();
-            songRepositorySQL.deleteSongsByAlbumId(albumId);
+            songRepositorySQL.deleteByAlbumId(albumId);
         } else {
             throw new ArtistNotFoundException("0 or more than 1 artist found");
         }
@@ -171,7 +172,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     private void deleteRelatedSongs(List<Album> albumsToDelete) throws SQLException {
         for (Album tempAlbum : albumsToDelete) {
             int albumId = tempAlbum.getId();
-            songRepositorySQL.deleteSongsByAlbumId(albumId);
+            songRepositorySQL.deleteByAlbumId(albumId);
         }
     }
 

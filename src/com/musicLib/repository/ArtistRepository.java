@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ArtistRepository {
 
-    boolean insert(Artist artist);
+    boolean add(Artist artist);
 
     List<Artist> queryAllArtists() throws SQLException;
 

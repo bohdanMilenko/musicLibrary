@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface SongRepository {
 
-    boolean insert(Song song) throws SQLException;
+    boolean add(Song song) throws SQLException;
 
-    List<Song> queryBySongName(String songName) throws SQLException;
+    List<Song> queryByName(String songName) throws SQLException;
 
     boolean delete(String artistName, String albumName, String songName);
 }

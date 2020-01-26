@@ -49,7 +49,7 @@ public class SongRepositorySQL implements SongRepository {
 
     //Single responsibility - should work only with songs
     @Override
-    public boolean insert(Song song) throws SQLException {
+    public boolean add(Song song) throws SQLException {
         Artist artist = song.getArtist();
         List<Artist> foundArtists = artistRepositorySQL.queryArtist(artist.getName());
         if (foundArtists.size() == 1) {
@@ -59,8 +59,6 @@ public class SongRepositorySQL implements SongRepository {
                 insertSong = SessionManagerSQLite.getPreparedStatement(INSERT_SONG);
                 insertSong.setString();
                 return true;
-            }else if(foundAlbums.size() == 0){
-                albumRepositorySQL.insert(album);
             }
         }
         return false;
@@ -68,7 +66,7 @@ public class SongRepositorySQL implements SongRepository {
 
 
     @Override
-    public List<Song> queryBySongName(String songName) throws SQLException {
+    public List<Song> queryByName(String songName) throws SQLException {
         List<Song> returnList = new ArrayList<>();
         StringBuilder sb = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_SONGS, COLUMN_SONGS_TITLE);
         queryBySongName = SessionManagerSQLite.getPreparedStatement(sb.toString());
@@ -78,7 +76,6 @@ public class SongRepositorySQL implements SongRepository {
         return returnList;
     }
 
-    //TODO RETHINK THE CONCEPT OF HANDLING EXCEPTIONS ON THE LOWEST LEVEL POSSIBLE
     public List<Song> queryByAlbumId(int albumId) throws SQLException {
         List<Song> listToReturn;
         StringBuilder query = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
@@ -96,7 +93,7 @@ public class SongRepositorySQL implements SongRepository {
         return false;
     }
 
-    public void deleteSongsByAlbumId(int albumId) throws SQLException {
+    public void deleteByAlbumId(int albumId) throws SQLException {
         deleteQuery = SessionManagerSQLite.getPreparedStatement(DELETE_SONGS_BY_ALBUM_ID);
         deleteQuery.setInt(1, albumId);
         deleteQuery.executeUpdate();
