@@ -2,10 +2,10 @@ package com.musicLib.services;
 
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
-import com.musicLib.exceptions.ArtistNotFoundException;
 import com.musicLib.exceptions.QueryException;
 import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.AlbumRepository;
+import com.musicLib.repository.SongRepository;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -14,12 +14,15 @@ public class AlbumServiceImpl implements AlbumService {
 
     private AlbumRepository albumRepo;
     private ArtistService artistService;
+    //TODO HOW TO ACCESS SONGSERVICE AND DELETE DEPENDANT SONGS ON ALBUM, FOR NOW DID IT THROUGH THE SONGREPO;
+    private SongRepository songRepository;
     private RecordValidator recordValidator;
 
-    public AlbumServiceImpl(AlbumRepository albumRepo, ArtistService artistService) {
+    public AlbumServiceImpl(AlbumRepository albumRepo, ArtistService artistService, SongRepository songRepository) {
         this.albumRepo = albumRepo;
         this.artistService = artistService;
-        this.recordValidator = new RecordValidator(artistService);;
+        this.songRepository = songRepository;
+        this.recordValidator = new RecordValidator(artistService);
     }
 
     public AlbumServiceImpl() {
@@ -79,13 +82,14 @@ public class AlbumServiceImpl implements AlbumService {
         }
     }
 
-    public boolean delete(String artistName, String albumName) throws QueryException {
+    public boolean delete(String artistName, String albumName) throws ServiceException {
+        int artistID = getArtistID(albumName);
+        int albumID = recordValidator.getAlbumID(albumName);
         try {
-            return albumRepo.delete(albumName, artistName);
-        } catch (ArtistNotFoundException e) {
-            throw new QueryException("Cannot find such artist in db", e);
-        }catch (SQLException e) {
-            throw new QueryException("Issue with db connectivity", e);
+//            songRepository.deleteByAlbumId(albumID);
+            return albumRepo.delete(albumID, artistID);
+        } catch (SQLException e) {
+            throw new ServiceException("Unable to delete album", e);
         }
     }
 }

@@ -14,5 +14,5 @@ public interface AlbumService {
 
     public List<Album> getByName(String albumName) throws QueryException;
 
-    public boolean delete(String artistName, String albumName) throws QueryException;
+    public boolean delete(String artistName, String albumName) throws QueryException, ServiceException;
 }
