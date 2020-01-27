@@ -23,7 +23,7 @@ public class ApplicationMain {
 
 
         ArtistService artistServiceImpl = new ArtistServiceImpl(artistRepositorySQLite);
-        AlbumService albumServiceImpl = new AlbumServiceImpl(albumRepositorySQLite, artistServiceImpl);
+        AlbumService albumServiceImpl = new AlbumServiceImpl(albumRepositorySQLite, artistServiceImpl, songRepositorySQLite);
         SongService songServiceSQL = new SongServiceImpl(songRepositorySQLite, artistServiceImpl, albumServiceImpl);
 
         try {

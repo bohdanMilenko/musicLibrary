@@ -13,6 +13,7 @@ public class RecordValidator {
 
     private ArtistService artistService;
     private AlbumService albumService;
+    private SongService songService;
 
     public RecordValidator(ArtistService artistService, AlbumService albumService) {
         this.artistService = artistService;
@@ -55,4 +56,8 @@ public class RecordValidator {
             throw new AlbumNotFoundException("There is no such album");
         }
     }
+
+//    public boolean ensureDependantSongsDeleted(int albumID) throws QueryException{
+//
+//    }
 }
