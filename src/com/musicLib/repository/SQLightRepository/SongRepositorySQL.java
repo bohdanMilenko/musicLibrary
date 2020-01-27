@@ -61,17 +61,13 @@ public class SongRepositorySQL implements SongRepository {
      * INNER JOIN songs ON songs.album = albums._id
      * WHERE albums._id = "?"
      */
+
     private String buildQueryByName() {
-        QueryBuilder qb = new QueryBuilder();
-        qb.startQuery(TABLE_ARTISTS, COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS, COLUMN_ARTISTS_NAME)
-                .addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_ID).addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_NAME)
-                .addSelection(TABLE_SONGS, COLUMN_SONGS_ID).addSelection(TABLE_SONGS, COLUMN_SONGS_TITLE)
-                .addSelection(TABLE_SONGS, COLUMN_SONGS_TRACK).queryFrom(TABLE_ARTISTS)
-                .innerJoinOn(TABLE_ALBUMS, COLUMN_ALBUMS_ARTIST, TABLE_ARTISTS, COLUMN_ARTISTS_ID)
-                .innerJoinOn(TABLE_SONGS, COLUMN_SONGS_ALBUM, TABLE_ALBUMS, COLUMN_ALBUMS_ID)
-                .specifyFirstCondition(TABLE_SONGS, COLUMN_SONGS_TITLE);
+        QueryBuilder qb = buildGeneralQuery();
+        qb.specifyFirstCondition(TABLE_SONGS, COLUMN_SONGS_TITLE);
         return qb.toString();
     }
+
 
     public List<Song> queryByAlbumId(int albumId) throws SQLException {
         List<Song> listToReturn;
@@ -92,15 +88,20 @@ public class SongRepositorySQL implements SongRepository {
      * WHERE albums._id = "?"
      */
     private String buildQueryByAlbumID() {
+        QueryBuilder qb = buildGeneralQuery();
+        qb.specifyFirstCondition(TABLE_ALBUMS, COLUMN_ALBUMS_ID);
+        return qb.toString();
+    }
+
+    private QueryBuilder buildGeneralQuery() {
         QueryBuilder qb = new QueryBuilder();
         qb.startQuery(TABLE_ARTISTS, COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS, COLUMN_ARTISTS_NAME)
                 .addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_ID).addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_NAME)
                 .addSelection(TABLE_SONGS, COLUMN_SONGS_ID).addSelection(TABLE_SONGS, COLUMN_SONGS_TITLE)
                 .addSelection(TABLE_SONGS, COLUMN_SONGS_TRACK).queryFrom(TABLE_ARTISTS)
                 .innerJoinOn(TABLE_ALBUMS, COLUMN_ALBUMS_ARTIST, TABLE_ARTISTS, COLUMN_ARTISTS_ID)
-                .innerJoinOn(TABLE_SONGS, COLUMN_SONGS_ALBUM, TABLE_ALBUMS, COLUMN_ALBUMS_ID)
-                .specifyFirstCondition(TABLE_ALBUMS, COLUMN_ALBUMS_ID);
-        return qb.toString();
+                .innerJoinOn(TABLE_SONGS, COLUMN_SONGS_ALBUM, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
+        return qb;
     }
 
     @Override
