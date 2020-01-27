@@ -23,8 +23,13 @@ public class RecordValidator {
         this.artistService = artistService;
     }
 
+
     public int getArtistID(Artist artist) throws QueryException {
-        List<Artist> artists = artistService.getByName(artist.getName());
+        return getArtistID(artist.getName());
+    }
+
+    public int getArtistID(String artistName) throws QueryException {
+        List<Artist> artists = artistService.getByName(artistName);
         if (artists.size() == 1) {
             Artist foundArtist = artists.get(0);
             return foundArtist.getId();
@@ -36,15 +41,7 @@ public class RecordValidator {
     }
 
     public int getAlbumID(Album album) throws QueryException {
-        List<Album> albums = albumService.getByName(album.getName());
-        if (albums.size() == 1) {
-            Album foundAlbums = albums.get(0);
-            return foundAlbums.getId();
-        } else if (albums.size() > 1) {
-            throw new DuplicatedRecordException("More than one album with the same name");
-        } else {
-            throw new AlbumNotFoundException("There is no such album");
-        }
+       return getAlbumID(album.getName());
     }
 
     public int getAlbumID(String  album) throws QueryException {

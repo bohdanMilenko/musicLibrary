@@ -4,6 +4,7 @@ import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.ArtistNotFoundException;
 import com.musicLib.exceptions.DuplicatedRecordException;
 import com.musicLib.exceptions.QueryException;
+import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.ArtistRepository;
 
 import java.sql.SQLException;
@@ -25,11 +26,11 @@ public class ArtistServiceImpl implements ArtistService {
         return artistRepo.add(artist);
     }
 
-    public List<Artist> getAll() throws QueryException {
+    public List<Artist> getAll() throws ServiceException {
         try {
             return artistRepo.queryAllArtists();
         } catch (SQLException e) {
-            throw new QueryException("Issue with getting all Artists", e);
+            throw new ServiceException("Issue with getting all Artists", e);
         }
     }
 
