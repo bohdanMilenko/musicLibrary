@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface SongService {
 
-    public boolean add(Song song) throws  QueryException, ServiceException;
+    public boolean add(Song song) throws  ServiceException;
 
     public List<Song> getByName(String songName) throws QueryException;
 
-    public boolean delete(String artistName, String albumName, String songName);
+    public boolean delete(String artistName, String albumName, String songName) throws QueryException;
 }

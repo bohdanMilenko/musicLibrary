@@ -28,7 +28,7 @@ public class SongServiceImpl implements SongService {
         int artistId = getArtistIDFromDB(artistFromSong);
         int albumId = getAlbumIDfROMdb(albumFromSong);
         Song updatedSong = updateArtistWithID(song, artistId);
-        updatedSong = updateWithAlbumID(updatedSong, artistId);
+        updatedSong = updateWithAlbumID(updatedSong, albumId);
         try {
             return songRepo.add(updatedSong);
         } catch (SQLException e) {
@@ -80,8 +80,13 @@ public class SongServiceImpl implements SongService {
         }
     }
 
-    public boolean delete(String artistName, String albumName, String songName) {
-        return songRepo.delete(artistName, albumName, songName);
+    public boolean delete(String artistName, String albumName, String songName) throws QueryException {
+       try {
+           int albumID = recordValidator.getAlbumID(albumName);
+           return songRepo.delete(songName, albumID);
+       }catch (SQLException e){
+           throw new QueryException("Cannot delete song from DB", e);
+       }
 
     }
 
