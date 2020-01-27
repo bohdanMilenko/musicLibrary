@@ -1,7 +1,6 @@
 package com.musicLib.repository.SQLightRepository;
 
-import static com.musicLib.repository.SQLightRepository.MetaData.ORDER_DESC;
-import static com.musicLib.repository.SQLightRepository.MetaData.ORDER_NONE;
+import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
 public class QueryBuilder {
 
@@ -12,7 +11,6 @@ public class QueryBuilder {
     private static final String whereClause = " WHERE ";
     private static final String andCondition = " AND ";
     private static final String orCondition = " OR ";
-
 
 
     private static final String deleteFrom = "DELETE FROM ";
@@ -39,27 +37,53 @@ public class QueryBuilder {
         return this;
     }
 
-    public QueryBuilder innerJoinOn(String initialTable, String initialColumnName, String secondTable, String secondColumnName){
+    public QueryBuilder innerJoinOn(String initialTable, String initialColumnName, String secondTable, String secondColumnName) {
         query.append(innerJoin).append(initialTable).append(joinOn).append(initialTable).append(".").append(initialColumnName)
                 .append(" = ").append(secondTable).append(".").append(secondColumnName);
         return this;
     }
 
-    public QueryBuilder specifyFirstCondition(String criteriaTableName, String criteriaColumnName){
+    public QueryBuilder specifyFirstCondition(String criteriaTableName, String criteriaColumnName) {
         query.append(whereClause).append(criteriaTableName).append(".").append(criteriaColumnName).
                 append(" = ?");
         return this;
     }
 
-    public QueryBuilder addANDCondition(String criteriaTableName, String criteriaColumnName){
+    public QueryBuilder addANDCondition(String criteriaTableName, String criteriaColumnName) {
         query.append(andCondition).append(criteriaTableName).append(".").append(criteriaColumnName).
                 append(" = ?");
         return this;
     }
 
-    public QueryBuilder addORCondition(String criteriaTableName, String criteriaColumnName){
+    public QueryBuilder addORCondition(String criteriaTableName, String criteriaColumnName) {
         query.append(orCondition).append(criteriaTableName).append(".").append(criteriaColumnName).
                 append(" = ?");
+        return this;
+    }
+
+
+    public QueryBuilder insertTo(String criteriaTableName) {
+        query.append(insertInto).append(criteriaTableName);
+        return this;
+    }
+
+    public QueryBuilder insertSpecifyColumns(String columnName) {
+        query.append(" (").append(columnName).append(") VALUES (?)");
+        return this;
+    }
+
+    public QueryBuilder insertSpecifyColumns(String columnName1, String columnName2) {
+        query.append(" (").append(columnName1).append(",").append(columnName2).append(") VALUES (?,?)");
+        return this;
+    }
+
+    public QueryBuilder insertSpecifyColumns(String columnName1, String columnName2, String columnName3) {
+        query.append(" (").append(columnName1).append(",").append(columnName2).append(",").append(columnName3).append(") VALUES (?,?)");
+        return this;
+    }
+
+    public QueryBuilder deleteFrom(String tableName){
+        query.append(deleteFrom).append(tableName);
         return this;
     }
 
