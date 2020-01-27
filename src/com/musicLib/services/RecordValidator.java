@@ -45,6 +45,17 @@ public class RecordValidator {
         } else {
             throw new AlbumNotFoundException("There is no such album");
         }
+    }
 
+    public int getAlbumID(String  album) throws QueryException {
+        List<Album> albums = albumService.getByName(album);
+        if (albums.size() == 1) {
+            Album foundAlbums = albums.get(0);
+            return foundAlbums.getId();
+        } else if (albums.size() > 1) {
+            throw new DuplicatedRecordException("More than one album with the same name");
+        } else {
+            throw new AlbumNotFoundException("There is no such album");
+        }
     }
 }
