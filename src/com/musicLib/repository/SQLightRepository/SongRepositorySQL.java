@@ -18,62 +18,59 @@ public class SongRepositorySQL implements SongRepository {
 
 
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
-    private static ArtistRepositorySQL artistRepositorySQL = new ArtistRepositorySQL();
-    private static AlbumRepositorySQL albumRepositorySQL = new AlbumRepositorySQL();
     private PreparedStatement queryByAlbumId;
     private PreparedStatement queryBySongName;
     private PreparedStatement insertSong;
-    private PreparedStatement deleteQuery;
+    private PreparedStatement deleteQueryByAlbumID;
+    private PreparedStatement deleteQueryBySongNameAndAlbumID;
 
-    private static final String DELETE_SONGS_BY_ALBUM_ID = "DELETE FROM " + TABLE_SONGS +
-            " WHERE " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + "= ?";
+    @Override
+    public boolean add(Song song) throws SQLException {
+        String query = buildInsertQuery();
+        insertSong = SessionManagerSQLite.getPreparedStatement(query);
+        insertSong.setInt(1, song.getTrackNumber());
+        insertSong.setString(2, song.getName());
+        insertSong.setInt(3, song.getAlbum().getId());
+        insertSong.executeUpdate();
+        return true;
+    }
+
+    /**
+     * INSERT INTO songs (track, title, album) VALUES (?,?,?)
+     */
+    private String buildInsertQuery() {
+        QueryBuilder qb = new QueryBuilder();
+        qb.insertTo(TABLE_SONGS).insertSpecifyColumns(COLUMN_SONGS_TRACK, COLUMN_SONGS_TITLE, COLUMN_SONGS_ALBUM);
+        return qb.toString();
+    }
+
+    @Override
+    public List<Song> queryByName(String songName) throws SQLException {
+        List<Song> returnList = new ArrayList<>();
+        String query = buildQueryByName();
+        queryBySongName = SessionManagerSQLite.getPreparedStatement(query);
+        queryBySongName.setString(1, songName);
+        ResultSet rs = queryBySongName.executeQuery();
+        returnList = resultSetToSong(rs);
+        return returnList;
+    }
 
     /**
      * SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
      * FROM artists INNER JOIN albums ON albums.artist = artists._id
      * INNER JOIN songs ON songs.album = albums._id
+     * WHERE albums._id = "?"
      */
-
-    private static final String QUERY_BODY = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
-            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " +
-            TABLE_SONGS + "." + COLUMN_SONGS_ID + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", " +
-            TABLE_SONGS + "." + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTISTS +
-            " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
-            " INNER JOIN " + TABLE_SONGS + " ON " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
-
-    private static final String INSERT_SONG = " INSERT INTO " + TABLE_SONGS +
-            " (" + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM + ") VALUES(?,?,?)";
-
-
-    //Single responsibility - should work only with songs
-    @Override
-    public boolean add(Song song) throws SQLException {
-        Artist artist = song.getArtist();
-        List<Artist> foundArtists = artistRepositorySQL.queryArtist(artist.getName());
-        if (foundArtists.size() == 1) {
-            Album album = song.getAlbum();
-            List<Album> foundAlbums = albumRepositorySQL.queryByAlbumName(album.getName());
-            if (foundAlbums.size() == 1) {
-                insertSong = SessionManagerSQLite.getPreparedStatement(INSERT_SONG);
-                //insertSong.setString();
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    @Override
-    public List<Song> queryByName(String songName) throws SQLException {
-        List<Song> returnList = new ArrayList<>();
-        StringBuilder sb = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_SONGS, COLUMN_SONGS_TITLE);
-        queryBySongName = SessionManagerSQLite.getPreparedStatement(sb.toString());
-        queryBySongName.setString(1, songName);
-        ResultSet rs = queryBySongName.executeQuery();
-        returnList = resultSetToSong(rs);
-        return returnList;
+    private String buildQueryByName() {
+        QueryBuilder qb = new QueryBuilder();
+        qb.startQuery(TABLE_ARTISTS, COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS, COLUMN_ARTISTS_NAME)
+                .addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_ID).addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_NAME)
+                .addSelection(TABLE_SONGS, COLUMN_SONGS_ID).addSelection(TABLE_SONGS, COLUMN_SONGS_TITLE)
+                .addSelection(TABLE_SONGS, COLUMN_SONGS_TRACK).queryFrom(TABLE_ARTISTS)
+                .innerJoinOn(TABLE_ALBUMS, COLUMN_ALBUMS_ARTIST, TABLE_ARTISTS, COLUMN_ARTISTS_ID)
+                .innerJoinOn(TABLE_SONGS, COLUMN_SONGS_ALBUM, TABLE_ALBUMS, COLUMN_ALBUMS_ID)
+                .specifyFirstCondition(TABLE_SONGS, COLUMN_SONGS_TITLE);
+        return qb.toString();
     }
 
     public List<Song> queryByAlbumId(int albumId) throws SQLException {
@@ -92,37 +89,56 @@ public class SongRepositorySQL implements SongRepository {
      * SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
      * FROM artists INNER JOIN albums ON albums.artist = artists._id
      * INNER JOIN songs ON songs.album = albums._id
+     * WHERE albums._id = "?"
      */
-    private String buildQueryByAlbumID(){
+    private String buildQueryByAlbumID() {
         QueryBuilder qb = new QueryBuilder();
-        qb.startQuery(TABLE_ARTISTS,COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS,COLUMN_ARTISTS_NAME)
-            .addSelection(TABLE_ALBUMS,COLUMN_ALBUMS_ID).addSelection(TABLE_ALBUMS,COLUMN_ALBUMS_NAME)
-                .addSelection(TABLE_SONGS,COLUMN_SONGS_ID).addSelection(TABLE_SONGS,COLUMN_SONGS_TITLE)
-                .addSelection(TABLE_SONGS,COLUMN_SONGS_TRACK).queryFrom(TABLE_ARTISTS)
-                .innerJoinOn(TABLE_ALBUMS,COLUMN_ALBUMS_ARTIST,TABLE_ARTISTS,COLUMN_ARTISTS_ID)
-                .innerJoinOn(TABLE_SONGS,COLUMN_SONGS_ALBUM,TABLE_ALBUMS,COLUMN_ALBUMS_ID)
-                .specifyFirstCondition(TABLE_ALBUMS,COLUMN_ALBUMS_ID);
+        qb.startQuery(TABLE_ARTISTS, COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS, COLUMN_ARTISTS_NAME)
+                .addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_ID).addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_NAME)
+                .addSelection(TABLE_SONGS, COLUMN_SONGS_ID).addSelection(TABLE_SONGS, COLUMN_SONGS_TITLE)
+                .addSelection(TABLE_SONGS, COLUMN_SONGS_TRACK).queryFrom(TABLE_ARTISTS)
+                .innerJoinOn(TABLE_ALBUMS, COLUMN_ALBUMS_ARTIST, TABLE_ARTISTS, COLUMN_ARTISTS_ID)
+                .innerJoinOn(TABLE_SONGS, COLUMN_SONGS_ALBUM, TABLE_ALBUMS, COLUMN_ALBUMS_ID)
+                .specifyFirstCondition(TABLE_ALBUMS, COLUMN_ALBUMS_ID);
         return qb.toString();
     }
 
     @Override
-    public boolean delete(String artistName, String albumName, String songName) {
-        //TODO IMPLEMENT
-
+    public boolean delete(String songName, int albumID) throws SQLException {
+        String query = buildDeleteBySongName();
+        deleteQueryBySongNameAndAlbumID = SessionManagerSQLite.getPreparedStatement(query);
+        deleteQueryByAlbumID.setInt(1, albumID);
+        deleteQueryByAlbumID.setString(2, songName);
+        deleteQueryBySongNameAndAlbumID.executeUpdate();
         return false;
     }
 
-    public void deleteByAlbumId(int albumId) throws SQLException {
-        deleteQuery = SessionManagerSQLite.getPreparedStatement(DELETE_SONGS_BY_ALBUM_ID);
-        deleteQuery.setInt(1, albumId);
-        deleteQuery.executeUpdate();
+    /**
+     * DELETE FROM songs WHERE songs.album = ? AND songs.title = ?
+     */
+    private String buildDeleteBySongName() {
+        QueryBuilder qb = new QueryBuilder();
+        qb.deleteFrom(TABLE_SONGS).specifyFirstCondition(TABLE_SONGS, COLUMN_SONGS_ALBUM)
+                .addANDCondition(TABLE_SONGS, COLUMN_SONGS_TITLE);
+        return qb.toString();
     }
 
+    public void deleteByAlbumId(int albumId) throws SQLException {
+        String query = buildDeleteByAlbumID();
+        deleteQueryByAlbumID = SessionManagerSQLite.getPreparedStatement(query);
+        deleteQueryByAlbumID.setInt(1, albumId);
+        deleteQueryByAlbumID.executeUpdate();
+    }
 
-    /*TODO ISSUE: IT IS AN INFINITE CIRCLE AS MY OBJECTS CONTAIN OTHER OBJECTS, I.E. ARTIST -> ALBUM, ALBUM -> ARTIST, SONGLIST
-    SONG -> ARTIST, ALBUM (AND THEY SHOULD HAVE OTHER OBJECTS AGAIN) It means that they are refereeing to themselves. It is possible to have Objects
-    but without Lists inside
-    */
+    /**
+     * DELETE FROM songs WHERE songs.album = "?"
+     */
+    private String buildDeleteByAlbumID() {
+        QueryBuilder qb = new QueryBuilder();
+        qb.deleteFrom(TABLE_SONGS).specifyFirstCondition(TABLE_SONGS, COLUMN_SONGS_ALBUM);
+        return qb.toString();
+    }
+
     private List<Song> resultSetToSong(ResultSet rs) throws SQLException {
         List<Song> listToReturn = new ArrayList<>();
         while (rs.next()) {
@@ -157,38 +173,56 @@ public class SongRepositorySQL implements SongRepository {
     }
 
 
-    private static final String QUERY_BY_SONG_NAME = "SELECT " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", "
-            + MetaData.TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", "
-            + TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME +
-            " FROM " + TABLE_SONGS + " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID
-            + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " + TABLE_ARTISTS + "." + COLUMN_ALBUMS_ID
-            + " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = \"";
-
-    private static final String TABLE_ARTIST_SONG_VIEW = "artist_list3";
-
-    private static final String CREATE_ARTIST_FOR_SONG_VIEW = "CREATE VIEW IF NOT EXISTS " +
-            TABLE_ARTIST_SONG_VIEW + " AS SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " AS Artist, " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + " AS " + COLUMN_SONGS_ALBUM + ", " +
-            TABLE_SONGS + "." + COLUMN_SONGS_TRACK + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE +
-            " FROM " + TABLE_SONGS +
-            " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_SONGS +
-            "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID +
-            " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
-            " = " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID +
-            " ORDER BY " +
-            TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " +
-            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " +
-            TABLE_SONGS + "." + COLUMN_SONGS_TRACK;
-
-    private static final String QUERY_VIEW_ARTISTS_LIST = "SELECT " + COLUMN_ARTISTS_NAME + ", " + COLUMN_SONGS_ALBUM + ", " + COLUMN_SONGS_TRACK
-            + " FROM " + TABLE_ARTIST_SONG_VIEW + " WHERE " + COLUMN_SONGS_TITLE + "= \"";
-
-    private static final String QUERY_VIEW_ARTISTS_LIST_PREP = "SELECT " + COLUMN_ARTISTS_NAME + ", " + COLUMN_SONGS_ALBUM + ", " + COLUMN_SONGS_TRACK
-            + " FROM " + TABLE_ARTIST_SONG_VIEW + " WHERE " + COLUMN_SONGS_TITLE + "= ?";
-
-    private static final String QUERY_SONG = " SELECT " + COLUMN_SONGS_ID + " FROM " + TABLE_SONGS
-            + " WHERE " + COLUMN_SONGS_ALBUM + " = ?  AND " + COLUMN_SONGS_TITLE + " = ?";
-
+//    /**
+//     * SELECT artists._id , artists.name, albums._id , albums.name, songs._id, songs.title, songs.track
+//     * FROM artists INNER JOIN albums ON albums.artist = artists._id
+//     * INNER JOIN songs ON songs.album = albums._id
+//     */
+//
+//    private static final String QUERY_BODY = "SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + ", "
+//            + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + ", " +
+//            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " +
+//            TABLE_SONGS + "." + COLUMN_SONGS_ID + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", " +
+//            TABLE_SONGS + "." + COLUMN_SONGS_TRACK + " FROM " + TABLE_ARTISTS +
+//            " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID + " = " +
+//            TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
+//            " INNER JOIN " + TABLE_SONGS + " ON " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID;
+//
+//    private static final String INSERT_SONG = " INSERT INTO " + TABLE_SONGS +
+//            " (" + COLUMN_SONGS_TRACK + ", " + COLUMN_SONGS_TITLE + ", " + COLUMN_SONGS_ALBUM + ") VALUES(?,?,?)";
+//
+//    private static final String QUERY_BY_SONG_NAME = "SELECT " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE + ", "
+//            + MetaData.TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", "
+//            + TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME +
+//            " FROM " + TABLE_SONGS + " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_SONGS + "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ARTISTS_ID
+//            + " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST + " = " + TABLE_ARTISTS + "." + COLUMN_ALBUMS_ID
+//            + " WHERE " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = \"";
+//
+//    private static final String TABLE_ARTIST_SONG_VIEW = "artist_list3";
+//
+//    private static final String CREATE_ARTIST_FOR_SONG_VIEW = "CREATE VIEW IF NOT EXISTS " +
+//            TABLE_ARTIST_SONG_VIEW + " AS SELECT " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " AS Artist, " +
+//            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + " AS " + COLUMN_SONGS_ALBUM + ", " +
+//            TABLE_SONGS + "." + COLUMN_SONGS_TRACK + ", " + TABLE_SONGS + "." + COLUMN_SONGS_TITLE +
+//            " FROM " + TABLE_SONGS +
+//            " INNER JOIN " + TABLE_ALBUMS + " ON " + TABLE_SONGS +
+//            "." + COLUMN_SONGS_ALBUM + " = " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID +
+//            " INNER JOIN " + TABLE_ARTISTS + " ON " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ARTIST +
+//            " = " + TABLE_ARTISTS + "." + COLUMN_ARTISTS_ID +
+//            " ORDER BY " +
+//            TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + ", " +
+//            TABLE_ALBUMS + "." + COLUMN_ALBUMS_NAME + ", " +
+//            TABLE_SONGS + "." + COLUMN_SONGS_TRACK;
+//
+//    private static final String QUERY_VIEW_ARTISTS_LIST = "SELECT " + COLUMN_ARTISTS_NAME + ", " + COLUMN_SONGS_ALBUM + ", " + COLUMN_SONGS_TRACK
+//            + " FROM " + TABLE_ARTIST_SONG_VIEW + " WHERE " + COLUMN_SONGS_TITLE + "= \"";
+//
+//    private static final String QUERY_VIEW_ARTISTS_LIST_PREP = "SELECT " + COLUMN_ARTISTS_NAME + ", " + COLUMN_SONGS_ALBUM + ", " + COLUMN_SONGS_TRACK
+//            + " FROM " + TABLE_ARTIST_SONG_VIEW + " WHERE " + COLUMN_SONGS_TITLE + "= ?";
+//
+//    private static final String QUERY_SONG = " SELECT " + COLUMN_SONGS_ID + " FROM " + TABLE_SONGS
+//            + " WHERE " + COLUMN_SONGS_ALBUM + " = ?  AND " + COLUMN_SONGS_TITLE + " = ?";
+//
 
 //    static String getQueryArtistsTable(int sorting) {
 //        StringBuilder sb = new StringBuilder("SELECT * FROM ");
