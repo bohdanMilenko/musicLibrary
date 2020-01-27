@@ -5,7 +5,6 @@ import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
 import com.musicLib.exceptions.ArtistNotFoundException;
-import com.musicLib.exceptions.DuplicatedRecordException;
 import com.musicLib.exceptions.QueryException;
 
 import java.sql.PreparedStatement;
@@ -29,8 +28,6 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     private static final String QUERY_ALBUMS = "SELECT " + COLUMN_ALBUMS_ID + " FROM " + TABLE_ALBUMS
             + " WHERE " + COLUMN_ALBUMS_NAME + "= ?";
 
-    private static final String INSERT_ALBUM = " INSERT INTO " + TABLE_ALBUMS +
-            " (" + COLUMN_ALBUMS_NAME + ", " + COLUMN_ALBUMS_ARTIST + ") VALUES(?,?)";
 
     private static final String QUERY_ALBUMS_BY_ARTIST_NAME = "SELECT " + COLUMN_ALBUMS_ID + ", " + COLUMN_ALBUMS_NAME
             + ", " + COLUMN_ALBUMS_ARTIST +
@@ -50,63 +47,59 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     public static final String DELETE_ALBUM_BY_ID = "DELETE FROM " + TABLE_ALBUMS +
             " WHERE " + TABLE_ALBUMS + "." + COLUMN_ALBUMS_ID + " =?";
 
-    //TODO INSTEAD OF THROWING AN ERROR, I NEED TO CHECK IF THIS ARTIST AND ALBUM EXIST. IF THEY DON'T I NEED TO CREATE THEM. conn.setAutoCommit(false)
     @Override
-    public boolean add(Album album) throws QueryException, SQLException {
-        List<Artist> foundArtistList = artistRepository.queryArtist(album.getArtist().getName());
-        foundArtistList.forEach(v -> System.out.println(v.getName()));
-        if (foundArtistList.size() == 1) {
-            insertAlbum = SessionManagerSQLite.getPreparedStatement(INSERT_ALBUM);
-            queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
-            queryAlbums.setString(1, album.getName());
-            ResultSet rs = queryAlbums.executeQuery();
-            if (rs.next()) {
-                throw new DuplicatedRecordException("Such album already exists");
-            }
-            Artist artist = foundArtistList.get(0);
-            insertAlbum.setString(1, album.getName());
-            insertAlbum.setInt(2, artist.getId());
-            int affectedRows = insertAlbum.executeUpdate();
-            if (affectedRows != 1) {
-                throw new SQLException("Problem with inserting Album");
-            }
-            ResultSet generatedKeys = insertAlbum.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int albumKey = generatedKeys.getInt(1);
-                album.setId(albumKey);
-                return true;
-            } else {
-                throw new SQLException("Problem retrieving an _id (album)");
-            }
-
-        } else if (foundArtistList.size() > 1) {
-            throw new DuplicatedRecordException("More than one artist with identical name");
-        } else {
-            throw new ArtistNotFoundException("No Artist found. Cannot insert album without artist");
-        }
-
+    public boolean add(Album album) throws SQLException {
+        String query = buildInsertQuery();
+        insertAlbum = SessionManagerSQLite.getPreparedStatement(query);
+        insertAlbum.setString(1, album.getName());
+        insertAlbum.setInt(2, album.getArtist().getId());
+        insertAlbum.executeUpdate();
+        return true;
     }
 
-    @Override
-    public List<Album> queryAlbumsByArtistName(String artistName) throws SQLException {
-        List<Album> albumsToReturn;
-        List<Artist> artists = artistRepository.queryArtist(artistName);
-        if (artists.size() == 1) {
-            Artist foundArtist = artists.get(0);
-            int artistId = foundArtist.getId();
-            queryByArtistName = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS_BY_ARTIST_NAME);
-            queryByArtistName.setInt(1, artistId);
-            ResultSet rs = queryByArtistName.executeQuery();
-            albumsToReturn = resultSetToAlbum(rs, artistName);
-            for (Album album : albumsToReturn) {
-                List<Song> songsList = songRepositorySQL.queryByAlbumId(album.getId());
-                album.setSongs(songsList);
-            }
-            return albumsToReturn;
-        } else {
-            return null;
-        }
+    /**
+     * INSERT INTO albums (album,artist) = VALUES (?,?)
+     */
+    private String buildInsertQuery() {
+        QueryBuilder qb = new QueryBuilder();
+        qb.insertTo(TABLE_ALBUMS).insertSpecifyColumns(COLUMN_ALBUMS_NAME, COLUMN_ALBUMS_ARTIST);
+        return qb.toString();
     }
+
+
+    @Override
+    public List<Album> queryAlbumsByArtistName(int artistID) throws SQLException {
+        String query = buildQueryByArtistName();
+        System.out.println(query);
+        queryByArtistName = SessionManagerSQLite.getPreparedStatement(query);
+       // queryByArtistName = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS_BY_ARTIST_NAME);
+        queryByArtistName.setInt(1, artistID);
+        ResultSet rs = queryByArtistName.executeQuery();
+        List<Album> albums = resultSetToAlbum(rs);
+        return albums;
+    }
+
+    /**
+     * SELECT artists._id , artists.name, albums._id , albums.name
+     * FROM artists INNER JOIN albums ON albums.artist = artists._id
+     * WHERE artists.name = "?"
+     */
+
+    private String buildQueryByArtistName() {
+        QueryBuilder generalQuery = buildGeneralQueryNoConditions();
+        generalQuery.specifyFirstCondition(TABLE_ARTISTS, COLUMN_ARTISTS_NAME);
+        return generalQuery.toString();
+    }
+
+    private QueryBuilder buildGeneralQueryNoConditions() {
+        QueryBuilder qb = new QueryBuilder();
+        qb.startQuery(TABLE_ARTISTS, COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS, COLUMN_ARTISTS_NAME)
+                .addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_ID).addSelection(TABLE_ALBUMS, COLUMN_ALBUMS_NAME)
+                .queryFrom(TABLE_ARTISTS)
+                .innerJoinOn(TABLE_ALBUMS, COLUMN_ALBUMS_ARTIST, TABLE_ARTISTS, COLUMN_ARTISTS_ID)
+        return qb;
+    }
+
 
     @Override
     public boolean delete(String albumName, String artistName) throws SQLException, QueryException {
@@ -192,28 +185,28 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     }
 
 
-    int insertAlbum(String name, int artistId) throws SQLException {
-        insertAlbum = SessionManagerSQLite.getPreparedStatement(INSERT_ALBUM);
-        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
-        queryAlbums.setString(1, name);
-        ResultSet rs = queryAlbums.executeQuery();
-        if (rs.next()) {
-            System.out.println("Album already exists in db: id is " + rs.getInt(1));
-            return rs.getInt(1);
-        } else {
-
-            insertAlbum.setString(1, name);
-            insertAlbum.setInt(2, artistId);
-            int affectedRows = insertAlbum.executeUpdate();
-            if (affectedRows != 1) {
-                throw new SQLException("Problem with inserting Album");
-            }
-            ResultSet generatedKeys = insertAlbum.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                return generatedKeys.getInt(1);
-            } else {
-                throw new SQLException("Problem retrieving an _id (album)");
-            }
-        }
-    }
+//    int insertAlbum(String name, int artistId) throws SQLException {
+//        insertAlbum = SessionManagerSQLite.getPreparedStatement(INSERT_ALBUM);
+//        queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_ALBUMS);
+//        queryAlbums.setString(1, name);
+//        ResultSet rs = queryAlbums.executeQuery();
+//        if (rs.next()) {
+//            System.out.println("Album already exists in db: id is " + rs.getInt(1));
+//            return rs.getInt(1);
+//        } else {
+//
+//            insertAlbum.setString(1, name);
+//            insertAlbum.setInt(2, artistId);
+//            int affectedRows = insertAlbum.executeUpdate();
+//            if (affectedRows != 1) {
+//                throw new SQLException("Problem with inserting Album");
+//            }
+//            ResultSet generatedKeys = insertAlbum.getGeneratedKeys();
+//            if (generatedKeys.next()) {
+//                return generatedKeys.getInt(1);
+//            } else {
+//                throw new SQLException("Problem retrieving an _id (album)");
+//            }
+//        }
+//    }
 }
