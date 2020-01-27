@@ -124,11 +124,12 @@ public class SongRepositorySQL implements SongRepository {
         return qb.toString();
     }
 
-    public void deleteByAlbumId(int albumId) throws SQLException {
+    public boolean deleteByAlbumId(int albumId) throws SQLException {
         String query = buildDeleteByAlbumID();
         deleteQueryByAlbumID = SessionManagerSQLite.getPreparedStatement(query);
         deleteQueryByAlbumID.setInt(1, albumId);
         deleteQueryByAlbumID.executeUpdate();
+        return true;
     }
 
     /**

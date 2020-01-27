@@ -14,4 +14,6 @@ public interface SongRepository {
     boolean delete(String songName, int albumID) throws SQLException;
 
     List<Song> queryByAlbumId(int albumId) throws SQLException;
+
+    boolean deleteByAlbumId(int albumId) throws SQLException;
 }

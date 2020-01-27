@@ -87,7 +87,19 @@ public class SongServiceImpl implements SongService {
        }catch (SQLException e){
            throw new QueryException("Cannot delete song from DB", e);
        }
-
     }
+
+    public boolean delete(String artistName, String albumName) throws QueryException {
+        try {
+            int artistID = recordValidator.getArtistID(artistName);
+            int albumID = recordValidator.getAlbumID(albumName);
+            return songRepo.deleteByAlbumId(albumID);
+        }catch (SQLException e){
+            throw new QueryException("Cannot delete song from DB", e);
+        }
+    }
+
+
+
 
 }
