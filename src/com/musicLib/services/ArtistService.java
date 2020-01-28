@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ArtistService {
 
-    public boolean add(Artist artist);
+    public boolean add(Artist artist) throws QueryException, ServiceException;
 
     public List<Artist> getAll() throws QueryException, ServiceException;
 

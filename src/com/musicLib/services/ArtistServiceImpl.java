@@ -22,8 +22,16 @@ public class ArtistServiceImpl implements ArtistService {
     public ArtistServiceImpl() {
     }
 
-    public boolean add(Artist artist) {
-        return artistRepo.add(artist);
+    public boolean add(Artist artist) throws ServiceException {
+        List<Artist> artists = artistRepo.queryArtist(artist.getName());
+        if(artists.size()>0){
+            throw new DuplicatedRecordException("Such artist already exists!");
+        }
+        try {
+            return artistRepo.add(artist);
+        }catch (SQLException e){
+            throw new ServiceException("Cannot insert artist to db",e);
+        }
     }
 
     public List<Artist> getAll() throws ServiceException {
