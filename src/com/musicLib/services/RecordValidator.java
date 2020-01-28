@@ -11,6 +11,14 @@ import java.util.List;
 
 public class RecordValidator {
 
+    //Idea to ask: pass here 3 references with repositories. When artist is queried, it will be returned as artist with no album list. from
+    //Artist service, i call method from recordValidator.UpdateArtistWithAlbums and Record Validator uses album repo to get list of albums.
+    //They are added to artist, but we need also Songs for album. Record validator then call method
+    // for each album: recordValidator.UpdateAlbumWithSongs and then albums are updated and Artist is returned.
+
+    //Can I work with Repositories in this class instead of Services?
+
+
     private ArtistService artistService;
     private AlbumService albumService;
     private SongService songService;
@@ -42,10 +50,10 @@ public class RecordValidator {
     }
 
     public int getAlbumID(Album album) throws QueryException {
-       return getAlbumID(album.getName());
+        return getAlbumID(album.getName());
     }
 
-    public int getAlbumID(String  album) throws QueryException {
+    public int getAlbumID(String album) throws QueryException {
         List<Album> albums = albumService.getByName(album);
         if (albums.size() == 1) {
             Album foundAlbums = albums.get(0);
@@ -56,8 +64,4 @@ public class RecordValidator {
             throw new AlbumNotFoundException("There is no such album");
         }
     }
-
-//    public boolean ensureDependantSongsDeleted(int albumID) throws QueryException{
-//
-//    }
 }
