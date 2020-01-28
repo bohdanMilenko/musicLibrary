@@ -27,6 +27,11 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder startQueryAll() {
+        query.append(selectStart).append(" * ");
+        return this;
+    }
+
     public QueryBuilder addSelection(String tableName, String columnName) {
         query.append(", ").append(tableName).append(".").append(columnName);
         return this;
