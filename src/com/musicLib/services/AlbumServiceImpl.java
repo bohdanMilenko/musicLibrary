@@ -60,7 +60,7 @@ public class AlbumServiceImpl implements AlbumService {
     public List<Album> getByArtistName(String artistName) throws ServiceException {
         int artistID = getArtistIDByArtistName(artistName);
         try {
-            return albumRepo.queryAlbumsByArtistName(artistID);
+            return albumRepo.queryAlbumsByArtistID(artistID);
         } catch (SQLException e) {
             throw new QueryException("Unable to query albums by artist name", e);
         }
@@ -76,7 +76,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     public List<Album> getByName(String albumName)throws QueryException {
         try {
-            return albumRepo.queryByAlbumName(albumName);
+            return albumRepo.queryByName(albumName);
         } catch (SQLException e) {
             throw new QueryException("Issue with db connectivity", e);
         }
