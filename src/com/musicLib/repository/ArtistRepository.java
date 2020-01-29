@@ -11,9 +11,9 @@ public interface ArtistRepository {
 
     boolean add(Artist artist) throws SQLException;
 
-    List<Artist> queryAllArtists() throws SQLException;
+    List<Artist> queryAll() throws SQLException;
 
-    List<Artist> queryArtist(String artistName);
+    List<Artist> queryArtist(String artistName) throws SQLException;
 
     boolean delete(String artistName) throws SQLException, ArtistNotFoundException, DuplicatedRecordException;
 

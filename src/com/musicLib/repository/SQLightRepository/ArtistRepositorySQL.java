@@ -3,11 +3,10 @@ package com.musicLib.repository.SQLightRepository;
 import com.musicLib.SQLUtil.SessionManagerSQLite;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
-import com.musicLib.repository.ArtistRepository;
 import com.musicLib.exceptions.ArtistNotFoundException;
 import com.musicLib.exceptions.DuplicatedRecordException;
+import com.musicLib.repository.ArtistRepository;
 
-import javax.management.Query;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +28,14 @@ public class ArtistRepositorySQL implements ArtistRepository {
     private static final String QUERY_ALL_ARTISTS = "SELECT " + COLUMN_ARTISTS_ID + "," + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS;
 
 
-
     private static final String DELETE_ARTIST = "DELETE FROM " + TABLE_ARTISTS + " WHERE "
             + TABLE_ARTISTS + "." + COLUMN_ARTISTS_NAME + " = ?";
 
     @Override
     public boolean add(Artist artist) throws SQLException {
-       String query = buildInsertQuery();
+        String query = buildInsertQuery();
         insertArtist = SessionManagerSQLite.getPreparedStatement(query);
-        insertArtist.setString(1,artist.getName());
+        insertArtist.setString(1, artist.getName());
         insertArtist.executeUpdate();
         return false;
     }
@@ -53,7 +51,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
 
 
     @Override
-    public List<Artist> queryAllArtists() throws SQLException {
+    public List<Artist> queryAll() throws SQLException {
         String query = buildQueryAll();
         ResultSet resultSet = getResultSet(query);
         List<Artist> artistsToReturn = resultSetToArtist(resultSet);
@@ -61,7 +59,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
         //TODO MOVE THIS TO RECORDVALIDATOR CLASS ON SERVICE LEVEL
         if (artistsToReturn != null) {
             for (Artist artist : artistsToReturn) {
-                albums = albumRepositorySQL.queryAlbumsByArtistID(artist.getName());
+                albums = albumRepositorySQL.queryAlbumsByArtistID(artist.getId());
                 artist.setAlbums(albums);
             }
         }
@@ -72,37 +70,32 @@ public class ArtistRepositorySQL implements ArtistRepository {
     /**
      * SELECT * FROM artist
      */
-    private String buildQueryAll(){
+    private String buildQueryAll() {
         QueryBuilder qb = new QueryBuilder();
         qb.startQueryAll().queryFrom(TABLE_ARTISTS);
         return qb.toString();
     }
 
     @Override
-    public List<Artist> queryArtist(String artistName) {
+    public List<Artist> queryArtist(String artistName) throws SQLException {
         String query = buildQueryByName();
         //PreparedStatement queryArtist = SessionManagerSQLite.getPreparedStatement(QUERY_ARTIST_BY_NAME);
         System.out.println(query);
         PreparedStatement queryArtist = SessionManagerSQLite.getPreparedStatement(query);
         List<Artist> returnList = new ArrayList<>();
-        try {
-            queryArtist.setString(1, artistName);
-            ResultSet rs = queryArtist.executeQuery();
-            returnList = resultSetToArtist(rs);
-            return returnList;
-        } catch (SQLException e) {
-            System.out.println(e + "\nCannot query by Artist Name");
-            return null;
-        }
+        queryArtist.setString(1, artistName);
+        ResultSet rs = queryArtist.executeQuery();
+        returnList = resultSetToArtist(rs);
+        return returnList;
     }
 
     /**
      * SELECT artists._id, artists.name FROM artists WHERE artists.name = ?
      */
-    private String buildQueryByName(){
+    private String buildQueryByName() {
         QueryBuilder qb = new QueryBuilder();
-        qb.startQuery(TABLE_ARTISTS, COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS,COLUMN_ARTISTS_NAME)
-                .queryFrom(TABLE_ARTISTS).specifyFirstCondition(TABLE_ARTISTS,COLUMN_ARTISTS_NAME);
+        qb.startQuery(TABLE_ARTISTS, COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS, COLUMN_ARTISTS_NAME)
+                .queryFrom(TABLE_ARTISTS).specifyFirstCondition(TABLE_ARTISTS, COLUMN_ARTISTS_NAME);
         return qb.toString();
     }
 
@@ -146,16 +139,16 @@ public class ArtistRepositorySQL implements ArtistRepository {
         }
     }
 
-    private boolean deleteArtist(String artistName) throws SQLException{
+    private boolean deleteArtist(String artistName) throws SQLException {
         deleteQuery = SessionManagerSQLite.getPreparedStatement(DELETE_ARTIST);
-        deleteQuery.setString(1,artistName);
+        deleteQuery.setString(1, artistName);
         deleteQuery.executeUpdate();
         return true;
     }
 
     public Artist queryById(int id) throws SQLException {
         String query = buildQueryByID();
-        queryByArtistID= SessionManagerSQLite.getPreparedStatement(query);
+        queryByArtistID = SessionManagerSQLite.getPreparedStatement(query);
         queryByArtistID.setInt(1, id);
         ResultSet rs = queryByArtistID.executeQuery();
         List<Artist> resultOfQuery = resultSetToArtist(rs);
@@ -169,10 +162,10 @@ public class ArtistRepositorySQL implements ArtistRepository {
     /**
      * SELECT artists._id, artists.name FROM artists WHERE artists._id = ?
      */
-    private String buildQueryByID(){
+    private String buildQueryByID() {
         QueryBuilder qb = new QueryBuilder();
-        qb.startQuery(TABLE_ARTISTS,COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS,COLUMN_ARTISTS_NAME)
-                .queryFrom(TABLE_ARTISTS).specifyFirstCondition(TABLE_ARTISTS,COLUMN_ARTISTS_ID);
+        qb.startQuery(TABLE_ARTISTS, COLUMN_ARTISTS_ID).addSelection(TABLE_ARTISTS, COLUMN_ARTISTS_NAME)
+                .queryFrom(TABLE_ARTISTS).specifyFirstCondition(TABLE_ARTISTS, COLUMN_ARTISTS_ID);
         return qb.toString();
     }
 

@@ -20,11 +20,13 @@ public class ApplicationMain {
         AlbumRepository albumRepositorySQLite = new AlbumRepositorySQL();
         SongRepository songRepositorySQLite = new SongRepositorySQL();
 
+        RecordValidator recordValidator = new RecordValidator(artistRepositorySQLite,albumRepositorySQLite,songRepositorySQLite);
+
+        SongService songServiceSQL = new SongServiceImpl(songRepositorySQLite,recordValidator);
+        AlbumService albumServiceSQL = new AlbumServiceImpl(albumRepositorySQLite, recordValidator);
+        ArtistService artistServiceSQL = new ArtistServiceImpl(artistRepositorySQLite, recordValidator);
 
 
-        ArtistService artistServiceImpl = new ArtistServiceImpl(artistRepositorySQLite);
-        AlbumService albumServiceImpl = new AlbumServiceImpl(albumRepositorySQLite, artistServiceImpl, songRepositorySQLite);
-        SongService songServiceSQL = new SongServiceImpl(songRepositorySQLite, artistServiceImpl, albumServiceImpl);
 
         try {
             List<Song> songs = songRepositorySQLite.queryByAlbumId(5);
