@@ -10,7 +10,7 @@ public interface SongService {
 
     public boolean add(Song song) throws  ServiceException;
 
-    public List<Song> getByName(String songName) throws QueryException;
+    public List<Song> getByName(String songName) throws QueryException, ServiceException;
 
-    public boolean delete(String artistName, String albumName, String songName) throws QueryException;
+    public boolean delete(String artistName, String albumName, String songName) throws QueryException, ServiceException;
 }

@@ -14,9 +14,9 @@ public class SongServiceImpl implements SongService {
     private SongRepository songRepo;
     private RecordValidator recordValidator;
 
-    public SongServiceImpl(SongRepository songRepo, ArtistService artistService, AlbumService albumService) {
+    public SongServiceImpl(SongRepository songRepo, RecordValidator recordValidator) {
         this.songRepo = songRepo;
-        this.recordValidator = new RecordValidator(artistService, albumService);
+        this.recordValidator = recordValidator;
     }
 
     public SongServiceImpl() {
@@ -26,7 +26,7 @@ public class SongServiceImpl implements SongService {
         Artist artistFromSong = song.getArtist();
         Album albumFromSong = song.getAlbum();
         int artistId = getArtistIDFromDB(artistFromSong);
-        int albumId = getAlbumIDfROMdb(albumFromSong);
+        int albumId = getAlbumIDFromDB(albumFromSong);
         Song updatedSong = updateArtistWithID(song, artistId);
         updatedSong = updateWithAlbumID(updatedSong, albumId);
         try {
@@ -47,7 +47,7 @@ public class SongServiceImpl implements SongService {
 
     }
 
-    private int getAlbumIDfROMdb(Album album) throws ServiceException {
+    private int getAlbumIDFromDB(Album album) throws ServiceException {
         int idToReturn;
         try {
             idToReturn = recordValidator.getAlbumID(album);
@@ -72,30 +72,30 @@ public class SongServiceImpl implements SongService {
     }
 
 
-    public List<Song> getByName(String songName) throws QueryException {
+    public List<Song> getByName(String songName) throws ServiceException {
         try {
             return songRepo.queryByName(songName);
         } catch (SQLException e) {
-            throw new QueryException("Cannot find song by it's name", e);
+            throw new ServiceException("Cannot find song by it's name", e);
         }
     }
 
-    public boolean delete(String artistName, String albumName, String songName) throws QueryException {
+    public boolean delete(String artistName, String albumName, String songName) throws ServiceException {
        try {
            int albumID = recordValidator.getAlbumID(albumName);
            return songRepo.delete(songName, albumID);
        }catch (SQLException e){
-           throw new QueryException("Cannot delete song from DB", e);
+           throw new ServiceException("Cannot delete song from DB", e);
        }
     }
 
-    public boolean delete(String artistName, String albumName) throws QueryException {
+    public boolean delete(String artistName, String albumName) throws ServiceException {
         try {
             int artistID = recordValidator.getArtistID(artistName);
             int albumID = recordValidator.getAlbumID(albumName);
             return songRepo.deleteByAlbumId(albumID);
         }catch (SQLException e){
-            throw new QueryException("Cannot delete song from DB", e);
+            throw new ServiceException("Cannot delete song from DB", e);
         }
     }
 

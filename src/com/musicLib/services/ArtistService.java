@@ -15,6 +15,6 @@ public interface ArtistService {
 
     public List<Artist> getByName(String artist);
 
-    public boolean delete(String artistName) throws SQLException, QueryException;
+    public boolean delete(String artistName) throws SQLException, QueryException, ServiceException;
 
 }

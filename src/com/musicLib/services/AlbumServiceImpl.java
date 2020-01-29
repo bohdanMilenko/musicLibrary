@@ -5,7 +5,6 @@ import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.QueryException;
 import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.AlbumRepository;
-import com.musicLib.repository.SongRepository;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,16 +12,11 @@ import java.util.List;
 public class AlbumServiceImpl implements AlbumService {
 
     private AlbumRepository albumRepo;
-    private ArtistService artistService;
-    //TODO HOW TO ACCESS SONGSERVICE AND DELETE DEPENDANT SONGS ON ALBUM, FOR NOW DID IT THROUGH THE SONGREPO;
-    private SongRepository songRepository;
     private RecordValidator recordValidator;
 
-    public AlbumServiceImpl(AlbumRepository albumRepo, ArtistService artistService, SongRepository songRepository) {
+    public AlbumServiceImpl(AlbumRepository albumRepo, RecordValidator recordValidator) {
         this.albumRepo = albumRepo;
-        this.artistService = artistService;
-        this.songRepository = songRepository;
-        this.recordValidator = new RecordValidator(artistService);
+        this.recordValidator = recordValidator;
     }
 
     public AlbumServiceImpl() {
@@ -30,10 +24,10 @@ public class AlbumServiceImpl implements AlbumService {
 
     public boolean add(Album album) throws ServiceException {
         int artistID = getArtistID(album);
-        album = updateWithArtistID(album,artistID);
+        album = updateWithArtistID(album, artistID);
         try {
             return albumRepo.add(album);
-        }  catch (SQLException e) {
+        } catch (SQLException e) {
             throw new ServiceException("Issue with adding album to db", e);
         }
     }
@@ -45,12 +39,12 @@ public class AlbumServiceImpl implements AlbumService {
     private int getArtistID(String album) throws ServiceException {
         try {
             return recordValidator.getAlbumID(album);
-        }catch (QueryException e){
+        } catch (QueryException e) {
             throw new ServiceException("Cannot get artist ID", e);
         }
     }
 
-    private Album updateWithArtistID(Album album, int artistID){
+    private Album updateWithArtistID(Album album, int artistID) {
         Artist artist = album.getArtist();
         artist.setId(artistID);
         album.setArtist(artist);
@@ -62,23 +56,23 @@ public class AlbumServiceImpl implements AlbumService {
         try {
             return albumRepo.queryAlbumsByArtistID(artistID);
         } catch (SQLException e) {
-            throw new QueryException("Unable to query albums by artist name", e);
+            throw new ServiceException("Unable to query albums by artist name", e);
         }
     }
 
-    private int getArtistIDByArtistName(String artistName) throws ServiceException{
-        try{
+    private int getArtistIDByArtistName(String artistName) throws ServiceException {
+        try {
             return recordValidator.getArtistID(artistName);
-        }catch (QueryException e){
+        } catch (QueryException e) {
             throw new ServiceException("Cannot get artist ID by artist name", e);
         }
     }
 
-    public List<Album> getByName(String albumName)throws QueryException {
+    public List<Album> getByName(String albumName) throws ServiceException {
         try {
             return albumRepo.queryByName(albumName);
         } catch (SQLException e) {
-            throw new QueryException("Issue with db connectivity", e);
+            throw new ServiceException("Issue with db connectivity", e);
         }
     }
 

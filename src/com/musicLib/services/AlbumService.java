@@ -12,7 +12,7 @@ public interface AlbumService {
 
     public List<Album> getByArtistName(String artistName) throws QueryException, ServiceException;
 
-    public List<Album> getByName(String albumName) throws QueryException;
+    public List<Album> getByName(String albumName) throws QueryException, ServiceException;
 
     public boolean delete(String artistName, String albumName) throws QueryException, ServiceException;
 }
