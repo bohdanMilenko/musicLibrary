@@ -23,10 +23,6 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     public boolean add(Artist artist) throws ServiceException {
-        List<Artist> artists = artistRepo.queryArtist(artist.getName());
-        if (artists.size() > 0) {
-            throw new DuplicatedRecordException("Such artist already exists!");
-        }
         try {
             return artistRepo.add(artist);
         } catch (SQLException e) {
@@ -43,12 +39,7 @@ public class ArtistServiceImpl implements ArtistService {
             throw new ServiceException("Issue with getting all Artists", e);
         }
     }
-
-    private List<Artist> addDependantAlbums(List<Artist> artists) throws ServiceException {
-        artists = recordValidator.addAlbumsToArtist(artists);
-        return artists;
-    }
-
+    //TODO PASS AN OBJECT NOT PRIMITIVE
     public List<Artist> getByName(String artist) throws ServiceException {
         try {
             List<Artist> artists = artistRepo.queryArtist(artist);
@@ -57,6 +48,11 @@ public class ArtistServiceImpl implements ArtistService {
         } catch (SQLException e) {
             throw new ServiceException("Issue with getting all Artists", e);
         }
+    }
+
+    private List<Artist> addDependantAlbums(List<Artist> artists) throws ServiceException {
+        artists = recordValidator.addAlbumsToArtist(artists);
+        return artists;
     }
 
     public boolean delete(String artistName) throws ServiceException {

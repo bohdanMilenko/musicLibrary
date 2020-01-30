@@ -13,7 +13,7 @@ public interface ArtistService {
 
     public List<Artist> getAll() throws QueryException, ServiceException;
 
-    public List<Artist> getByName(String artist);
+    public List<Artist> getByName(String artist) throws ServiceException;
 
     public boolean delete(String artistName) throws SQLException, QueryException, ServiceException;
 

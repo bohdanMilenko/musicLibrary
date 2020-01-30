@@ -73,7 +73,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
 
 
     public List<Album> queryByArtistAndAlbumName(String artistName, String albumName) throws SQLException {
-        List<Album> albumToReturn = new ArrayList<>();
+        List<Album> albumToReturn;
         String query = buildQueryByArtistAndAlbumNames();
         queryByArtistAndAlbumName = SessionManagerSQLite.getPreparedStatement(query);
         ResultSet rs = queryByArtistAndAlbumName.executeQuery();

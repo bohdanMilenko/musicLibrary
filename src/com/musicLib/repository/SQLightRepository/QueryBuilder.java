@@ -4,6 +4,7 @@ import static com.musicLib.repository.SQLightRepository.MetaData.*;
 
 public class QueryBuilder {
 
+    //TODO CAPITAL LETTERS RENAME
     private static final String selectStart = "SELECT ";
     private static final String addFrom = " FROM ";
     private static final String innerJoin = " INNER JOIN ";
@@ -12,10 +13,10 @@ public class QueryBuilder {
     private static final String andCondition = " AND ";
     private static final String orCondition = " OR ";
 
-
     private static final String deleteFrom = "DELETE FROM ";
     private static final String insertInto = "INSERT INTO ";
 
+    //TODO UTILS
     private StringBuilder query = new StringBuilder();
 
     public QueryBuilder() {
@@ -83,7 +84,7 @@ public class QueryBuilder {
     }
 
     public QueryBuilder insertSpecifyColumns(String columnName1, String columnName2, String columnName3) {
-        query.append(" (").append(columnName1).append(",").append(columnName2).append(",").append(columnName3).append(") VALUES (?,?)");
+        query.append(" (").append(columnName1).append(",").append(columnName2).append(",").append(columnName3).append(") VALUES (?,?,?)");
         return this;
     }
 

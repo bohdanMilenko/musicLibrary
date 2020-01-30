@@ -76,6 +76,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
         return qb.toString();
     }
 
+    //TODO RENAME
     @Override
     public List<Artist> queryArtist(String artistName) throws SQLException {
         String query = buildQueryByName();
