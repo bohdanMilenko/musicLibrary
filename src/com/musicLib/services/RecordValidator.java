@@ -4,9 +4,6 @@ import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
 import com.musicLib.exceptions.*;
-import com.musicLib.repository.AlbumRepository;
-import com.musicLib.repository.ArtistRepository;
-import com.musicLib.repository.SongRepository;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,31 +17,28 @@ public class RecordValidator {
 
     //Can I work with Repositories in this class instead of Services?
 
-    private ArtistRepository artistRepository;
-    private AlbumRepository albumRepository;
-    private SongRepository songRepository;
+    private ArtistService artistService;
+    private AlbumService albumService;
+    private SongService songService;
 
-    public RecordValidator(ArtistRepository artistRepository, AlbumRepository albumRepository, SongRepository songRepository) {
-        this.artistRepository = artistRepository;
-        this.albumRepository = albumRepository;
-        this.songRepository = songRepository;
+    public RecordValidator(ArtistService artistService, AlbumService albumService, SongService songService) {
+        this.artistService = artistService;
+        this.albumService = albumService;
+        this.songService = songService;
     }
 
-    int getArtistID(Artist artist) throws QueryException {
-        return getArtistID(artist.getName());
-    }
-
-    int getArtistID(String artistName) throws QueryException {
-        List<Artist> artists = artistRepository.queryArtist(artistName);
+    boolean validateArtist(Artist artist) throws ServiceException {
+        List<Artist> artists = artistService.getByName(artist.getName());
         if (artists.size() == 1) {
             Artist foundArtist = artists.get(0);
-            return foundArtist.getId();
+            return true;
         } else if (artists.size() > 1) {
             throw new DuplicatedRecordException("More than one artist with the same name");
         } else {
             throw new ArtistNotFoundException("There is no such artist");
         }
     }
+
 
     public int getAlbumID(Album album) throws QueryException {
             return getAlbumID(album.getName());

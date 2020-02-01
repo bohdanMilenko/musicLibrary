@@ -62,7 +62,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     private int getArtistIDByArtistName(String artistName) throws ServiceException {
         try {
-            return recordValidator.getArtistID(artistName);
+            return recordValidator.validateArtist(artistName);
         } catch (QueryException e) {
             throw new ServiceException("Cannot get artist ID by artist name", e);
         }

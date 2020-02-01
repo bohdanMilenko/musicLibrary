@@ -39,7 +39,7 @@ public class SongServiceImpl implements SongService {
     private int getArtistIDFromDB(Artist artist) throws ServiceException {
         int idToReturn;
         try {
-            idToReturn = recordValidator.getArtistID(artist);
+            idToReturn = recordValidator.validateArtist(artist);
             return idToReturn;
         } catch (QueryException e) {
             throw new ServiceException("Cannot get Artist ID", e);
@@ -91,7 +91,7 @@ public class SongServiceImpl implements SongService {
 
     public boolean delete(String artistName, String albumName) throws ServiceException {
         try {
-            int artistID = recordValidator.getArtistID(artistName);
+            int artistID = recordValidator.validateArtist(artistName);
             int albumID = recordValidator.getAlbumID(albumName);
             return songRepo.deleteByAlbumId(albumID);
         }catch (SQLException e){
