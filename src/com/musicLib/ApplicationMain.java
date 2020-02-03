@@ -20,12 +20,23 @@ public class ApplicationMain {
         AlbumRepository albumRepositorySQLite = new AlbumRepositorySQL();
         SongRepository songRepositorySQLite = new SongRepositorySQL();
 
-        RecordValidator recordValidator = new RecordValidator(artistRepositorySQLite,albumRepositorySQLite,songRepositorySQLite);
 
-        SongService songServiceSQL = new SongServiceImpl(songRepositorySQLite,recordValidator);
-        AlbumService albumServiceSQL = new AlbumServiceImpl(albumRepositorySQLite, recordValidator);
-        ArtistService artistServiceSQL = new ArtistServiceImpl(artistRepositorySQLite, recordValidator);
 
+        SongService songServiceSQL = new SongServiceImpl(songRepositorySQLite);
+        AlbumService albumServiceSQL = new AlbumServiceImpl(albumRepositorySQLite);
+        ArtistService artistServiceSQL = new ArtistServiceImpl(artistRepositorySQLite);
+
+        RecordValidator recordValidator = new RecordValidator(artistServiceSQL,albumServiceSQL,songServiceSQL);
+
+        songServiceSQL.setAlbumService(albumServiceSQL);
+        songServiceSQL.setRecordValidator(recordValidator);
+
+        artistServiceSQL.setAlbumService(albumServiceSQL);
+        artistServiceSQL.setRecordValidator(recordValidator);
+
+        albumServiceSQL.setSongService(songServiceSQL);
+        albumServiceSQL.setArtistService(artistServiceSQL);
+        albumServiceSQL.setRecordValidator(recordValidator);
 
 
         try {
@@ -74,12 +85,6 @@ public class ApplicationMain {
 //        System.out.println(tempAlbum.toString());
 //
 //        System.out.println(artistServiceImpl.delete("Blue Öyster Cult"));
-
-
-    }
-
-    private static void workWithSQLDb(){
-
 
 
     }
