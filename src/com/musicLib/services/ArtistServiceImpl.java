@@ -1,8 +1,6 @@
 package com.musicLib.services;
 
 import com.musicLib.entities.Artist;
-import com.musicLib.exceptions.ArtistNotFoundException;
-import com.musicLib.exceptions.DuplicatedRecordException;
 import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.ArtistRepository;
 
@@ -12,11 +10,11 @@ import java.util.List;
 public class ArtistServiceImpl implements ArtistService {
 
     private ArtistRepository artistRepo;
+    private AlbumService albumService;
     private RecordValidator recordValidator;
 
-    public ArtistServiceImpl(ArtistRepository artistRepo, RecordValidator recordValidator) {
+    public ArtistServiceImpl(ArtistRepository artistRepo) {
         this.artistRepo = artistRepo;
-        this.recordValidator = recordValidator;
     }
 
     public ArtistServiceImpl() {
@@ -24,6 +22,7 @@ public class ArtistServiceImpl implements ArtistService {
 
     public boolean add(Artist artist) throws ServiceException {
         try {
+            recordValidator.validateNoSuchArtistPresent(artist);
             return artistRepo.add(artist);
         } catch (SQLException e) {
             throw new ServiceException("Cannot insert artist to db", e);
@@ -32,39 +31,52 @@ public class ArtistServiceImpl implements ArtistService {
 
     public List<Artist> getAll() throws ServiceException {
         try {
-            List<Artist> artists = artistRepo.queryAll();
-            artists = addDependantAlbums(artists);
+            List<Artist> artists = artistRepo.getAll();
             return artists;
         } catch (SQLException e) {
             throw new ServiceException("Issue with getting all Artists", e);
         }
     }
+
     //TODO PASS AN OBJECT NOT PRIMITIVE
-    public List<Artist> getByName(String artist) throws ServiceException {
+    public List<Artist> getByName(Artist artist) throws ServiceException {
         try {
-            List<Artist> artists = artistRepo.queryArtist(artist);
-            artists = addDependantAlbums(artists);
+            List<Artist> artists = artistRepo.getByName(artist.getName());
             return artists;
         } catch (SQLException e) {
             throw new ServiceException("Issue with getting all Artists", e);
         }
     }
 
-    private List<Artist> addDependantAlbums(List<Artist> artists) throws ServiceException {
-        artists = recordValidator.addAlbumsToArtist(artists);
-        return artists;
+
+    //FINISHED
+    public boolean delete(Artist artist) throws ServiceException {
+        try {
+            updateArtistID(artist);
+            albumService.deleteAlbumsFromArtist(artist);
+            return artistRepo.delete(artist.getName());
+        } catch (SQLException e){
+            throw new ServiceException("Unable to delete artist: " + artist.getName(), e);
+        }
     }
 
-    public boolean delete(String artistName) throws ServiceException {
-        try {
-            return artistRepo.delete(artistName);
-        } catch (ArtistNotFoundException e) {
-            throw new ServiceException("There is no such Artist", e);
-        } catch (DuplicatedRecordException e) {
-            throw new ServiceException("Multiple Artists present, cannot delete a specific one", e);
-        } catch (SQLException e) {
-            throw new ServiceException("Issue with database connectivity", e);
+    private Artist updateArtistID(Artist artist) throws ServiceException {
+        if (recordValidator.validateArtist(artist)) {
+            List<Artist>  foundArtists = getByName(artist);
+            int artistId = foundArtists.get(0).getId();
+            artist.setId(artistId);
+            return artist;
         }
+        throw new ServiceException("Unable to update Artist with ID");
+    }
+
+
+    public void setAlbumService(AlbumService albumService) {
+        this.albumService = albumService;
+    }
+
+    public void setRecordValidator(RecordValidator recordValidator) {
+        this.recordValidator = recordValidator;
     }
 }
 
