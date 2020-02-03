@@ -1,5 +1,6 @@
 package com.musicLib.services;
 
+import com.musicLib.entities.Album;
 import com.musicLib.entities.Song;
 import com.musicLib.exceptions.ServiceException;
 
@@ -9,7 +10,7 @@ public interface SongService {
 
     boolean add(Song song) throws  ServiceException;
 
-    List<Song> getByName(Song song) throws ServiceException;
+    List<Song> get(Song song) throws ServiceException;
 
     boolean delete(Song song) throws ServiceException;
 
@@ -17,5 +18,5 @@ public interface SongService {
 
     void setRecordValidator(RecordValidator recordValidator);
 
-
+    void deleteSongsFromAlbum(Album album) throws ServiceException;
 }

@@ -46,7 +46,7 @@ public class SongServiceImpl implements SongService {
         }
     }
 
-    public List<Song> getByName(Song song) throws ServiceException {
+    public List<Song> get(Song song) throws ServiceException {
         try {
             return songRepo.queryByName(song.getName());
         } catch (SQLException e) {
@@ -66,6 +66,14 @@ public class SongServiceImpl implements SongService {
        }
     }
 
+    @Override
+    public void deleteSongsFromAlbum(Album album) throws ServiceException{
+        try {
+            songRepo.deleteByAlbumId(album.getId());
+        }catch (SQLException e){
+            throw new ServiceException("Unable to delete songs from album",e);
+        }
+    }
 
     public void setAlbumService(AlbumService albumService) {
         this.albumService = albumService;
