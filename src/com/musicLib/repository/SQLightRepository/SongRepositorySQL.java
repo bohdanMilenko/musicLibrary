@@ -105,11 +105,11 @@ public class SongRepositorySQL implements SongRepository {
     }
 
     @Override
-    public boolean delete(String songName, int albumID) throws SQLException {
+    public boolean delete(Song song) throws SQLException {
         String query = buildDeleteBySongName();
         deleteQueryBySongNameAndAlbumID = SessionManagerSQLite.getPreparedStatement(query);
-        deleteQueryByAlbumID.setInt(1, albumID);
-        deleteQueryByAlbumID.setString(2, songName);
+        deleteQueryByAlbumID.setInt(1, song.getAlbum().getId());
+        deleteQueryByAlbumID.setString(2, song.getName());
         deleteQueryBySongNameAndAlbumID.executeUpdate();
         return false;
     }

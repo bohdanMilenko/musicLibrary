@@ -1,9 +1,8 @@
 package com.musicLib.services;
 
 import com.musicLib.entities.Album;
-import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
-import com.musicLib.exceptions.*;
+import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.SongRepository;
 
 import java.sql.SQLException;
@@ -12,94 +11,67 @@ import java.util.List;
 public class SongServiceImpl implements SongService {
 
     private SongRepository songRepo;
+    private AlbumService albumService;
     private RecordValidator recordValidator;
 
-    public SongServiceImpl(SongRepository songRepo, RecordValidator recordValidator) {
+    public SongServiceImpl(SongRepository songRepo) {
         this.songRepo = songRepo;
-        this.recordValidator = recordValidator;
     }
 
     public SongServiceImpl() {
     }
 
     public boolean add(Song song) throws ServiceException {
-        Artist artistFromSong = song.getArtist();
-        Album albumFromSong = song.getAlbum();
-        int artistId = getArtistIDFromDB(artistFromSong);
-        int albumId = getAlbumIDFromDB(albumFromSong);
-        Song updatedSong = updateArtistWithID(song, artistId);
-        updatedSong = updateWithAlbumID(updatedSong, albumId);
         try {
-            return songRepo.add(updatedSong);
+            Album albumFromSong = song.getAlbum();
+            if(validateAlbum(albumFromSong)){
+                song = updateSongWithRequiredID(song);
+                return songRepo.add(song);
+            }
+            throw new ServiceException("Failed to add song");
         } catch (SQLException e) {
             throw new ServiceException("Unable to add song", e);
         }
     }
 
-    private int getArtistIDFromDB(Artist artist) throws ServiceException {
-        int idToReturn;
-        try {
-            idToReturn = recordValidator.validateArtist(artist);
-            return idToReturn;
-        } catch (QueryException e) {
-            throw new ServiceException("Cannot get Artist ID", e);
-        }
-
+    private Song updateSongWithRequiredID(Song song) throws ServiceException{
+        return albumService.updateSongWithID(song);
     }
 
-    private int getAlbumIDFromDB(Album album) throws ServiceException {
-        int idToReturn;
+    private boolean validateAlbum(Album album) throws ServiceException{
         try {
-            idToReturn = recordValidator.getAlbumID(album);
-            return idToReturn;
-        } catch (QueryException e) {
-            throw new ServiceException("Cannot get Album ID", e);
+            return recordValidator.validateAlbum(album);
+        }catch (ServiceException e){
+            throw new ServiceException("Album validation failed", e);
         }
     }
 
-    private Song updateArtistWithID(Song song, int artistId) {
-        Artist artist = song.getArtist();
-        artist.setId(artistId);
-        song.setArtist(artist);
-        return song;
-    }
-
-    private Song updateWithAlbumID(Song song, int albumId) {
-        Album album = song.getAlbum();
-        album.setId(albumId);
-        song.setAlbum(album);
-        return song;
-    }
-
-
-    public List<Song> getByName(String songName) throws ServiceException {
+    public List<Song> getByName(Song song) throws ServiceException {
         try {
-            return songRepo.queryByName(songName);
+            return songRepo.queryByName(song.getName());
         } catch (SQLException e) {
             throw new ServiceException("Cannot find song by it's name", e);
         }
     }
 
-    public boolean delete(String artistName, String albumName, String songName) throws ServiceException {
+    public boolean delete(Song song) throws ServiceException {
        try {
-           int albumID = recordValidator.getAlbumID(albumName);
-           return songRepo.delete(songName, albumID);
+           if(validateAlbum(song.getAlbum())){
+               updateSongWithRequiredID(song);
+               return songRepo.delete(song);
+           }
+           throw new ServiceException("Failed to delete song");
        }catch (SQLException e){
            throw new ServiceException("Cannot delete song from DB", e);
        }
     }
 
-    public boolean delete(String artistName, String albumName) throws ServiceException {
-        try {
-            int artistID = recordValidator.validateArtist(artistName);
-            int albumID = recordValidator.getAlbumID(albumName);
-            return songRepo.deleteByAlbumId(albumID);
-        }catch (SQLException e){
-            throw new ServiceException("Cannot delete song from DB", e);
-        }
+
+    public void setAlbumService(AlbumService albumService) {
+        this.albumService = albumService;
     }
 
-
-
-
+    public void setRecordValidator(RecordValidator recordValidator) {
+        this.recordValidator = recordValidator;
+    }
 }

@@ -1,16 +1,21 @@
 package com.musicLib.services;
 
 import com.musicLib.entities.Song;
-import com.musicLib.exceptions.QueryException;
 import com.musicLib.exceptions.ServiceException;
 
 import java.util.List;
 
 public interface SongService {
 
-    public boolean add(Song song) throws  ServiceException;
+    boolean add(Song song) throws  ServiceException;
 
-    public List<Song> getByName(String songName) throws QueryException, ServiceException;
+    List<Song> getByName(Song song) throws ServiceException;
 
-    public boolean delete(String artistName, String albumName, String songName) throws QueryException, ServiceException;
+    boolean delete(Song song) throws ServiceException;
+
+    void setAlbumService(AlbumService albumService);
+
+    void setRecordValidator(RecordValidator recordValidator);
+
+
 }
