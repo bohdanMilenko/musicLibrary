@@ -26,7 +26,7 @@ public class RecordValidator {
     }
 
     boolean validateArtist(Artist artist) throws ServiceException {
-        List<Artist> artists = artistService.getByName(artist.getName());
+        List<Artist> artists = artistService.getByName(artist);
         if (artists.size() == 1) {
             return true;
         } else if (artists.size() > 1) {
@@ -38,7 +38,7 @@ public class RecordValidator {
 
 
     public boolean validateAlbum(Album album) throws ServiceException {
-        List<Album> albums = albumService.getByName(album.getName());
+        List<Album> albums = albumService.get(album);
         if (albums.size() == 1) {
             return true;
         } else if (albums.size() > 1) {
@@ -46,5 +46,17 @@ public class RecordValidator {
         } else {
             throw new AlbumNotFoundException("There is no such album");
         }
+    }
+
+    public boolean isDependantAlbumPresent(Artist artist){
+        if(albumService.get())
+    }
+
+    public boolean validateNoSuchArtistPresent(Artist artist) throws ServiceException{
+        List<Artist> foundArtists = artistService.getByName(artist);
+        if(foundArtists.size() >0){
+            throw new DuplicatedRecordException("More than one artist with such name exists");
+        }
+        return true;
     }
 }
