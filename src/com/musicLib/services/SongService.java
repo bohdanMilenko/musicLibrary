@@ -12,6 +12,8 @@ public interface SongService {
 
     List<Song> get(Song song) throws ServiceException;
 
+    //TODO ADD METHOD TO VALIDATE IF ALBUM/ARTIST HAS DEPENDANT SONGS
+
     boolean delete(Song song) throws ServiceException;
 
     void setAlbumService(AlbumService albumService);

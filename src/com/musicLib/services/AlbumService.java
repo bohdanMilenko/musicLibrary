@@ -13,6 +13,8 @@ public interface AlbumService {
 
     List<Album> get(Album album) throws ServiceException;
 
+    //TODO ADD SEARCH BY ARTIST TO VALIDATE IF ARTIST HAS DEPENDANT ALBUMS
+
     boolean delete(Album album) throws ServiceException;
 
     Song updateSongWithID(Song song) throws ServiceException;
