@@ -51,7 +51,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
 
 
     @Override
-    public List<Artist> queryAll() throws SQLException {
+    public List<Artist> getAll() throws SQLException {
         String query = buildQueryAll();
         ResultSet resultSet = getResultSet(query);
         List<Artist> artistsToReturn = resultSetToArtist(resultSet);
@@ -59,7 +59,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
         //TODO MOVE THIS TO RECORDVALIDATOR CLASS ON SERVICE LEVEL
         if (artistsToReturn != null) {
             for (Artist artist : artistsToReturn) {
-                albums = albumRepositorySQL.queryAlbumsByArtistID(artist.getId());
+                albums = albumRepositorySQL.getAlbumsByArtistID(artist.getId());
                 artist.setAlbums(albums);
             }
         }
@@ -78,7 +78,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
 
     //TODO RENAME
     @Override
-    public List<Artist> queryArtist(String artistName) throws SQLException {
+    public List<Artist> getByName(String artistName) throws SQLException {
         String query = buildQueryByName();
         //PreparedStatement queryArtist = SessionManagerSQLite.getPreparedStatement(QUERY_ARTIST_BY_NAME);
         System.out.println(query);
@@ -122,7 +122,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
 
     @Override
     public boolean delete(String artistName) throws SQLException, ArtistNotFoundException, DuplicatedRecordException {
-        List<Artist> artistToDelete = queryArtist(artistName);
+        List<Artist> artistToDelete = getByName(artistName);
         int numberOfArtists = artistToDelete.size();
         System.out.println(numberOfArtists);
         switch (numberOfArtists) {
@@ -130,7 +130,6 @@ public class ArtistRepositorySQL implements ArtistRepository {
                 Artist artist = artistToDelete.get(0);
                 System.out.println(artist.toString());
                 List<Album> artistsAlbums = artist.getAlbums();
-                albumRepositorySQL.deleteAlbumsByArtistName(artistName);
                 deleteArtist(artistName);
                 return true;
             case 0:
