@@ -21,12 +21,12 @@ public class ArtistRepositoryMongo implements ArtistRepository {
     }
 
     @Override
-    public List<Artist> queryAll() {
+    public List<Artist> getAll() {
         return null;
     }
 
     @Override
-    public List<Artist> queryArtist(String artistName) {
+    public List<Artist> getByName(String artistName) {
         return null;
     }
 
