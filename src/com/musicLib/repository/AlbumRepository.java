@@ -16,5 +16,7 @@ public interface AlbumRepository {
 
     boolean delete(int albumID, int artistID) throws  QueryException, SQLException;
 
+    boolean deleteByArtistID(int artistID) throws QueryException;
+
 
 }

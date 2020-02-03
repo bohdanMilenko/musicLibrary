@@ -119,6 +119,16 @@ public class AlbumServiceImpl implements AlbumService {
         }
     }
 
+    @Override
+    public void deleteAlbumsFromArtist(Artist artist) throws ServiceException{
+        try {
+            albumRepo.deleteByArtistID(artist.getId());
+        }catch (QueryException e){
+            throw new ServiceException("Unable to delete dependant albums for artist: " +artist.getName(), e);
+        }
+
+    }
+
     public void setArtistService(ArtistService artistService) {
         this.artistService = artistService;
     }

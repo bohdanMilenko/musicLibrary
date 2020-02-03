@@ -3,6 +3,7 @@ package com.musicLib.repository.SQLightRepository;
 import com.musicLib.SQLUtil.SessionManagerSQLite;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
+import com.musicLib.exceptions.QueryException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +19,8 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     private PreparedStatement queryAlbums;
     private PreparedStatement insertAlbum;
     private PreparedStatement queryByArtistID;
-    private PreparedStatement deleteAlbumById;
+    private PreparedStatement deleteAlbumByID;
+    private PreparedStatement deleteByArtistID;
     private PreparedStatement queryByArtistAndAlbumName;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
     private static SongRepositorySQL songRepositorySQL = new SongRepositorySQL();
@@ -157,8 +159,8 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
         songRepositorySQL.deleteByAlbumId(albumID);
         String query = buildDeleteByAlbumNameAndArtistID();
         System.out.println(query);
-        deleteAlbumById = SessionManagerSQLite.getPreparedStatement(query);
-        deleteAlbumById.executeUpdate();
+        deleteAlbumByID = SessionManagerSQLite.getPreparedStatement(query);
+        deleteAlbumByID.executeUpdate();
         conn.commit();
         conn.setAutoCommit(true);
         return true;
@@ -174,34 +176,26 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
         return qb.toString();
     }
 
-
-    //TODO NOT FINISHED
-    public boolean deleteAlbumsByArtistName(String artist) throws SQLException {
-        List<Album> albumsToDelete = getAlbumsByArtistID(artist);
-        deleteRelatedSongs(albumsToDelete);
-        for (Album tempAlbum : albumsToDelete) {
-            deleteAlbumById = SessionManagerSQLite.getPreparedStatement(DELETE_ALBUM_BY_ID);
-            deleteAlbumById.setInt(1, tempAlbum.getId());
-            deleteAlbumById.executeUpdate();
+    @Override
+    public boolean deleteByArtistID(int artistID) throws QueryException{
+        try {
+            String query = buildDeleteByArtistID();
+            deleteByArtistID = SessionManagerSQLite.getPreparedStatement(query);
+            deleteAlbumByID.setInt(1, artistID);
+            deleteAlbumByID.executeUpdate();
+            return true;
+        }catch (SQLException e){
+            throw new QueryException("Unable to delete albums by artist ID", e);
         }
-        return true;
     }
 
-    private String buildDeleteByArtistName(){
+    private String buildDeleteByArtistID(){
         QueryBuilder qb = new QueryBuilder();
-        qb.deleteFrom(TABLE_ALBUMS).specifyFirstCondition(TABLE_ARTISTS,COLUMN_ARTISTS_NAME);
+        qb.deleteFrom(TABLE_ALBUMS).specifyFirstCondition(TABLE_ALBUMS,COLUMN_ALBUMS_ARTIST);
         return qb.toString();
     }
 
-    private void deleteRelatedSongs(List<Album> albumsToDelete) throws SQLException {
-        for (Album tempAlbum : albumsToDelete) {
-            int albumId = tempAlbum.getId();
-            songRepositorySQL.deleteByAlbumId(albumId);
-        }
-    }
-
-
-//    private static final String QUERY_ALBUMS = "SELECT " + COLUMN_ALBUMS_ID + " FROM " + TABLE_ALBUMS
+    //    private static final String QUERY_ALBUMS = "SELECT " + COLUMN_ALBUMS_ID + " FROM " + TABLE_ALBUMS
 //            + " WHERE " + COLUMN_ALBUMS_NAME + "= ?";
 //
 //

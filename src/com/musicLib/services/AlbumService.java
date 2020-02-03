@@ -1,6 +1,7 @@
 package com.musicLib.services;
 
 import com.musicLib.entities.Album;
+import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
 import com.musicLib.exceptions.ServiceException;
 
@@ -21,4 +22,6 @@ public interface AlbumService {
     void setSongService(SongService songService);
     
     void setRecordValidator(RecordValidator recordValidator);
+
+    void deleteAlbumsFromArtist(Artist artist) throws ServiceException;
 }
