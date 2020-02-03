@@ -2,6 +2,7 @@ package com.musicLib.services;
 
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
+import com.musicLib.entities.Song;
 import com.musicLib.exceptions.QueryException;
 import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.AlbumRepository;
@@ -12,78 +13,121 @@ import java.util.List;
 public class AlbumServiceImpl implements AlbumService {
 
     private AlbumRepository albumRepo;
+    private ArtistService artistService;
+    private SongService songService;
     private RecordValidator recordValidator;
 
-    public AlbumServiceImpl(AlbumRepository albumRepo, RecordValidator recordValidator) {
+    public AlbumServiceImpl(AlbumRepository albumRepo) {
         this.albumRepo = albumRepo;
-        this.recordValidator = recordValidator;
     }
 
     public AlbumServiceImpl() {
     }
 
     public boolean add(Album album) throws ServiceException {
-        int artistID = getArtistID(album);
-        album = updateWithArtistID(album, artistID);
         try {
-            return albumRepo.add(album);
+            if (validateAlbum(album)) {
+                updateAlbumWithArtistID(album);
+                return albumRepo.add(album);
+            }
+            throw new ServiceException("Failed to add Album");
         } catch (SQLException e) {
             throw new ServiceException("Issue with adding album to db", e);
         }
     }
 
-    private int getArtistID(Album album) throws ServiceException {
-        return getArtistID(album.getName());
-    }
-
-    private int getArtistID(String album) throws ServiceException {
-        try {
-            return recordValidator.getAlbumID(album);
-        } catch (QueryException e) {
-            throw new ServiceException("Cannot get artist ID", e);
+    private Album updateAlbumWithArtistID(Album album) throws ServiceException {
+        Artist artistFromAlbum = album.getArtist();
+        List<Artist> foundArtists = artistService.getByName(album.getArtist());
+        if (foundArtists.size() == 1) {
+            artistFromAlbum.setId(foundArtists.get(0).getId());
+            album.setArtist(artistFromAlbum);
+            return album;
         }
+        throw new ServiceException("Unable to update Album with ID");
     }
 
-    private Album updateWithArtistID(Album album, int artistID) {
-        Artist artist = album.getArtist();
-        artist.setId(artistID);
-        album.setArtist(artist);
-        return album;
+    private boolean validateAlbum(Album album) throws ServiceException {
+        return recordValidator.validateAlbum(album);
     }
 
-    public List<Album> getByArtistName(String artistName) throws ServiceException {
-        int artistID = getArtistIDByArtistName(artistName);
+    public List<Album> get(Album album) throws ServiceException {
         try {
-            return albumRepo.queryAlbumsByArtistID(artistID);
-        } catch (SQLException e) {
-            throw new ServiceException("Unable to query albums by artist name", e);
-        }
-    }
-
-    private int getArtistIDByArtistName(String artistName) throws ServiceException {
-        try {
-            return recordValidator.validateArtist(artistName);
-        } catch (QueryException e) {
-            throw new ServiceException("Cannot get artist ID by artist name", e);
-        }
-    }
-
-    public List<Album> getByName(String albumName) throws ServiceException {
-        try {
-            return albumRepo.queryByName(albumName);
+            return albumRepo.getByName(album.getName());
         } catch (SQLException e) {
             throw new ServiceException("Issue with db connectivity", e);
         }
     }
 
-    public boolean delete(String artistName, String albumName) throws ServiceException {
-        int artistID = getArtistID(albumName);
-        int albumID = recordValidator.getAlbumID(albumName);
+    public boolean delete(Album album) throws ServiceException {
         try {
-//            songRepository.deleteByAlbumId(albumID);
-            return albumRepo.delete(albumID, artistID);
+            if (recordValidator.validateAlbum(album)) {
+                updateAlbumWithID(album);
+                updateAlbumWithArtistID(album);
+                songService.deleteSongsFromAlbum(album);
+                return albumRepo.delete(album.getId(),album.getArtist().getId());
+            }
+            throw new ServiceException("Unable to delete album");
         } catch (SQLException e) {
             throw new ServiceException("Unable to delete album", e);
         }
+    }
+
+    private Album updateAlbumWithID(Album album) throws ServiceException {
+        List<Album> foundAlbums = get(album);
+        if (foundAlbums.size() == 1) {
+            album.setId(foundAlbums.get(0).getId());
+            return album;
+        }
+        throw new ServiceException("Unable to update album with ID from DB");
+
+    }
+
+
+    @Override
+    public Song updateSongWithID(Song song) throws ServiceException {
+        updateSongWithAlbumID(song);
+        updateSongWithArtistID(song);
+        return song;
+    }
+
+
+    private Song updateSongWithAlbumID(Song song) throws ServiceException {
+        try {
+            Album albumFromSong = song.getAlbum();
+            List<Album> foundAlbums = albumRepo.getByName(albumFromSong.getName());
+            if (foundAlbums.size() == 1) {
+                albumFromSong.setId(foundAlbums.get(0).getId());
+                song.setAlbum(albumFromSong);
+                return song;
+            } else {
+                throw new QueryException("Either multiple or none albums with the same name");
+            }
+        } catch (SQLException e) {
+            throw new ServiceException("Unable to update song with album ID", e);
+        }
+    }
+
+    private Song updateSongWithArtistID(Song song) throws ServiceException {
+        if (song.getAlbum().getId() != 0) {
+            Album albumFromSong = song.getAlbum();
+            updateAlbumWithArtistID(albumFromSong);
+            song.setAlbum(albumFromSong);
+            return song;
+        } else {
+            throw new QueryException("Either multiple or no artists found");
+        }
+    }
+
+    public void setArtistService(ArtistService artistService) {
+        this.artistService = artistService;
+    }
+
+    public void setSongService(SongService songService) {
+        this.songService = songService;
+    }
+
+    public void setRecordValidator(RecordValidator recordValidator) {
+        this.recordValidator = recordValidator;
     }
 }

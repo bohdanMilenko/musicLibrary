@@ -10,9 +10,9 @@ public interface AlbumRepository {
 
     boolean add(Album album) throws SQLException, QueryException;
 
-    List<Album> queryAlbumsByArtistID(int artistID) throws SQLException;
+    List<Album> getAlbumsByArtistID(int artistID) throws SQLException;
 
-    List<Album> queryByName(String albumName) throws SQLException;
+    List<Album> getByName(String albumName) throws SQLException;
 
     boolean delete(int albumID, int artistID) throws  QueryException, SQLException;
 

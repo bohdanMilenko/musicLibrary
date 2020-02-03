@@ -48,7 +48,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
 
 
     @Override
-    public List<Album> queryAlbumsByArtistID(int artistID) throws SQLException {
+    public List<Album> getAlbumsByArtistID(int artistID) throws SQLException {
         String query = buildQueryByArtistID();
         System.out.println(query);
         queryByArtistID = SessionManagerSQLite.getPreparedStatement(query);
@@ -95,7 +95,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
 
 
     @Override
-    public List<Album> queryByName(String albumName) throws SQLException {
+    public List<Album> getByName(String albumName) throws SQLException {
         List<Album> returnList = new ArrayList<>();
         //queryAlbums = SessionManagerSQLite.getPreparedStatement(QUERY_BY_ALBUM_NAME);
         String query = buildQueryByName();
@@ -177,7 +177,7 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
 
     //TODO NOT FINISHED
     public boolean deleteAlbumsByArtistName(String artist) throws SQLException {
-        List<Album> albumsToDelete = queryAlbumsByArtistID(artist);
+        List<Album> albumsToDelete = getAlbumsByArtistID(artist);
         deleteRelatedSongs(albumsToDelete);
         for (Album tempAlbum : albumsToDelete) {
             deleteAlbumById = SessionManagerSQLite.getPreparedStatement(DELETE_ALBUM_BY_ID);
