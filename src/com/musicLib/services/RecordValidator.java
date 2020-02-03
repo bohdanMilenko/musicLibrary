@@ -2,10 +2,8 @@ package com.musicLib.services;
 
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
-import com.musicLib.entities.Song;
 import com.musicLib.exceptions.*;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class RecordValidator {
@@ -30,7 +28,6 @@ public class RecordValidator {
     boolean validateArtist(Artist artist) throws ServiceException {
         List<Artist> artists = artistService.getByName(artist.getName());
         if (artists.size() == 1) {
-            Artist foundArtist = artists.get(0);
             return true;
         } else if (artists.size() > 1) {
             throw new DuplicatedRecordException("More than one artist with the same name");
@@ -40,56 +37,14 @@ public class RecordValidator {
     }
 
 
-    public int getAlbumID(Album album) throws QueryException {
-            return getAlbumID(album.getName());
-    }
-//TODO CHANGE TO VALIDATION NOT OPERATION
-    int getAlbumID(String album) throws QueryException {
-        List<Album> albums;
-        try {
-            albums = albumRepository.queryByName(album);
-        }catch (SQLException e){
-            throw new QueryException("Unable to get album ID", e);
-        }
+    public boolean validateAlbum(Album album) throws ServiceException {
+        List<Album> albums = albumService.getByName(album.getName());
         if (albums.size() == 1) {
-            Album foundAlbums = albums.get(0);
-            return foundAlbums.getId();
+            return true;
         } else if (albums.size() > 1) {
             throw new DuplicatedRecordException("More than one album with the same name");
         } else {
             throw new AlbumNotFoundException("There is no such album");
         }
-    }
-
-
-    List<Artist> addAlbumsToArtist(List<Artist> artists) throws QueryException{
-        try {
-            for (Artist tempArtist : artists) {
-                List<Album> tempAlbums = albumRepository.queryAlbumsByArtistID(tempArtist.getId());
-                if (tempAlbums.size() > 0) {
-                    tempAlbums = addSongsToAlbum(tempAlbums);
-                }
-                tempArtist.setAlbums(tempAlbums);
-            }
-            return artists;
-        }catch (SQLException e){
-            throw new QueryException("Unable to add albums to artists", e);
-        }
-    }
-
-    List<Album> addSongsToAlbum(List<Album> albums) throws QueryException{
-        try {
-            for (Album tempAlbum : albums) {
-                List<Song> tempSongs = songRepository.queryByAlbumId(tempAlbum.getId());
-                tempAlbum.setSongs(tempSongs);
-            }
-            return albums;
-        }catch (SQLException e){
-            throw new QueryException("Unable to add songs to Albums", e);
-        }
-    }
-
-    public boolean deleteDependantAlbums(Artist artist) throws ServiceException{
-
     }
 }
