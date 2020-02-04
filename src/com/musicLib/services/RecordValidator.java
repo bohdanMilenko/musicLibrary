@@ -2,7 +2,11 @@ package com.musicLib.services;
 
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
-import com.musicLib.exceptions.*;
+import com.musicLib.entities.Song;
+import com.musicLib.exceptions.AlbumNotFoundException;
+import com.musicLib.exceptions.ArtistNotFoundException;
+import com.musicLib.exceptions.DuplicatedRecordException;
+import com.musicLib.exceptions.ServiceException;
 
 import java.util.List;
 
@@ -48,15 +52,23 @@ public class RecordValidator {
         }
     }
 
-    public boolean isDependantAlbumPresent(Artist artist){
-        if(albumService.get())
+    public boolean hasDependantAlbums(Artist artist) throws ServiceException {
+        List<Album> dependantAlbums = albumService.getByArtist(artist);
+        return dependantAlbums.size() > 0;
     }
 
-    public boolean validateNoSuchArtistPresent(Artist artist) throws ServiceException{
-        List<Artist> foundArtists = artistService.getByName(artist);
-        if(foundArtists.size() >0){
-            throw new DuplicatedRecordException("More than one artist with such name exists");
+    public boolean hasDependantSongs(List<Album> albums) throws ServiceException {
+        for (Album album : albums) {
+            List<Song> dependantSongs = songService.getByAlbum(album);
+            if (dependantSongs.size() > 0) {
+                return true;
+            }
         }
-        return true;
+        return false;
+    }
+
+    public boolean validateNoSuchArtistPresent(Artist artist) throws ServiceException {
+        List<Artist> foundArtists = artistService.getByName(artist);
+        return foundArtists.size() <= 0;
     }
 }
