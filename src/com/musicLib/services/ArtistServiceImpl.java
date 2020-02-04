@@ -23,6 +23,7 @@ public class ArtistServiceImpl implements ArtistService {
 
     public boolean add(Artist artist) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(artist);
             recordValidator.validateNoSuchArtistPresent(artist);
             return artistRepo.add(artist);
         } catch (SQLException e) {
@@ -39,9 +40,9 @@ public class ArtistServiceImpl implements ArtistService {
         }
     }
 
-    //TODO PASS AN OBJECT NOT PRIMITIVE
     public List<Artist> getByName(Artist artist) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(artist);
             List<Artist> artists = artistRepo.getByName(artist.getName());
             return artists;
         } catch (SQLException e) {
@@ -53,9 +54,10 @@ public class ArtistServiceImpl implements ArtistService {
     //FINISHED
     public boolean delete(Artist artist) throws ServiceException {
         try {
-            updateArtistID(artist);
+            recordValidator.validateIfNotNull(artist);
+            artist = updateArtistID(artist);
             if (recordValidator.hasDependantAlbums(artist)) {
-                updateAlbums(artist);
+                artist = updateAlbums(artist);
                 albumService.deleteAlbumsFromArtist(artist);
             }
             return artistRepo.delete(artist.getName());
@@ -65,6 +67,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     public Artist updateArtistID(Artist artist) throws ServiceException {
+        recordValidator.validateIfNotNull(artist);
         if (recordValidator.validateArtist(artist)) {
             List<Artist> foundArtists = getByName(artist);
             int artistId = foundArtists.get(0).getId();
@@ -74,7 +77,7 @@ public class ArtistServiceImpl implements ArtistService {
         throw new ServiceException("Unable to update Artist with ID");
     }
 
-    public Artist updateAlbums(Artist artist) throws ServiceException {
+    Artist updateAlbums(Artist artist) throws ServiceException {
         try {
             List<Album> foundAlbums = albumService.getByArtist(artist);
             artist.setAlbums(foundAlbums);

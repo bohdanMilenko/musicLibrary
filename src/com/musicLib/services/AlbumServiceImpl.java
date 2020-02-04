@@ -27,8 +27,9 @@ public class AlbumServiceImpl implements AlbumService {
 
     public boolean add(Album album) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(album);
             if (validateAlbum(album)) {
-                updateAlbumWithArtistID(album);
+                album = updateAlbumWithArtistID(album);
                 return albumRepo.add(album);
             }
             throw new ServiceException("Failed to add Album");
@@ -43,7 +44,6 @@ public class AlbumServiceImpl implements AlbumService {
         artistFromAlbum.setId(foundArtists.get(0).getId());
         album.setArtist(artistFromAlbum);
         return album;
-
     }
 
     private boolean validateAlbum(Album album) throws ServiceException {
@@ -61,6 +61,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     public List<Album> getByArtist(Artist artist) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(artist);
             artist = artistService.updateArtistID(artist);
             return albumRepo.getAlbumsByArtistID(artist.getId());
         } catch (SQLException e) {
@@ -70,6 +71,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     public boolean delete(Album album) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(album);
             if (recordValidator.validateAlbum(album)) {
                 updateAlbumWithID(album);
                 updateAlbumWithArtistID(album);
@@ -95,6 +97,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public Song updateSongWithID(Song song) throws ServiceException {
+        recordValidator.validateIfNotNull(song);
         updateSongWithAlbumID(song);
         updateSongWithArtistID(song);
         return song;
@@ -119,24 +122,41 @@ public class AlbumServiceImpl implements AlbumService {
 
     private Song updateSongWithArtistID(Song song) throws ServiceException {
         if (song.getAlbum().getId() != 0) {
-            Album albumFromSong = song.getAlbum();
-            updateAlbumWithArtistID(albumFromSong);
-            song.setAlbum(albumFromSong);
+            Artist artistFromSong = song.getArtist();
+            recordValidator.validateIfNotNull(artistFromSong);
+            List<Artist> artistFromDB = artistService.getByName(artistFromSong);
+            int artistID = artistFromDB.get(0).getId();
+            artistFromSong.setId(artistID);
+            song.setArtist(artistFromSong);
             return song;
         } else {
             throw new QueryException("Either multiple or no artists found");
         }
     }
 
+//    private Song updateSongWithArtistID(Song song) throws ServiceException {
+//        if (song.getAlbum().getId() != 0) {
+//            Album albumFromSong = song.getAlbum();
+//            updateAlbumWithArtistID(albumFromSong);
+//            song.setAlbum(albumFromSong);
+//            return song;
+//        } else {
+//            throw new QueryException("Either multiple or no artists found");
+//        }
+//    }
+
+
+    //ASK QUESTION: SHOULD I THROW EXCEPTION IN VALIDATION METHOD OR ALSO HAVE IF CONDITION IN THE METHOD?
     @Override
     public void deleteAlbumsFromArtist(Artist artist) throws ServiceException {
         try {
-            removeDependantSongs(artist);
-            albumRepo.deleteByArtistID(artist.getId());
+            if (recordValidator.validateIfNotNull(artist)) {
+                removeDependantSongs(artist);
+                albumRepo.deleteByArtistID(artist.getId());
+            }
         } catch (QueryException e) {
             throw new ServiceException("Unable to delete dependant albums for artist: " + artist.getName(), e);
         }
-
     }
 
     private void removeDependantSongs(Artist artist) throws ServiceException {

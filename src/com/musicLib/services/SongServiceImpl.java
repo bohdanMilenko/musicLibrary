@@ -23,11 +23,13 @@ public class SongServiceImpl implements SongService {
 
     public boolean add(Song song) throws ServiceException {
         try {
-            Album albumFromSong = song.getAlbum();
-            if (validateAlbum(albumFromSong)) {
-                song = updateSongWithRequiredID(song);
-                return songRepo.add(song);
-            }
+            recordValidator.validateIfNotNull(song);
+                recordValidator.validateIfSongHasAlbum(song);
+                Album albumFromSong = song.getAlbum();
+                if (validateAlbum(albumFromSong)) {
+                    song = updateSongWithRequiredID(song);
+                    return songRepo.add(song);
+                }
             throw new ServiceException("Failed to add song");
         } catch (SQLException e) {
             throw new ServiceException("Unable to add song", e);
@@ -40,6 +42,7 @@ public class SongServiceImpl implements SongService {
 
     private boolean validateAlbum(Album album) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(album);
             return recordValidator.validateAlbum(album);
         } catch (ServiceException e) {
             throw new ServiceException("Album validation failed", e);
@@ -48,6 +51,7 @@ public class SongServiceImpl implements SongService {
 
     public List<Song> get(Song song) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(song);
             return songRepo.getByName(song.getName());
         } catch (SQLException e) {
             throw new ServiceException("Cannot find song by it's name", e);
@@ -57,6 +61,7 @@ public class SongServiceImpl implements SongService {
     @Override
     public List<Song> getByAlbum(Album album) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(album);
             return songRepo.getByAlbumId(album.getId());
         } catch (SQLException e) {
             throw new ServiceException("Unable get songs by album", e);
@@ -65,6 +70,7 @@ public class SongServiceImpl implements SongService {
 
     public boolean delete(Song song) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(song);
             if (validateAlbum(song.getAlbum())) {
                 updateSongWithRequiredID(song);
                 return songRepo.delete(song);
@@ -78,6 +84,7 @@ public class SongServiceImpl implements SongService {
     @Override
     public void deleteSongsFromAlbum(Album album) throws ServiceException {
         try {
+            recordValidator.validateIfNotNull(album);
             songRepo.deleteByAlbumId(album.getId());
         } catch (SQLException e) {
             throw new ServiceException("Unable to delete songs from album", e);
