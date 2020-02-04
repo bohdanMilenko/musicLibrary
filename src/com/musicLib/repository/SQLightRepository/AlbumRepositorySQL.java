@@ -5,7 +5,6 @@ import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.QueryException;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -74,26 +73,25 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     }
 
 
-    public List<Album> queryByArtistAndAlbumName(String artistName, String albumName) throws SQLException {
-        List<Album> albumToReturn;
-        String query = buildQueryByArtistAndAlbumNames();
-        queryByArtistAndAlbumName = SessionManagerSQLite.getPreparedStatement(query);
-        ResultSet rs = queryByArtistAndAlbumName.executeQuery();
-        albumToReturn = resultSetToAlbum(rs);
-        return albumToReturn;
-    }
-
-    /**
-     * SELECT artists._id , artists.name, albums._id , albums.name
-     * FROM artists INNER JOIN albums ON albums.artist = artists._id
-     * WHERE artists.name = "?"
-     */
-    private String buildQueryByArtistAndAlbumNames() {
-        QueryBuilder qb = buildGeneralQueryNoConditions();
-        qb.specifyFirstCondition(TABLE_ALBUMS, COLUMN_ALBUMS_NAME).addANDCondition(TABLE_ARTISTS, COLUMN_ARTISTS_NAME);
-        return qb.toString();
-    }
-
+//    public List<Album> queryByArtistAndAlbumName(String artistName, String albumName) throws SQLException {
+//        List<Album> albumToReturn;
+//        String query = buildQueryByArtistAndAlbumNames();
+//        queryByArtistAndAlbumName = SessionManagerSQLite.getPreparedStatement(query);
+//        ResultSet rs = queryByArtistAndAlbumName.executeQuery();
+//        albumToReturn = resultSetToAlbum(rs);
+//        return albumToReturn;
+//    }
+//
+//    /**
+//     * SELECT artists._id , artists.name, albums._id , albums.name
+//     * FROM artists INNER JOIN albums ON albums.artist = artists._id
+//     * WHERE artists.name = "?"
+//     */
+//    private String buildQueryByArtistAndAlbumNames() {
+//        QueryBuilder qb = buildGeneralQueryNoConditions();
+//        qb.specifyFirstCondition(TABLE_ALBUMS, COLUMN_ALBUMS_NAME).addANDCondition(TABLE_ARTISTS, COLUMN_ARTISTS_NAME);
+//        return qb.toString();
+//    }
 
 
     @Override
@@ -149,20 +147,12 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
         return albumsToReturn;
     }
 
-
-
     @Override
     public boolean delete(int albumID, int artistID) throws SQLException {
-        Connection conn = SessionManagerSQLite.getConnection();
-        conn.setAutoCommit(false);
-        //TODO I AM WORKING WITH SONGREPO HERE! SHOULD I DELETE DEPENDANT SONGS IN SERVICE LAYER IN RECORD VALIDATOR?
-        songRepositorySQL.deleteByAlbumId(albumID);
         String query = buildDeleteByAlbumNameAndArtistID();
         System.out.println(query);
         deleteAlbumByID = SessionManagerSQLite.getPreparedStatement(query);
         deleteAlbumByID.executeUpdate();
-        conn.commit();
-        conn.setAutoCommit(true);
         return true;
     }
 
@@ -177,21 +167,21 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
     }
 
     @Override
-    public boolean deleteByArtistID(int artistID) throws QueryException{
+    public boolean deleteByArtistID(int artistID) throws QueryException {
         try {
             String query = buildDeleteByArtistID();
             deleteByArtistID = SessionManagerSQLite.getPreparedStatement(query);
             deleteAlbumByID.setInt(1, artistID);
             deleteAlbumByID.executeUpdate();
             return true;
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new QueryException("Unable to delete albums by artist ID", e);
         }
     }
 
-    private String buildDeleteByArtistID(){
+    private String buildDeleteByArtistID() {
         QueryBuilder qb = new QueryBuilder();
-        qb.deleteFrom(TABLE_ALBUMS).specifyFirstCondition(TABLE_ALBUMS,COLUMN_ALBUMS_ARTIST);
+        qb.deleteFrom(TABLE_ALBUMS).specifyFirstCondition(TABLE_ALBUMS, COLUMN_ALBUMS_ARTIST);
         return qb.toString();
     }
 
