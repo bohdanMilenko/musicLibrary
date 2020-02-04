@@ -3,6 +3,7 @@ package com.musicLib.services;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
+import com.musicLib.exceptions.AlbumNotFoundException;
 import com.musicLib.exceptions.QueryException;
 import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.AlbumRepository;
@@ -39,12 +40,10 @@ public class AlbumServiceImpl implements AlbumService {
     private Album updateAlbumWithArtistID(Album album) throws ServiceException {
         Artist artistFromAlbum = album.getArtist();
         List<Artist> foundArtists = artistService.getByName(album.getArtist());
-        if (foundArtists.size() == 1) {
-            artistFromAlbum.setId(foundArtists.get(0).getId());
-            album.setArtist(artistFromAlbum);
-            return album;
-        }
-        throw new ServiceException("Unable to update Album with ID");
+        artistFromAlbum.setId(foundArtists.get(0).getId());
+        album.setArtist(artistFromAlbum);
+        return album;
+
     }
 
     private boolean validateAlbum(Album album) throws ServiceException {
@@ -59,13 +58,23 @@ public class AlbumServiceImpl implements AlbumService {
         }
     }
 
+    @Override
+    public List<Album> getByArtist(Artist artist) throws ServiceException {
+        try {
+            artist = artistService.updateArtistID(artist);
+            return albumRepo.getAlbumsByArtistID(artist.getId());
+        } catch (SQLException e) {
+            throw new ServiceException("Unable t get albums by artist", e);
+        }
+    }
+
     public boolean delete(Album album) throws ServiceException {
         try {
             if (recordValidator.validateAlbum(album)) {
                 updateAlbumWithID(album);
                 updateAlbumWithArtistID(album);
                 songService.deleteSongsFromAlbum(album);
-                return albumRepo.delete(album.getId(),album.getArtist().getId());
+                return albumRepo.delete(album.getId(), album.getArtist().getId());
             }
             throw new ServiceException("Unable to delete album");
         } catch (SQLException e) {
@@ -120,13 +129,30 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public void deleteAlbumsFromArtist(Artist artist) throws ServiceException{
+    public void deleteAlbumsFromArtist(Artist artist) throws ServiceException {
         try {
+            removeDependantSongs(artist);
             albumRepo.deleteByArtistID(artist.getId());
-        }catch (QueryException e){
-            throw new ServiceException("Unable to delete dependant albums for artist: " +artist.getName(), e);
+        } catch (QueryException e) {
+            throw new ServiceException("Unable to delete dependant albums for artist: " + artist.getName(), e);
         }
 
+    }
+
+    private void removeDependantSongs(Artist artist) throws ServiceException {
+        List<Album> albums = artist.getAlbums();
+        if (albums.isEmpty()) {
+            throw new AlbumNotFoundException("No albums to delete from");
+        }
+        try {
+            if (recordValidator.hasDependantSongs(albums)) {
+                for (Album album : albums) {
+                    songService.deleteSongsFromAlbum(album);
+                }
+            }
+        } catch (ServiceException e) {
+            throw new ServiceException("Unable to delete songs from albums", e);
+        }
     }
 
     public void setArtistService(ArtistService artistService) {

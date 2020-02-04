@@ -1,5 +1,6 @@
 package com.musicLib.services;
 
+import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.ArtistRepository;
@@ -53,21 +54,34 @@ public class ArtistServiceImpl implements ArtistService {
     public boolean delete(Artist artist) throws ServiceException {
         try {
             updateArtistID(artist);
-            albumService.deleteAlbumsFromArtist(artist);
+            if (recordValidator.hasDependantAlbums(artist)) {
+                updateAlbums(artist);
+                albumService.deleteAlbumsFromArtist(artist);
+            }
             return artistRepo.delete(artist.getName());
-        } catch (SQLException e){
+        } catch (SQLException e) {
             throw new ServiceException("Unable to delete artist: " + artist.getName(), e);
         }
     }
 
-    private Artist updateArtistID(Artist artist) throws ServiceException {
+    public Artist updateArtistID(Artist artist) throws ServiceException {
         if (recordValidator.validateArtist(artist)) {
-            List<Artist>  foundArtists = getByName(artist);
+            List<Artist> foundArtists = getByName(artist);
             int artistId = foundArtists.get(0).getId();
             artist.setId(artistId);
             return artist;
         }
         throw new ServiceException("Unable to update Artist with ID");
+    }
+
+    public Artist updateAlbums(Artist artist) throws ServiceException {
+        try {
+            List<Album> foundAlbums = albumService.getByArtist(artist);
+            artist.setAlbums(foundAlbums);
+            return artist;
+        } catch (ServiceException e) {
+            throw new ServiceException("Unable to update artist with albums", e);
+        }
     }
 
 

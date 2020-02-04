@@ -21,7 +21,7 @@ public interface ArtistService {
 
     void setAlbumService(AlbumService albumService);
 
-
+    Artist updateArtistID(Artist artist) throws ServiceException;
 
 }
 
