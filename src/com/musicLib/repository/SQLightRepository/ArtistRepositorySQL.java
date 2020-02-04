@@ -55,15 +55,6 @@ public class ArtistRepositorySQL implements ArtistRepository {
         String query = buildQueryAll();
         ResultSet resultSet = getResultSet(query);
         List<Artist> artistsToReturn = resultSetToArtist(resultSet);
-        List<Album> albums;
-        //TODO MOVE THIS TO RECORDVALIDATOR CLASS ON SERVICE LEVEL
-        if (artistsToReturn != null) {
-            for (Artist artist : artistsToReturn) {
-                albums = albumRepositorySQL.getAlbumsByArtistID(artist.getId());
-                artist.setAlbums(albums);
-            }
-        }
-
         return artistsToReturn;
     }
 
@@ -76,11 +67,9 @@ public class ArtistRepositorySQL implements ArtistRepository {
         return qb.toString();
     }
 
-    //TODO RENAME
     @Override
     public List<Artist> getByName(String artistName) throws SQLException {
         String query = buildQueryByName();
-        //PreparedStatement queryArtist = SessionManagerSQLite.getPreparedStatement(QUERY_ARTIST_BY_NAME);
         System.out.println(query);
         PreparedStatement queryArtist = SessionManagerSQLite.getPreparedStatement(query);
         List<Artist> returnList = new ArrayList<>();
@@ -146,7 +135,7 @@ public class ArtistRepositorySQL implements ArtistRepository {
         return true;
     }
 
-    public Artist queryById(int id) throws SQLException {
+    public Artist getById(int id) throws SQLException {
         String query = buildQueryByID();
         queryByArtistID = SessionManagerSQLite.getPreparedStatement(query);
         queryByArtistID.setInt(1, id);
