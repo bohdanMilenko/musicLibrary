@@ -71,4 +71,19 @@ public class RecordValidator {
         List<Artist> foundArtists = artistService.getByName(artist);
         return foundArtists.size() <= 0;
     }
+
+    public boolean validateIfSongHasAlbum(Song song) throws AlbumNotFoundException{
+        Album album = song.getAlbum();
+        if(album == null){
+            throw new AlbumNotFoundException("Cannot add song without Album");
+        }
+        return true;
+    }
+
+    public boolean validateIfNotNull(Object entity) throws ServiceException{
+        if(entity == null){
+            throw new ServiceException("Passed object is null");
+        }
+        return true;
+    }
 }
