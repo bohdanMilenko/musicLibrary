@@ -40,7 +40,7 @@ public class ApplicationMain {
 
 
         try {
-            List<Song> songs = songRepositorySQLite.queryByAlbumId(5);
+            List<Song> songs = songRepositorySQLite.getByAlbumId(5);
             songs.forEach(v -> System.out.println(v.getName()));
         }catch (SQLException e){
             System.out.println(e.getMessage());
