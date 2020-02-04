@@ -45,7 +45,7 @@ public class SongRepositorySQL implements SongRepository {
     }
 
     @Override
-    public List<Song> queryByName(String songName) throws SQLException {
+    public List<Song> getByName(String songName) throws SQLException {
         List<Song> returnList = new ArrayList<>();
         String query = buildQueryByName();
         queryBySongName = SessionManagerSQLite.getPreparedStatement(query);
@@ -69,7 +69,7 @@ public class SongRepositorySQL implements SongRepository {
     }
 
 
-    public List<Song> queryByAlbumId(int albumId) throws SQLException {
+    public List<Song> getByAlbumId(int albumId) throws SQLException {
         List<Song> listToReturn;
         //StringBuilder query = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
         String query = buildQueryByAlbumID();

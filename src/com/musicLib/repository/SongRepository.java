@@ -9,11 +9,11 @@ public interface SongRepository {
 
     boolean add(Song song) throws SQLException;
 
-    List<Song> queryByName(String songName) throws SQLException;
+    List<Song> getByName(String songName) throws SQLException;
 
     boolean delete(Song song) throws SQLException;
 
-    List<Song> queryByAlbumId(int albumId) throws SQLException;
+    List<Song> getByAlbumId(int albumId) throws SQLException;
 
     boolean deleteByAlbumId(int albumId) throws SQLException;
 }
