@@ -32,26 +32,9 @@ class SongServiceImplTest {
     private Song validSong;
 
     @BeforeEach
-    void initServices() {
-        ArtistRepository artistRepositorySQLite = new ArtistRepositorySQL();
-        AlbumRepository albumRepositorySQLite = new AlbumRepositorySQL();
-        SongRepository songRepositorySQLite = new SongRepositorySQL();
+    void setUp() {
 
-        songServiceSQL = new SongServiceImpl(songRepositorySQLite);
-        albumServiceSQL = new AlbumServiceImpl(albumRepositorySQLite);
-        artistServiceSQL = new ArtistServiceImpl(artistRepositorySQLite);
-
-        RecordValidator recordValidator = new RecordValidator(artistServiceSQL, albumServiceSQL, songServiceSQL);
-
-        songServiceSQL.setAlbumService(albumServiceSQL);
-        songServiceSQL.setRecordValidator(recordValidator);
-
-        artistServiceSQL.setAlbumService(albumServiceSQL);
-        artistServiceSQL.setRecordValidator(recordValidator);
-
-        albumServiceSQL.setSongService(songServiceSQL);
-        albumServiceSQL.setArtistService(artistServiceSQL);
-        albumServiceSQL.setRecordValidator(recordValidator);
+        initializeServices();
 
         validSongWithNoAlbumAndArtist = new Song();
         validSongWithNoAlbumAndArtist.setName("New Track");
@@ -133,6 +116,29 @@ class SongServiceImplTest {
     @Test
     void deleteSongValidSongValidAlbumWithArtist() throws ServiceException{
         assertTrue(songServiceSQL.delete(validSong));
+    }
+
+
+    private void initializeServices(){
+        ArtistRepository artistRepositorySQLite = new ArtistRepositorySQL();
+        AlbumRepository albumRepositorySQLite = new AlbumRepositorySQL();
+        SongRepository songRepositorySQLite = new SongRepositorySQL();
+
+        songServiceSQL = new SongServiceImpl(songRepositorySQLite);
+        albumServiceSQL = new AlbumServiceImpl(albumRepositorySQLite);
+        artistServiceSQL = new ArtistServiceImpl(artistRepositorySQLite);
+
+        RecordValidator recordValidator = new RecordValidator(artistServiceSQL, albumServiceSQL, songServiceSQL);
+
+        songServiceSQL.setAlbumService(albumServiceSQL);
+        songServiceSQL.setRecordValidator(recordValidator);
+
+        artistServiceSQL.setAlbumService(albumServiceSQL);
+        artistServiceSQL.setRecordValidator(recordValidator);
+
+        albumServiceSQL.setSongService(songServiceSQL);
+        albumServiceSQL.setArtistService(artistServiceSQL);
+        albumServiceSQL.setRecordValidator(recordValidator);
     }
 
 }
