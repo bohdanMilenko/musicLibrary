@@ -135,13 +135,12 @@ public class AlbumRepositorySQL implements com.musicLib.repository.AlbumReposito
             Album tempAlbum = new Album();
             Artist tempArtist = new Artist();
 
-            tempAlbum.setId(rs.getInt(1));
-            tempAlbum.setName(rs.getString(2));
-
-            tempArtist.setId(rs.getInt(3));
-            tempArtist.setName(rs.getString(4));
+            tempArtist.setId(rs.getInt(1));
+            tempArtist.setName(rs.getString(2));
             tempAlbum.setArtist(tempArtist);
 
+            tempAlbum.setId(rs.getInt(3));
+            tempAlbum.setName(rs.getString(4));
             albumsToReturn.add(tempAlbum);
         }
         return albumsToReturn;
