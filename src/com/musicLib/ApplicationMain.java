@@ -16,17 +16,19 @@ public class ApplicationMain {
 
     public static void main(String[] args) {
 
+        SongService songServiceSQL;
+        AlbumService albumServiceSQL;
+        ArtistService artistServiceSQL;
+
         ArtistRepository artistRepositorySQLite = new ArtistRepositorySQL();
         AlbumRepository albumRepositorySQLite = new AlbumRepositorySQL();
         SongRepository songRepositorySQLite = new SongRepositorySQL();
 
+        songServiceSQL = new SongServiceImpl(songRepositorySQLite);
+        albumServiceSQL = new AlbumServiceImpl(albumRepositorySQLite);
+        artistServiceSQL = new ArtistServiceImpl(artistRepositorySQLite);
 
-
-        SongService songServiceSQL = new SongServiceImpl(songRepositorySQLite);
-        AlbumService albumServiceSQL = new AlbumServiceImpl(albumRepositorySQLite);
-        ArtistService artistServiceSQL = new ArtistServiceImpl(artistRepositorySQLite);
-
-        RecordValidator recordValidator = new RecordValidator(artistServiceSQL,albumServiceSQL,songServiceSQL);
+        RecordValidator recordValidator = new RecordValidator(artistServiceSQL, albumServiceSQL, songServiceSQL);
 
         songServiceSQL.setAlbumService(albumServiceSQL);
         songServiceSQL.setRecordValidator(recordValidator);
@@ -42,7 +44,8 @@ public class ApplicationMain {
         try {
             List<Song> songs = songRepositorySQLite.getByAlbumId(5);
             songs.forEach(v -> System.out.println(v.getName()));
-        }catch (SQLException e){
+        } catch (
+                SQLException e) {
             System.out.println(e.getMessage());
         }
 
@@ -88,4 +91,6 @@ public class ApplicationMain {
 
 
     }
+
+
 }
