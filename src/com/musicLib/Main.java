@@ -9,8 +9,8 @@ import com.musicLib.exceptions.DuplicatedRecordException;
 import com.musicLib.repository.MongoDBRepisotory.AlbumRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.MetaDataMongo;
-import com.musicLib.MongoDatabaseModel.ArtistRecordMongo;
-import com.musicLib.MongoUtil.SessionManagerMongo;
+import com.musicLib.mongoDatabaseModel.ArtistRecordMongo;
+import com.musicLib.mongoUtil.SessionManagerMongo;
 import org.bson.Document;
 
 import java.util.List;
