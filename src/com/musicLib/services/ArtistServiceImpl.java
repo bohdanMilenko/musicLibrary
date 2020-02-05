@@ -23,8 +23,7 @@ public class ArtistServiceImpl implements ArtistService {
 
     public boolean add(Artist artist) throws ServiceException {
         try {
-            recordValidator.validateIfNotNull(artist);
-            recordValidator.validateNoSuchArtistPresent(artist);
+            recordValidator.validateArtistAddMethod(artist);
             return artistRepo.add(artist);
         } catch (SQLException e) {
             throw new ServiceException("Cannot insert artist to db", e);
@@ -50,11 +49,10 @@ public class ArtistServiceImpl implements ArtistService {
         }
     }
 
-
     //FINISHED
     public boolean delete(Artist artist) throws ServiceException {
         try {
-            recordValidator.validateIfNotNull(artist);
+            recordValidator.validateArtistDeleteMethod(artist);
             artist = updateArtistID(artist);
             if (recordValidator.hasDependantAlbums(artist)) {
                 artist = updateAlbums(artist);
@@ -67,14 +65,10 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     public Artist updateArtistID(Artist artist) throws ServiceException {
-        recordValidator.validateIfNotNull(artist);
-        if (recordValidator.validateArtist(artist)) {
-            List<Artist> foundArtists = getByName(artist);
-            int artistId = foundArtists.get(0).getId();
-            artist.setId(artistId);
-            return artist;
-        }
-        throw new ServiceException("Unable to update Artist with ID");
+        List<Artist> foundArtists = getByName(artist);
+        int artistId = foundArtists.get(0).getId();
+        artist.setId(artistId);
+        return artist;
     }
 
     Artist updateAlbums(Artist artist) throws ServiceException {

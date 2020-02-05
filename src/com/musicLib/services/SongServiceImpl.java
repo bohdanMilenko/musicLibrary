@@ -23,31 +23,19 @@ public class SongServiceImpl implements SongService {
 
     public boolean add(Song song) throws ServiceException {
         try {
-            recordValidator.validateIfNotNull(song);
-                recordValidator.validateIfSongHasAlbum(song);
-                Album albumFromSong = song.getAlbum();
-                if (validateAlbum(albumFromSong)) {
-                    song = updateSongWithRequiredID(song);
-                    return songRepo.add(song);
-                }
-            throw new ServiceException("Failed to add song");
+            recordValidator.validateSongAddMethod(song);
+            song = updateSongWithRequiredID(song);
+            return songRepo.add(song);
         } catch (SQLException e) {
             throw new ServiceException("Unable to add song", e);
         }
     }
 
+
     private Song updateSongWithRequiredID(Song song) throws ServiceException {
         return albumService.updateSongWithID(song);
     }
 
-    private boolean validateAlbum(Album album) throws ServiceException {
-        try {
-            recordValidator.validateIfNotNull(album);
-            return recordValidator.validateAlbum(album);
-        } catch (ServiceException e) {
-            throw new ServiceException("Album validation failed", e);
-        }
-    }
 
     public List<Song> get(Song song) throws ServiceException {
         try {
@@ -70,12 +58,9 @@ public class SongServiceImpl implements SongService {
 
     public boolean delete(Song song) throws ServiceException {
         try {
-            recordValidator.validateIfNotNull(song);
-            if (validateAlbum(song.getAlbum())) {
-                updateSongWithRequiredID(song);
-                return songRepo.delete(song);
-            }
-            throw new ServiceException("Failed to delete song");
+            recordValidator.validateSongDeleteMethod(song);
+            updateSongWithRequiredID(song);
+            return songRepo.delete(song);
         } catch (SQLException e) {
             throw new ServiceException("Cannot delete song from DB", e);
         }

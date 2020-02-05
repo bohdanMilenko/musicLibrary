@@ -22,7 +22,7 @@ public class SongRepositorySQL implements SongRepository {
     private PreparedStatement queryBySongName;
     private PreparedStatement insertSong;
     private PreparedStatement deleteQueryByAlbumID;
-    private PreparedStatement deleteQueryBySongNameAndAlbumID;
+    private PreparedStatement deleteQueryBySongName;
 
     @Override
     public boolean add(Song song) throws SQLException {
@@ -107,20 +107,19 @@ public class SongRepositorySQL implements SongRepository {
     @Override
     public boolean delete(Song song) throws SQLException {
         String query = buildDeleteBySongName();
-        deleteQueryBySongNameAndAlbumID = SessionManagerSQLite.getPreparedStatement(query);
-        deleteQueryByAlbumID.setInt(1, song.getAlbum().getId());
-        deleteQueryByAlbumID.setString(2, song.getName());
-        deleteQueryBySongNameAndAlbumID.executeUpdate();
-        return false;
+        deleteQueryBySongName = SessionManagerSQLite.getPreparedStatement(query);
+        deleteQueryBySongName.setString(1, song.getName());
+        deleteQueryBySongName.executeUpdate();
+        return true;
     }
 
     /**
-     * DELETE FROM songs WHERE songs.album = ? AND songs.title = ?
+     * DELETE FROM songs WHERE songs.title = ?
      */
     private String buildDeleteBySongName() {
         QueryBuilder qb = new QueryBuilder();
-        qb.deleteFrom(TABLE_SONGS).specifyFirstCondition(TABLE_SONGS, COLUMN_SONGS_ALBUM)
-                .addANDCondition(TABLE_SONGS, COLUMN_SONGS_TITLE);
+        qb.deleteFrom(TABLE_SONGS).specifyFirstCondition(TABLE_SONGS, COLUMN_SONGS_TITLE);
+
         return qb.toString();
     }
 

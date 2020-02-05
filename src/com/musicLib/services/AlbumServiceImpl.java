@@ -27,12 +27,9 @@ public class AlbumServiceImpl implements AlbumService {
 
     public boolean add(Album album) throws ServiceException {
         try {
-            recordValidator.validateIfNotNull(album);
-            if (validateAlbum(album)) {
-                album = updateAlbumWithArtistID(album);
-                return albumRepo.add(album);
-            }
-            throw new ServiceException("Failed to add Album");
+            recordValidator.validateAlbumAddMethod(album);
+            album = updateAlbumWithArtistID(album);
+            return albumRepo.add(album);
         } catch (SQLException e) {
             throw new ServiceException("Issue with adding album to db", e);
         }
@@ -46,9 +43,6 @@ public class AlbumServiceImpl implements AlbumService {
         return album;
     }
 
-    private boolean validateAlbum(Album album) throws ServiceException {
-        return recordValidator.validateAlbum(album);
-    }
 
     public List<Album> get(Album album) throws ServiceException {
         try {
@@ -61,7 +55,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     public List<Album> getByArtist(Artist artist) throws ServiceException {
         try {
-            recordValidator.validateIfNotNull(artist);
+            recordValidator.validateGetAlbumByArtist(artist);
             artist = artistService.updateArtistID(artist);
             return albumRepo.getAlbumsByArtistID(artist.getId());
         } catch (SQLException e) {
@@ -71,14 +65,11 @@ public class AlbumServiceImpl implements AlbumService {
 
     public boolean delete(Album album) throws ServiceException {
         try {
-            recordValidator.validateIfNotNull(album);
-            if (recordValidator.validateAlbum(album)) {
-                updateAlbumWithID(album);
-                updateAlbumWithArtistID(album);
-                songService.deleteSongsFromAlbum(album);
-                return albumRepo.delete(album.getId(), album.getArtist().getId());
-            }
-            throw new ServiceException("Unable to delete album");
+            recordValidator.validateAlbumDeleteMethod(album);
+            updateAlbumWithID(album);
+            updateAlbumWithArtistID(album);
+            songService.deleteSongsFromAlbum(album);
+            return albumRepo.delete(album.getId(), album.getArtist().getId());
         } catch (SQLException e) {
             throw new ServiceException("Unable to delete album", e);
         }
@@ -94,7 +85,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     }
 
-
+    //TODO THIS METHOD SHOULD RETURN ALBUM, NOT SONG. UPDATING ARTIST ID SHOULD BE IN ARTIST SERVICE
     @Override
     public Song updateSongWithID(Song song) throws ServiceException {
         recordValidator.validateIfNotNull(song);
@@ -103,12 +94,14 @@ public class AlbumServiceImpl implements AlbumService {
         return song;
     }
 
-
+    //TODO
     private Song updateSongWithAlbumID(Song song) throws ServiceException {
         try {
             Album albumFromSong = song.getAlbum();
             List<Album> foundAlbums = albumRepo.getByName(albumFromSong.getName());
             if (foundAlbums.size() == 1) {
+                System.out.println("Album name: " + albumFromSong.getName());
+                System.out.println("Album id fund in db: " + foundAlbums.get(0).getId() + ", " + foundAlbums.get(0).getName());
                 albumFromSong.setId(foundAlbums.get(0).getId());
                 song.setAlbum(albumFromSong);
                 return song;
@@ -120,6 +113,7 @@ public class AlbumServiceImpl implements AlbumService {
         }
     }
 
+    //TODO
     private Song updateSongWithArtistID(Song song) throws ServiceException {
         if (song.getAlbum().getId() != 0) {
             Artist artistFromSong = song.getArtist();
