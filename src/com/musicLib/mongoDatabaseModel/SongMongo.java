@@ -1,4 +1,4 @@
-package com.musicLib.MongoDatabaseModel;
+package com.musicLib.mongoDatabaseModel;
 
 public class SongMongo {
 

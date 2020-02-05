@@ -1,4 +1,4 @@
-package ServiceTests;
+package com.musicLib.serviceTests;
 
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
@@ -26,11 +26,10 @@ class SongServiceImplTest {
     AlbumService albumServiceSQL;
     ArtistService artistServiceSQL;
 
-    private Song songWithNoAlbumAndArtist;
-    private Song songWithNoArtistAndInvalidAlbum;
-    private Song songWithAlbumAndArtist;
-    private Song songWithNoArtistAndValidAlbum;
-    private  Song validSong;
+    private Song validSongWithNoAlbumAndArtist;
+    private Song songInvalidAlbumNoArtist;
+    private Song songWithValidAlbumNoArtist;
+    private Song validSong;
 
     @BeforeEach
     void initServices() {
@@ -54,27 +53,28 @@ class SongServiceImplTest {
         albumServiceSQL.setArtistService(artistServiceSQL);
         albumServiceSQL.setRecordValidator(recordValidator);
 
-        songWithNoAlbumAndArtist = new Song();
-        songWithNoAlbumAndArtist.setName("New Magic Wand");
-        songWithNoAlbumAndArtist.setTrackNumber(15);
+        validSongWithNoAlbumAndArtist = new Song();
+        validSongWithNoAlbumAndArtist.setName("New Track");
+        validSongWithNoAlbumAndArtist.setTrackNumber(15);
 
-        songWithNoArtistAndInvalidAlbum = new Song();
-        songWithNoArtistAndInvalidAlbum.setName("Earthquake");
-        songWithNoArtistAndInvalidAlbum.setTrackNumber(11);
+        songInvalidAlbumNoArtist = new Song();
+        songInvalidAlbumNoArtist.setName("Earthquake");
+        songInvalidAlbumNoArtist.setTrackNumber(11);
         Album invalidAlbum = new Album();
         invalidAlbum.setName("IGOR");
-        songWithNoArtistAndInvalidAlbum.setAlbum(invalidAlbum);
+        songInvalidAlbumNoArtist.setAlbum(invalidAlbum);
 
 
-        songWithNoArtistAndValidAlbum = new Song();
-        songWithNoArtistAndValidAlbum.setName("Boy is a gun");
-        songWithNoArtistAndValidAlbum.setTrackNumber(11);
+        songWithValidAlbumNoArtist = new Song();
+        songWithValidAlbumNoArtist.setName("New Track");
+        songWithValidAlbumNoArtist.setTrackNumber(11);
         Album validAlbum = new Album();
         validAlbum.setName("Pulse");
-        songWithNoArtistAndValidAlbum.setAlbum(validAlbum);
+        songWithValidAlbumNoArtist.setAlbum(validAlbum);
 
         validSong = new Song();
-        validSong.setName("New Track");
+        validSong.setName("New Track1");
+        validSong.setTrackNumber(10);
         Artist validArtist = new Artist();
         validArtist.setName("Pink Floyd");
         validSong.setAlbum(validAlbum);
@@ -82,35 +82,57 @@ class SongServiceImplTest {
 
     }
 
+    //LIMITATIONS OF DELETE METHOD: UNABLE TO DELETE SONGS MULTIPLE SONGS WITH THE SAME NUMBER, SHOULD I CREATE A NEW METHOD
+    //THAT DELETES SONG FROM SPECIFIC ALBUM ?
+
     @Test
-    void addNullCheck(){
-        assertThrows(ServiceException.class, ()-> songServiceSQL.add(null));
+    void addSongNullCheck() {
+        assertThrows(ServiceException.class, () -> songServiceSQL.add(null));
     }
 
     @Test
     @DisplayName("Adding song with album that is not in DB")
     @Description("Service exception must be thrown as song cannot be added to album that does not exist in DB")
-    void addSongWithNoAlbumInDB() throws ServiceException {
-        assertThrows(ServiceException.class,() -> songServiceSQL.add(songWithNoArtistAndInvalidAlbum));
+    void addSongInvalidAlbumNoArtist(){
+        assertThrows(ServiceException.class, () -> songServiceSQL.add(songInvalidAlbumNoArtist));
     }
 
     @Test
     @DisplayName("Adding song without Album embedded")
     @Description("To add song to DB, the Song object MUST contain Album, if it is not so, AlbumNotFoundException is thrown")
-    void addSongWithoutAlbumAndArtist(){
-        assertThrows(AlbumNotFoundException.class,() -> songServiceSQL.add(songWithNoAlbumAndArtist));
+    void addSongNoAlbumNoArtist() {
+        assertThrows(AlbumNotFoundException.class, () -> songServiceSQL.add(validSongWithNoAlbumAndArtist));
     }
 
     @Test
-    void addSongWithoutArtistAndValidAlbum() throws ServiceException {
-        assertThrows(ServiceException.class,()->songServiceSQL.add(songWithNoArtistAndValidAlbum));
+    void addSongValidAlbumNoArtist() {
+        assertThrows(ServiceException.class, () -> songServiceSQL.add(songWithValidAlbumNoArtist));
     }
 
-
-    //TODO ISSUES: TRACK IS ADDED WITH ID OF THE ARTIST NOT ALBUM AND IT IS POSSIBLE TO ADD DUPLICATED SONG!
     @Test
-    void addSongWithValidAlbumAndArtist() throws ServiceException{
-        System.out.println(validSong.toString());
+    @Description("Please change the name of validSong so you are able to test new name that was not tested and added before")
+    void addSongWithValidAlbumAndArtist() throws ServiceException {
         assertTrue(songServiceSQL.add(validSong));
     }
+
+    @Test
+    void deleteSongNullCheck(){
+        assertThrows(ServiceException.class,() -> songServiceSQL.delete(null));
+    }
+
+    @Test
+    void deleteSongValidSongNoArtistNoAlbum(){
+        assertThrows(ServiceException.class,() -> songServiceSQL.delete(validSongWithNoAlbumAndArtist));
+    }
+
+    @Test
+    void deleteSongValidSongValidAlbumNoArtist(){
+        assertThrows(ServiceException.class,() -> songServiceSQL.delete(songWithValidAlbumNoArtist));
+    }
+
+    @Test
+    void deleteSongValidSongValidAlbumWithArtist() throws ServiceException{
+        assertTrue(songServiceSQL.delete(validSong));
+    }
+
 }
