@@ -12,13 +12,6 @@ import java.util.List;
 
 public class RecordValidator {
 
-    //Idea to ask: pass here 3 references with repositories. When artist is queried, it will be returned as artist with no album list. from
-    //Artist service, i call method from recordValidator.UpdateArtistWithAlbums and Record Validator uses album repo to get list of albums.
-    //They are added to artist, but we need also Songs for album. Record validator then call method
-    // for each album: recordValidator.UpdateAlbumWithSongs and then albums are updated and Artist is returned.
-
-    //Can I work with Repositories in this class instead of Services?
-
     private ArtistService artistService;
     private AlbumService albumService;
     private SongService songService;
@@ -29,27 +22,85 @@ public class RecordValidator {
         this.songService = songService;
     }
 
-    boolean validateArtist(Artist artist) throws ServiceException {
-        List<Artist> artists = artistService.getByName(artist);
-        if (artists.size() == 1) {
-            return true;
-        } else if (artists.size() > 1) {
-            throw new DuplicatedRecordException("More than one artist with the same name");
-        } else {
-            throw new ArtistNotFoundException("There is no such artist");
-        }
+
+    public boolean validateArtistAddMethod(Artist artist) throws ServiceException {
+        validateRecordForNulls(artist);
+        validateNoSuchArtistPresent(artist);
+        return true;
+    }
+
+    public boolean validateAlbumAddMethod(Album album) throws ServiceException {
+        validateRecordForNulls(album);
+        validateNoSuchAlbumPresent(album);
+        validateArtistExistsAndUnique(album.getArtist());
+        return true;
+    }
+
+    public boolean validateSongAddMethod(Song song) throws ServiceException {
+        validateRecordForNulls(song);
+        validateNoSuchSongPresent(song);
+        validateAlbumExistsAndUnique(song.getAlbum());
+        return true;
+    }
+
+    public boolean validateGetAlbumByArtist(Artist artist) throws ServiceException{
+        validateRecordForNulls(artist);
+        validateArtistExistsAndUnique(artist);
+        return true;
+    }
+
+    public boolean validateArtistDeleteMethod(Artist artist) throws ServiceException {
+        validateRecordForNulls(artist);
+        validateArtistExistsAndUnique(artist);
+        return true;
+    }
+
+    public boolean validateAlbumDeleteMethod(Album album) throws ServiceException {
+        validateRecordForNulls(album);
+        validateAlbumExistsAndUnique(album);
+        return true;
+    }
+
+    public boolean validateSongDeleteMethod(Song song) throws ServiceException {
+        validateRecordForNulls(song);
+        validateSongExistsAndUnique(song);
+        return true;
     }
 
 
-    public boolean validateAlbum(Album album) throws ServiceException {
+    private boolean validateRecordForNulls(Artist artist) throws ServiceException {
+        validateIfNotNull(artist);
+        return true;
+    }
+
+    private boolean validateRecordForNulls(Album album) throws ServiceException {
+        validateIfNotNull(album);
+        validateIfNotNull(album.getArtist());
+        validateNoSuchAlbumPresent(album);
+        return true;
+    }
+
+    private boolean validateRecordForNulls(Song song) throws ServiceException {
+        validateIfNotNull(song);
+        validateIfNotNull(song.getArtist());
+        validateIfNotNull(song.getAlbum());
+        return true;
+    }
+
+    private boolean validateNoSuchAlbumPresent(Album album) throws ServiceException {
         List<Album> albums = albumService.get(album);
-        if (albums.size() == 1) {
+        if (albums.size() == 0) {
             return true;
-        } else if (albums.size() > 1) {
-            throw new DuplicatedRecordException("More than one album with the same name");
-        } else {
-            throw new AlbumNotFoundException("There is no such album");
         }
+        throw new DuplicatedRecordException("Such album already exists");
+    }
+
+    private boolean validateNoSuchSongPresent(Song song) throws ServiceException {
+        List<Song> songs = songService.get(song);
+        if (songs.size() == 0) {
+            return true;
+        }
+        throw new DuplicatedRecordException("Such song already exists");
     }
 
     public boolean hasDependantAlbums(Artist artist) throws ServiceException {
@@ -72,18 +123,47 @@ public class RecordValidator {
         return foundArtists.size() <= 0;
     }
 
-    public boolean validateIfSongHasAlbum(Song song) throws AlbumNotFoundException{
-        Album album = song.getAlbum();
-        if(album == null){
-            throw new AlbumNotFoundException("Cannot add song without Album");
-        }
-        return true;
-    }
 
-    public boolean validateIfNotNull(Object entity) throws ServiceException{
-        if(entity == null){
+    public boolean validateIfNotNull(Object entity) throws ServiceException {
+        if (entity == null) {
             throw new ServiceException("Passed object is null");
         }
         return true;
     }
+
+
+    private boolean validateArtistExistsAndUnique(Artist artist) throws ServiceException {
+        List<Artist> artists = artistService.getByName(artist);
+        if (artists.size() == 1) {
+            return true;
+        } else if (artists.size() > 1) {
+            throw new DuplicatedRecordException("More than one artist with the same name");
+        } else {
+            throw new ArtistNotFoundException("There is no such artist");
+        }
+    }
+
+
+    private boolean validateAlbumExistsAndUnique(Album album) throws ServiceException {
+        List<Album> albums = albumService.get(album);
+        if (albums.size() == 1) {
+            return true;
+        } else if (albums.size() > 1) {
+            throw new DuplicatedRecordException("More than one album with the same name");
+        } else {
+            throw new AlbumNotFoundException("There is no such album");
+        }
+    }
+
+    private boolean validateSongExistsAndUnique(Song song) throws ServiceException {
+        List<Song> songs = songService.get(song);
+        if (songs.size() == 1) {
+            return true;
+        } else if (songs.size() > 1) {
+            throw new DuplicatedRecordException("More than one song with the same name");
+        } else {
+            throw new AlbumNotFoundException("There is no such song");
+        }
+    }
+
 }
