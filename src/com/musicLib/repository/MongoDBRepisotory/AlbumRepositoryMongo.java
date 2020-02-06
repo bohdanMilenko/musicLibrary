@@ -7,6 +7,7 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import com.musicLib.exceptions.ArtistNotFoundException;
 import com.musicLib.exceptions.DuplicatedRecordException;
+import com.musicLib.mongoUtil.SessionManagerMongo;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -14,6 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AlbumRepositoryMongo {
+
+    private SessionManagerMongo sessionManagerMongo = new SessionManagerMongo();
+
 
     //Should I catch the exception or let it be thrown? Is it better to throw it in this method or in findArtist() ??
     public Document insertNewAlbum(MongoCollection collection, String artistName, String albumName, int numberOfSongs, int yearReleased)

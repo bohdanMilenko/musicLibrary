@@ -21,9 +21,6 @@ public class ArtistRepositorySQL implements ArtistRepository {
     private PreparedStatement deleteQuery;
     private PreparedStatement queryByArtistID;
     private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
-    private static AlbumRepositorySQL albumRepositorySQL = new AlbumRepositorySQL();
-    private static SongRepositorySQL songRepository = new SongRepositorySQL();
-
 
     private static final String QUERY_ALL_ARTISTS = "SELECT " + COLUMN_ARTISTS_ID + "," + COLUMN_ARTISTS_NAME + " FROM " + TABLE_ARTISTS;
 
