@@ -2,21 +2,32 @@ package com.musicLib.repository.MongoDBRepisotory;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.DuplicatedRecordException;
 import com.musicLib.mongoDatabaseModel.AlbumMongo;
 import com.musicLib.mongoDatabaseModel.ArtistRecordMongo;
-import com.musicLib.entities.Artist;
+import com.musicLib.mongoUtil.SessionManagerMongo;
 import com.musicLib.repository.ArtistRepository;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.*;
+
 public class ArtistRepositoryMongo implements ArtistRepository {
+
+
+    private MongoDatabase mongoDatabase = SessionManagerMongo.getDbFromPropertyFile();
+    private  MongoCollection<Document> artistCollection = mongoDatabase.getCollection(ARTISTS_COLLECTION);
+
 
     @Override
     public boolean add(Artist artist){
-        //TODO Crate functionality to write to the db
+        Document artistToInsert = new Document();
+        artistToInsert.append(ARTIST_NAME,artist.getName());
+        artistCollection.insertOne(artistToInsert);
         return true;
     }
 
@@ -27,7 +38,29 @@ public class ArtistRepositoryMongo implements ArtistRepository {
 
     @Override
     public List<Artist> getByName(String artistName) {
-        return null;
+        Document artistToFind= new Document();
+        artistToFind.append(ARTIST_NAME,artistName);
+        try(MongoCursor<Document> cursor = artistCollection.find(artistToFind).iterator()){
+            return cursorToArtist(cursor);
+        }
+    }
+
+    private List<Artist> cursorToArtist(MongoCursor<Document> cursor){
+        List<Artist> artists = new ArrayList<>();
+        while (cursor.hasNext()){
+            Document tempDoc = cursor.next();
+            Artist tempArtist = documentToArtist(tempDoc);
+            artists.add(tempArtist);
+        }
+        return artists;
+    }
+
+    private Artist documentToArtist(Document tempDoc) {
+        Artist tempArtist = new Artist();
+        //todo think how to store objectID
+        //tempArtist.setId((ObjectId) tempDoc.get(ID));
+        tempArtist.setName(tempDoc.getString(ARTIST_NAME));
+        return tempArtist;
     }
 
     @Override
@@ -48,8 +81,7 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         }
         recordToInsert = new Document();
         recordToInsert.append(MetaDataMongo.ARTIST_NAME, artistName)
-                .append(MetaDataMongo.ARTIST_YEAR_FOUNDED, yearFounded)
-                .append(MetaDataMongo.ARTIST_GENRE, genre);
+                .append(MetaDataMongo.ARTIST_YEAR_FOUNDED, yearFounded);
         collection.insertOne(recordToInsert);
         System.out.println("Inserted a record");
         return recordToInsert;
@@ -90,7 +122,6 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         ArtistRecordMongo tempRecord = new ArtistRecordMongo();
         tempRecord.setArtistName((String) retrievedDocument.get(MetaDataMongo.ARTIST_NAME));
         tempRecord.setDateFounded((int) retrievedDocument.get(MetaDataMongo.ARTIST_YEAR_FOUNDED));
-        tempRecord.setGenre((String) retrievedDocument.get(MetaDataMongo.ARTIST_GENRE));
         Document artistAlbums = (Document) retrievedDocument.get(MetaDataMongo.ARTIST_ALBUMS);
         if (artistAlbums != null) {
             List<AlbumMongo> albumMongoList = new ArrayList<>();
