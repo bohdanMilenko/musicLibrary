@@ -1,17 +1,10 @@
 package com.musicLib;
 
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.musicLib.exceptions.ArtistNotFoundException;
-import com.musicLib.exceptions.DuplicatedRecordException;
-import com.musicLib.repository.MongoDBRepisotory.AlbumRepositoryMongo;
-import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
-import com.musicLib.repository.MongoDBRepisotory.MetaDataMongo;
-import com.musicLib.mongoDatabaseModel.ArtistRecordMongo;
+import com.musicLib.entities.Artist;
 import com.musicLib.mongoUtil.SessionManagerMongo;
-import org.bson.Document;
+import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
 
 import java.util.List;
 
@@ -29,93 +22,98 @@ public class Main {
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
         ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
 
-        MongoCollection songsDatabase = db.getCollection("Songs");
-        try {
-            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Iron Maiden", 1975, "Heavy Metal");
-        }catch (DuplicatedRecordException e){
-            System.out.println("Such record already exists: " + e);
-        }
+        Artist validArtist = new Artist();
+        validArtist.setName("Pink Floyd");
+        System.out.println( artistRepositoryMongo.add(validArtist));
 
-        try {
-            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Anthrax", 1981, "Thrash Metal");
-        }catch (DuplicatedRecordException e){
-            System.out.println("Such record already exists: " + e);
-        }
+        List<Artist> artistFromDB = artistRepositoryMongo.getByName("Pink Floyd");
+        artistFromDB.forEach(v -> System.out.println(v.getName() + " " + v.getId()));
+//        try {
+//            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Iron Maiden", 1975, "Heavy Metal");
+//        }catch (DuplicatedRecordException e){
+//            System.out.println("Such record already exists: " + e);
+//        }
+//
+//        try {
+//            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Anthrax", 1981, "Thrash Metal");
+//        }catch (DuplicatedRecordException e){
+//            System.out.println("Such record already exists: " + e);
+//        }
+//
+//        try {
+//            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "AC/DC", 1973, "Rock and Roll");
+//        }catch (DuplicatedRecordException e){
+//            System.out.println("Such record already exists: " + e);
+//        }
+//
+//        try {
+//            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Led Zeppelin", 1968, "Blues Rock");
+//        }catch (DuplicatedRecordException e){
+//            System.out.println("Such record already exists: " + e);
+//        }
+//
+//
+//
+//
+//        List<ArtistRecordMongo> list = artistRepositoryMongo.queryArtistByName(songsDatabase,"Iron Maiden");
+//        for(ArtistRecordMongo record : list){
+//            System.out.println(record.toString());
+//        }
+//
+//        System.out.println();
+//
+//        AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
+//        try {
+//            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Anthrax", "Piece of Mind", 9, 1983);
+//            System.out.println(insertedNewAlbum.toJson());
+//        }catch (ArtistNotFoundException e){
+//            System.out.println("There is no such artist: " + e);
+//        }catch (DuplicatedRecordException e2){
+//            System.out.println("Such album exists");
+//            e2.printStackTrace();
+//        }
+//
+//
+//        try {
+//            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Led Zeppelin", "Led Zeppelin 2", 9, 1969);
+//            System.out.println(insertedNewAlbum.toJson());
+//        }catch (ArtistNotFoundException e){
+//            System.out.println("There is no such artist: " + e);
+//        }catch (DuplicatedRecordException e2){
+//            System.out.println("Such album exists");
+//            e2.printStackTrace();
+//        }
+//
+//        try {
+//            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Anthrax", "For All Kings", 12, 2016);
+//            System.out.println(insertedNewAlbum.toJson());
+//        }catch (ArtistNotFoundException e){
+//            System.out.println("There is no such artist: " + e);
+//        }catch (DuplicatedRecordException e2){
+//            System.out.println("Such album exists");
+//            e2.printStackTrace();
+//        }
+//
+//        try{
+//            albumRepositoryMongo.updateAlbumName(songsDatabase,"Led Zeppelin", "Led Zeppelin 2", "Led Zeppelin 4");
+//        }catch (ArtistNotFoundException e){
+//            System.out.println("There is no such artist: " + e);
+//        }
 
-        try {
-            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "AC/DC", 1973, "Rock and Roll");
-        }catch (DuplicatedRecordException e){
-            System.out.println("Such record already exists: " + e);
-        }
-
-        try {
-            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Led Zeppelin", 1968, "Blues Rock");
-        }catch (DuplicatedRecordException e){
-            System.out.println("Such record already exists: " + e);
-        }
-
-
-
-
-        List<ArtistRecordMongo> list = artistRepositoryMongo.queryArtistByName(songsDatabase,"Iron Maiden");
-        for(ArtistRecordMongo record : list){
-            System.out.println(record.toString());
-        }
-
-        System.out.println();
-
-        AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
-        try {
-            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Anthrax", "Piece of Mind", 9, 1983);
-            System.out.println(insertedNewAlbum.toJson());
-        }catch (ArtistNotFoundException e){
-            System.out.println("There is no such artist: " + e);
-        }catch (DuplicatedRecordException e2){
-            System.out.println("Such album exists");
-            e2.printStackTrace();
-        }
-
-
-        try {
-            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Led Zeppelin", "Led Zeppelin 2", 9, 1969);
-            System.out.println(insertedNewAlbum.toJson());
-        }catch (ArtistNotFoundException e){
-            System.out.println("There is no such artist: " + e);
-        }catch (DuplicatedRecordException e2){
-            System.out.println("Such album exists");
-            e2.printStackTrace();
-        }
-
-        try {
-            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Anthrax", "For All Kings", 12, 2016);
-            System.out.println(insertedNewAlbum.toJson());
-        }catch (ArtistNotFoundException e){
-            System.out.println("There is no such artist: " + e);
-        }catch (DuplicatedRecordException e2){
-            System.out.println("Such album exists");
-            e2.printStackTrace();
-        }
-
-        try{
-            albumRepositoryMongo.updateAlbumName(songsDatabase,"Led Zeppelin", "Led Zeppelin 2", "Led Zeppelin 4");
-        }catch (ArtistNotFoundException e){
-            System.out.println("There is no such artist: " + e);
-        }
-
-        List<ArtistRecordMongo> allRecords = artistRepositoryMongo.queryAllArtists(songsDatabase);
+       // List<ArtistRecordMongo> allRecords = artistRepositoryMongo.queryAllArtists(songsDatabase);
         //allRecords.forEach(k -> System.out.println(k.toString()));
 
-        ArtistRecordMongo anthrax = allRecords.get(3);
-        System.out.println(anthrax.getArtistName());
-        System.out.println(anthrax.getAlbum().get(0).getAlbumName());
-
-        MongoCursor databases = mongoClient.listDatabaseNames().iterator();
-        while (databases.hasNext()){
-            System.out.println(databases.next());
-        }
-        MongoCursor cursor = songsDatabase.find(new Document(MetaDataMongo.ARTIST_NAME,"Iron Maiden" )).iterator();
-        Document foundRecord = (Document) cursor.next();
-        System.out.println(foundRecord.get(MetaDataMongo.ARTIST_NAME));
+//        ArtistRecordMongo anthrax = allRecords.get(3);
+//        System.out.println(anthrax.getArtistName());
+//        System.out.println(anthrax.getAlbum().get(0).getAlbumName());
+//
+//        MongoCursor databases = mongoClient.listDatabaseNames().iterator();
+//        while (databases.hasNext()){
+//            System.out.println(databases.next());
+//        }
+//        MongoCursor cursor = songsDatabase.find(new Document(ARTIST_NAME,"Iron Maiden" )).iterator();
+//        Document foundRecord = (Document) cursor.next();
+//        System.out.println(foundRecord.get(MetaDataMongo.ARTIST_NAME));
 
 
 //        SongsRepository songsRepository = new SongsRepository();
