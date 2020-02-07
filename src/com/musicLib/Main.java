@@ -28,6 +28,8 @@ public class Main {
 
         List<Artist> artistFromDB = artistRepositoryMongo.getByName("Pink Floyd");
         artistFromDB.forEach(v -> System.out.println(v.getName() + " " + v.getId()));
+
+        //System.out.println(artistRepositoryMongo.delete("Pink Floyd"));
 //        try {
 //            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Iron Maiden", 1975, "Heavy Metal");
 //        }catch (DuplicatedRecordException e){

@@ -43,7 +43,8 @@ public class AlbumServiceImpl implements AlbumService {
         return album;
     }
 
-
+    //String and rename
+    @Override
     public List<Album> get(Album album) throws ServiceException {
         try {
             return albumRepo.getByName(album.getName());
@@ -52,9 +53,12 @@ public class AlbumServiceImpl implements AlbumService {
         }
     }
 
+
+    //Put comments to describe complex methods
     @Override
     public List<Album> getByArtist(Artist artist) throws ServiceException {
         try {
+            //todo if id > 0 do not check
             recordValidator.validateGetAlbumByArtist(artist);
             artist = artistService.updateArtistID(artist);
             return albumRepo.getAlbumsByArtistID(artist.getId());

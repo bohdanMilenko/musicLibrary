@@ -20,7 +20,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SongServiceImplTest {
+class SongServiceImplIntegrationTest {
+
 
     SongService songServiceSQL;
     AlbumService albumServiceSQL;
@@ -30,6 +31,9 @@ class SongServiceImplTest {
     private Song songInvalidAlbumNoArtist;
     private Song songWithValidAlbumNoArtist;
     private Song validSong;
+
+    //mockito, unit tests, mongoRepo, moreassertions in tests
+    //mongoIntegrationTests
 
     @BeforeEach
     void setUp() {
@@ -116,9 +120,10 @@ class SongServiceImplTest {
     @Test
     void deleteSongValidSongValidAlbumWithArtist() throws ServiceException{
         assertTrue(songServiceSQL.delete(validSong));
+        //CHECK IF SONGS ARE DELETED (GET METHOD)
     }
 
-
+    //mOCK REPO
     private void initializeServices(){
         ArtistRepository artistRepositorySQLite = new ArtistRepositorySQL();
         AlbumRepository albumRepositorySQLite = new AlbumRepositorySQL();

@@ -14,7 +14,8 @@ import org.bson.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.*;
+import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.ARTISTS_COLLECTION;
+import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.ARTIST_NAME;
 
 public class ArtistRepositoryMongo implements ArtistRepository {
 
@@ -22,6 +23,7 @@ public class ArtistRepositoryMongo implements ArtistRepository {
     private MongoDatabase mongoDatabase = SessionManagerMongo.getDbFromPropertyFile();
     private  MongoCollection<Document> artistCollection = mongoDatabase.getCollection(ARTISTS_COLLECTION);
 
+    //Default/No argument constructr with init
 
     @Override
     public boolean add(Artist artist){
@@ -36,6 +38,7 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         return null;
     }
 
+    //TODO HASH FUNCTION TO INT - TWO WAY
     @Override
     public List<Artist> getByName(String artistName) {
         Document artistToFind= new Document();
@@ -63,10 +66,17 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         return tempArtist;
     }
 
+    //TODO DELETERESULT LOG IT  CTRL + Q
+    //PUT SYSTEM OUT IN CASES WHEN OBJECT MAY BE CHANGED
     @Override
     public boolean delete(String artistName) {
-        return false;
+        Document artistToDelete = new Document();
+        artistToDelete.append(ARTIST_NAME,artistName);
+        artistCollection.deleteMany(artistToDelete);
+        return true;
     }
+
+
 
     /**
      * Use this method to insert new Artist.

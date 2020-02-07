@@ -50,6 +50,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     //FINISHED
+    //TODO CASCADE REMOVAL - ADD TO README
     public boolean delete(Artist artist) throws ServiceException {
         try {
             recordValidator.validateArtistDeleteMethod(artist);
@@ -65,6 +66,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     public Artist updateArtistID(Artist artist) throws ServiceException {
+        //TODO IF ID PRESENT RETURN THE SAME ARTIST
         List<Artist> foundArtists = getByName(artist);
         int artistId = foundArtists.get(0).getId();
         artist.setId(artistId);

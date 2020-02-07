@@ -36,6 +36,7 @@ public class RecordValidator {
         return true;
     }
 
+    //TODO VOID METHOD
     public boolean validateSongAddMethod(Song song) throws ServiceException {
         validateRecordForNulls(song);
         validateNoSuchSongPresent(song);
@@ -43,7 +44,7 @@ public class RecordValidator {
         return true;
     }
 
-    public boolean validateGetAlbumByArtist(Artist artist) throws ServiceException{
+    public boolean validateGetAlbumByArtist(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateArtistExistsAndUnique(artist);
         return true;
@@ -103,6 +104,8 @@ public class RecordValidator {
         throw new DuplicatedRecordException("Such song already exists");
     }
 
+    //TODO UPDATE ARTIST WITH ALBUMS WITHOUT RETURNING IT
+    //WRITE ABOUT LAZY INIT
     public boolean hasDependantAlbums(Artist artist) throws ServiceException {
         List<Album> dependantAlbums = albumService.getByArtist(artist);
         return dependantAlbums.size() > 0;
@@ -130,7 +133,6 @@ public class RecordValidator {
         }
         return true;
     }
-
 
     private boolean validateArtistExistsAndUnique(Artist artist) throws ServiceException {
         List<Artist> artists = artistService.getByName(artist);
