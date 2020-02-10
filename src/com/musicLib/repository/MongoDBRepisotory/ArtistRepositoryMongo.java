@@ -3,6 +3,7 @@ package com.musicLib.repository.MongoDBRepisotory;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.DuplicatedRecordException;
 import com.musicLib.mongoDatabaseModel.AlbumMongo;
@@ -20,10 +21,14 @@ import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.ARTIST_NAM
 public class ArtistRepositoryMongo implements ArtistRepository {
 
 
-    private MongoDatabase mongoDatabase = SessionManagerMongo.getDbFromPropertyFile();
-    private  MongoCollection<Document> artistCollection = mongoDatabase.getCollection(ARTISTS_COLLECTION);
+    private MongoDatabase mongoDatabase;
+    private  MongoCollection<Document> artistCollection ;
 
-    //Default/No argument constructr with init
+
+    public ArtistRepositoryMongo() {
+        mongoDatabase = SessionManagerMongo.getDbFromPropertyFile();
+        artistCollection = mongoDatabase.getCollection(ARTISTS_COLLECTION);
+    }
 
     @Override
     public boolean add(Artist artist){
@@ -61,18 +66,19 @@ public class ArtistRepositoryMongo implements ArtistRepository {
     private Artist documentToArtist(Document tempDoc) {
         Artist tempArtist = new Artist();
         //todo think how to store objectID
-        //tempArtist.setId((ObjectId) tempDoc.get(ID));
+        //tempArtist.setId(tempDoc.get(ID).toString());
         tempArtist.setName(tempDoc.getString(ARTIST_NAME));
         return tempArtist;
     }
 
-    //TODO DELETERESULT LOG IT  CTRL + Q
+    //TODO DELETERESULT LOG IT CTRL + Q
     //PUT SYSTEM OUT IN CASES WHEN OBJECT MAY BE CHANGED
     @Override
     public boolean delete(String artistName) {
         Document artistToDelete = new Document();
         artistToDelete.append(ARTIST_NAME,artistName);
-        artistCollection.deleteMany(artistToDelete);
+        DeleteResult dr = artistCollection.deleteMany(artistToDelete);
+        System.out.println(dr.toString());
         return true;
     }
 

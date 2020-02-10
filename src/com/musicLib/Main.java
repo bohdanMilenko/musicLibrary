@@ -1,12 +1,8 @@
 package com.musicLib;
 
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
-import com.musicLib.entities.Artist;
-import com.musicLib.mongoUtil.SessionManagerMongo;
-import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
+import org.bson.types.ObjectId;
 
-import java.util.List;
+import java.nio.ByteBuffer;
 
 public class Main {
 
@@ -17,17 +13,35 @@ public class Main {
          *
          */
 
-        MongoClient mongoClient = SessionManagerMongo.getMongoClient();
+        ObjectId objectId = new ObjectId();
+        System.out.println(objectId.toHexString());
+        byte [] bytes =  objectId.toByteArray();
+        int intArr = Byte.toUnsignedInt( bytes[1]);
+        System.out.println(objectId.toByteArray());
+        System.out.println( bytesToHex(bytes));
 
-        MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
-        ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
+        ByteBuffer wrapper = ByteBuffer.wrap(bytes);
+        int objectIntValue = wrapper.getInt();
 
-        Artist validArtist = new Artist();
-        validArtist.setName("Pink Floyd");
-        System.out.println( artistRepositoryMongo.add(validArtist));
+        for (int i = 0; i < bytes.length; i++) {
+            ObjectId objectId2 = new ObjectId();
+            System.out.println(objectId2.toHexString());
+        }
 
-        List<Artist> artistFromDB = artistRepositoryMongo.getByName("Pink Floyd");
-        artistFromDB.forEach(v -> System.out.println(v.getName() + " " + v.getId()));
+
+
+
+//        MongoClient mongoClient = SessionManagerMongo.getMongoClient();
+//
+//        MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
+//        ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
+//
+//        Artist validArtist = new Artist();
+//        validArtist.setName("Pink Floyd");
+//        System.out.println( artistRepositoryMongo.add(validArtist));
+//
+//        List<Artist> artistFromDB = artistRepositoryMongo.getByName("Pink Floyd");
+//        artistFromDB.forEach(v -> System.out.println(v.getName() + " " + v.getId()));
 
         //System.out.println(artistRepositoryMongo.delete("Pink Floyd"));
 //        try {
@@ -173,6 +187,24 @@ public class Main {
 //
 //
    }
+    private static byte[] parseHexString(final String s) {
+        byte[] b = new byte[16];
+        for (int i = 0; i < b.length; i++) {
+            b[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16);
+        }
+        return b;
+    }
+
+    private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
 //
 //
 //    private static void printResultSet(List<SongArtist> anyListToPrint){
