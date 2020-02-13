@@ -5,19 +5,48 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
+import com.musicLib.entities.Album;
 import com.musicLib.exceptions.ArtistNotFoundException;
 import com.musicLib.exceptions.DuplicatedRecordException;
+import com.musicLib.exceptions.QueryException;
 import com.musicLib.mongoUtil.SessionManagerMongo;
+import com.musicLib.repository.AlbumRepository;
 import org.bson.Document;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AlbumRepositoryMongo {
+public class AlbumRepositoryMongo implements AlbumRepository {
 
     private SessionManagerMongo sessionManagerMongo = new SessionManagerMongo();
 
+
+    @Override
+    public boolean add(Album album) throws SQLException, QueryException {
+        return false;
+    }
+
+    @Override
+    public List<Album> getAlbumsByArtistID(int artistID) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public List<Album> getByName(String albumName) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public boolean delete(int albumID, int artistID) throws QueryException, SQLException {
+        return false;
+    }
+
+    @Override
+    public boolean deleteByArtistID(int artistID) throws QueryException {
+        return false;
+    }
 
     //Should I catch the exception or let it be thrown? Is it better to throw it in this method or in findArtist() ??
     public Document insertNewAlbum(MongoCollection collection, String artistName, String albumName, int numberOfSongs, int yearReleased)

@@ -2,6 +2,7 @@ package com.musicLib;
 
 import org.bson.types.ObjectId;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 public class Main {
@@ -17,16 +18,22 @@ public class Main {
         System.out.println(objectId.toHexString());
         byte [] bytes =  objectId.toByteArray();
         int intArr = Byte.toUnsignedInt( bytes[1]);
-        System.out.println(objectId.toByteArray());
-        System.out.println( bytesToHex(bytes));
+        //System.out.println(objectId.toByteArray());
+        ////System.out.println( bytesToHex(bytes));
+        String myHex = "31F18AA";
+        BigInteger myBig = new BigInteger("507f1f77bcf86cd799439011",16);
+        System.out.println("Integer to hex:" + myBig.toString(16));
+
+        System.out.println("Hex to Int:" + myBig);
+
 
         ByteBuffer wrapper = ByteBuffer.wrap(bytes);
         int objectIntValue = wrapper.getInt();
 
-        for (int i = 0; i < bytes.length; i++) {
-            ObjectId objectId2 = new ObjectId();
-            System.out.println(objectId2.toHexString());
-        }
+//        for (int i = 0; i < bytes.length; i++) {
+//            ObjectId objectId2 = new ObjectId();
+//            System.out.println(objectId2.toHexString());
+//        }
 
 
 
