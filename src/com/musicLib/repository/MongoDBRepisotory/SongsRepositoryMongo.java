@@ -10,23 +10,25 @@ import org.bson.Document;
 import java.sql.SQLException;
 import java.util.List;
 
-import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.SONGS_COLLECTION;
+import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.ALBUMS_COLLECTION;
 
 public class SongsRepositoryMongo implements SongRepository {
 
 
     private MongoDatabase mongoDatabase;
-    private MongoCollection<Document> songsCollection ;
+    private MongoCollection<Document> albumsCollection ;
 
 
     public SongsRepositoryMongo() {
         mongoDatabase = SessionManagerMongo.getDbFromPropertyFile();
-        songsCollection = mongoDatabase.getCollection(SONGS_COLLECTION);
+        albumsCollection = mongoDatabase.getCollection(ALBUMS_COLLECTION);
     }
+
 
     @Override
     public boolean add(Song song) throws SQLException {
-        return false;
+        Document songToAdd = new Document();
+        songToAdd.append()
     }
 
     @Override

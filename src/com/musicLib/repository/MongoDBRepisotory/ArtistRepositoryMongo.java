@@ -5,7 +5,6 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.musicLib.entities.Artist;
-import com.musicLib.exceptions.DuplicatedRecordException;
 import com.musicLib.mongoDatabaseModel.AlbumMongo;
 import com.musicLib.mongoDatabaseModel.ArtistRecordMongo;
 import com.musicLib.mongoUtil.SessionManagerMongo;
@@ -84,27 +83,6 @@ public class ArtistRepositoryMongo implements ArtistRepository {
 
 
 
-    /**
-     * Use this method to insert new Artist.
-     * @throws DuplicatedRecordException - in case such Artist already exists
-     */
-    public Document insertNewArtist(MongoCollection<Document> collection, String artistName, int yearFounded, String genre) throws  DuplicatedRecordException {
-        Document recordToInsert = null;
-        try (MongoCursor<Document> cursor = collection.find(new Document(MetaDataMongo.ARTIST_NAME, artistName)).iterator()) {
-            if (cursor.hasNext()) {
-                throw new DuplicatedRecordException("Such artist is already present in db");
-            }
-        }
-        recordToInsert = new Document();
-        recordToInsert.append(MetaDataMongo.ARTIST_NAME, artistName)
-                .append(MetaDataMongo.ARTIST_YEAR_FOUNDED, yearFounded);
-        collection.insertOne(recordToInsert);
-        System.out.println("Inserted a record");
-        return recordToInsert;
-    }
-
-
-
 
     public List<ArtistRecordMongo> queryArtistByName(MongoCollection<Document> collection, String artistName) {
         List<ArtistRecordMongo> listToReturn = new ArrayList<>();
@@ -112,7 +90,7 @@ public class ArtistRepositoryMongo implements ArtistRepository {
             while (cursor.hasNext()) {
                 Document retrievedDocument = cursor.next();
                 ArtistRecordMongo tempRecord = createArtistRecord( retrievedDocument);
-                Document artistAlbumsDocument = (Document) retrievedDocument.get(MetaDataMongo.ARTIST_ALBUMS);
+                Document artistAlbumsDocument = (Document) retrievedDocument.get(MetaDataMongo.ARTIST_ALBUMS_LIST);
                 if (artistAlbumsDocument != null) {
                     AlbumMongo tempAlbum = createAlbumRecord(artistAlbumsDocument);
                     listToReturn.add(tempRecord);
@@ -138,7 +116,7 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         ArtistRecordMongo tempRecord = new ArtistRecordMongo();
         tempRecord.setArtistName((String) retrievedDocument.get(MetaDataMongo.ARTIST_NAME));
         tempRecord.setDateFounded((int) retrievedDocument.get(MetaDataMongo.ARTIST_YEAR_FOUNDED));
-        Document artistAlbums = (Document) retrievedDocument.get(MetaDataMongo.ARTIST_ALBUMS);
+        Document artistAlbums = (Document) retrievedDocument.get(MetaDataMongo.ARTIST_ALBUMS_LIST);
         if (artistAlbums != null) {
             List<AlbumMongo> albumMongoList = new ArrayList<>();
             AlbumMongo tempAlbum = createAlbumRecord(artistAlbums);
@@ -150,8 +128,8 @@ public class ArtistRepositoryMongo implements ArtistRepository {
 
     private AlbumMongo createAlbumRecord(Document documentWithAlbums) {
         AlbumMongo tempAlbum = new AlbumMongo();
-        tempAlbum.setAlbumName((String) documentWithAlbums.get(MetaDataMongo.ALBUM_NAME));
-        tempAlbum.setAlbumName((String) documentWithAlbums.get(MetaDataMongo.ALBUM_NAME));
+        tempAlbum.setAlbumName((String) documentWithAlbums.get(MetaDataMongo.ARTIST_ALBUM_NAME));
+        tempAlbum.setAlbumName((String) documentWithAlbums.get(MetaDataMongo.ARTIST_ALBUM_NAME));
         return tempAlbum;
     }
 
