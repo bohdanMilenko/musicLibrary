@@ -1,6 +1,5 @@
 package com.musicLib.repository.MongoDBRepisotory;
 
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -16,7 +15,7 @@ import com.musicLib.repository.AlbumRepository;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import javax.print.Doc;
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +29,7 @@ public class AlbumRepositoryMongo implements AlbumRepository {
     private MongoCollection<Document> artistsDB;
     private MongoCollection<Document> albumsDB;
 
+    private static BigInteger albumsCounter;
 
     public AlbumRepositoryMongo() {
         database = SessionManagerMongo.getDbFromPropertyFile();
@@ -45,7 +45,7 @@ public class AlbumRepositoryMongo implements AlbumRepository {
 
         Document albumForArtistTable = new Document();
         albumForArtistTable.append(ARTIST_ALBUM_NAME,album.getName());
-
+        return true;
     }
 
     private ObjectId getObjectID(String albumName){
@@ -53,8 +53,8 @@ public class AlbumRepositoryMongo implements AlbumRepository {
         album.append(ALBUM_NAME, albumName);
         MongoCursor<Document> foundArtist =  artistsDB.find(album).limit(1).iterator();
         album = foundArtist.next();
-        return  album.getObjectId();
-
+        //return  album.getObjectId();
+        return null;
     }
 
     @Override

@@ -28,7 +28,8 @@ public class SongsRepositoryMongo implements SongRepository {
     @Override
     public boolean add(Song song) throws SQLException {
         Document songToAdd = new Document();
-        songToAdd.append()
+        //songToAdd.append()
+        return true;
     }
 
     @Override
