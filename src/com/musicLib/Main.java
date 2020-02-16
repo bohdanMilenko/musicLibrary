@@ -1,50 +1,30 @@
 package com.musicLib;
 
-import org.bson.types.ObjectId;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
+import com.musicLib.entities.Artist;
+import com.musicLib.mongoUtil.SessionManagerMongo;
+import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        /**
-         * Issues: Cannot add a second album to the artist, as albums are not in the List []. Adding new album results in overriding
-         *
-         */
 
-        ObjectId objectId = new ObjectId();
-        System.out.println(objectId.toHexString());
-        byte [] bytes =  objectId.toByteArray();
-        int intArr = Byte.toUnsignedInt( bytes[1]);
-        //System.out.println(objectId.toByteArray());
-        ////System.out.println( bytesToHex(bytes));
-        String myHex = "31F18AA";
-        BigInteger myBig = new BigInteger("507f1f77bcf86cd799439011",16);
-        System.out.println("Integer to hex:" + myBig.toString(16));
+        MongoClient mongoClient = SessionManagerMongo.getMongoClient();
 
-        System.out.println("Hex to Int:" + myBig);
+        MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
+        ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
+        Artist validArtist = new Artist();
+        validArtist.setName("Led Zeppelin2");
+        artistRepositoryMongo.add(validArtist);
+
+        List<Artist> artistsMongo =  artistRepositoryMongo.getAll();
+        artistsMongo.forEach(v -> System.out.println(v.getName()));
 
 
-        ByteBuffer wrapper = ByteBuffer.wrap(bytes);
-        int objectIntValue = wrapper.getInt();
-
-//        for (int i = 0; i < bytes.length; i++) {
-//            ObjectId objectId2 = new ObjectId();
-//            System.out.println(objectId2.toHexString());
-//        }
-
-
-
-
-//        MongoClient mongoClient = SessionManagerMongo.getMongoClient();
-//
-//        MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
-//        ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
-//
-//        Artist validArtist = new Artist();
-//        validArtist.setName("Pink Floyd");
 //        System.out.println( artistRepositoryMongo.add(validArtist));
 //
 //        List<Artist> artistFromDB = artistRepositoryMongo.getByName("Pink Floyd");
@@ -212,16 +192,7 @@ public class Main {
         }
         return new String(hexChars);
     }
-//
-//
-//    private static void printResultSet(List<SongArtist> anyListToPrint){
-//        if(!anyListToPrint.isEmpty()){
-//            for( SongArtist  loopingInstance : anyListToPrint){
-//                System.out.println( "Artist: " +  loopingInstance.getArtist() + " from album: " + loopingInstance.getAlbum());
-//            }
-//        } else {
-//            System.out.println("No songs found");
-//        }
-//    }
+
+
 
 }
