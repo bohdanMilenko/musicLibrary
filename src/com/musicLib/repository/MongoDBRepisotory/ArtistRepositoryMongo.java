@@ -34,7 +34,8 @@ public class ArtistRepositoryMongo implements ArtistRepository {
     @Override
     public boolean add(Artist artist) {
         Document artistToInsert = new Document();
-        artistToInsert.append(ARTIST_ID, assignArtistID()).append(ARTIST_NAME, artist.getName());
+        //artistToInsert.append(ARTIST_ID, assignArtistID()).append(ARTIST_NAME, artist.getName());
+        artistToInsert.append(ARTIST_ID, MetaDataMongo.getNextSequence(artistCollection)).append(ARTIST_NAME, artist.getName());
         boolean validOperation = false;
         int attempts = 0;
         do {
