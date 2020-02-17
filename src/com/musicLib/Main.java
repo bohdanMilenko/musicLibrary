@@ -18,7 +18,7 @@ public class Main {
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
         ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
         Artist validArtist = new Artist();
-        validArtist.setName("Led Zeppelin2");
+        validArtist.setName("Led Zeppelin");
         artistRepositoryMongo.add(validArtist);
 
         List<Artist> artistsMongo =  artistRepositoryMongo.getAll();
