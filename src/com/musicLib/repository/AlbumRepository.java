@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface AlbumRepository {
 
-    boolean add(Album album) throws SQLException, QueryException;
+    boolean add(Album album) throws SQLException;
 
     List<Album> getAlbumsByArtistID(int artistID) throws SQLException;
 
     List<Album> getByName(String albumName) throws SQLException;
 
-    boolean delete(int albumID, int artistID) throws  QueryException, SQLException;
+    boolean delete(int albumID, int artistID) throws  SQLException;
 
     boolean deleteByArtistID(int artistID) throws QueryException;
 
