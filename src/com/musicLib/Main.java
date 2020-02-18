@@ -2,9 +2,13 @@ package com.musicLib;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
+import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
+import com.musicLib.entities.Song;
 import com.musicLib.mongoUtil.SessionManagerMongo;
+import com.musicLib.repository.MongoDBRepisotory.AlbumRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
+import com.musicLib.repository.MongoDBRepisotory.SongsRepositoryMongo;
 
 import java.util.List;
 
@@ -17,12 +21,31 @@ public class Main {
 
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
         ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
+        AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
+        SongsRepositoryMongo songsRepositoryMongo = new SongsRepositoryMongo();
         Artist validArtist = new Artist();
-        validArtist.setName("Led Zeppelin");
-        artistRepositoryMongo.add(validArtist);
+        validArtist.setName("GRIMES");
+        validArtist.setId(3);
 
-        List<Artist> artistsMongo =  artistRepositoryMongo.getAll();
-        artistsMongo.forEach(v -> System.out.println(v.getName()));
+        Album album = new Album();
+        album.setArtist(validArtist);
+        album.setName("Single");
+
+        Song song = new Song();
+        song.setArtist(validArtist);
+        song.setAlbum(album);
+        song.setName("We Appreciate Power");
+        songsRepositoryMongo.add(song);
+
+        List<Song> songs = songsRepositoryMongo.getByName("War machine");
+        songs.forEach(v -> System.out.println(v.toString()));
+        //albumRepositoryMongo.deleteByArtistID(3);
+
+
+        //artistRepositoryMongo.add(validArtist);
+
+        //List<Artist> artistsMongo =  artistRepositoryMongo.getAll();
+        // artistsMongo.forEach(v -> System.out.println(v.getName()));
 
 
 //        System.out.println( artistRepositoryMongo.add(validArtist));
@@ -103,7 +126,7 @@ public class Main {
 //            System.out.println("There is no such artist: " + e);
 //        }
 
-       // List<ArtistRecordMongo> allRecords = artistRepositoryMongo.queryAllArtists(songsDatabase);
+        // List<ArtistRecordMongo> allRecords = artistRepositoryMongo.queryAllArtists(songsDatabase);
         //allRecords.forEach(k -> System.out.println(k.toString()));
 
 //        ArtistRecordMongo anthrax = allRecords.get(3);
@@ -173,7 +196,8 @@ public class Main {
 ////        System.out.println(path.toUri());
 //
 //
-   }
+    }
+
     private static byte[] parseHexString(final String s) {
         byte[] b = new byte[16];
         for (int i = 0; i < b.length; i++) {
@@ -183,6 +207,7 @@ public class Main {
     }
 
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
+
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -192,7 +217,6 @@ public class Main {
         }
         return new String(hexChars);
     }
-
 
 
 }
