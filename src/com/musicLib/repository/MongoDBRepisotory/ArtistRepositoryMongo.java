@@ -1,6 +1,6 @@
 package com.musicLib.repository.MongoDBRepisotory;
 
-import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -31,6 +31,11 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         artistCollection = mongoDatabase.getCollection(ARTISTS_COLLECTION);
     }
 
+
+    /**
+     * Returning true, as Mongo does not allow autoincrement for _id field and it cannot be disabled since Mongo 4.0,
+     * ObjectId cannot be used as entities are using int to hold id filed.
+     */
     @Override
     public boolean add(Artist artist) {
         Document artistToInsert = new Document();
@@ -42,9 +47,10 @@ public class ArtistRepositoryMongo implements ArtistRepository {
             try {
                 addArtist(artistToInsert);
                 validOperation = true;
-            } catch (DuplicateKeyException e) {
+            } catch (MongoWriteException e) {
                 attempts++;
                 System.out.println("Incorrect ID for Artist");
+                return true;
             }
         } while (!validOperation || attempts < 3);
         if (attempts == 3) {
@@ -58,9 +64,14 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         return true;
     }
 
+    /**
+     * cursor.next() is used to drop Sequence document from parsing
+     * (Collection is using AutoIncrement for _id field and getNextSequence() to assign it)
+     */
     @Override
     public List<Artist> getAll() {
         try (MongoCursor<Document> cursor = artistCollection.find().iterator()) {
+            cursor.next();
             return cursorToArtist(cursor);
         }
     }
@@ -100,10 +111,5 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         System.out.println(dr.toString());
         return true;
     }
-
-    private int assignArtistID() {
-        return Math.abs(intGenerator.nextInt());
-    }
-
 
 }
