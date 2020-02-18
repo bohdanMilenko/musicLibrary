@@ -3,15 +3,15 @@ package com.musicLib.repository.MongoDBRepisotory;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 import com.musicLib.entities.Album;
-import com.musicLib.exceptions.QueryException;
+import com.musicLib.entities.Artist;
 import com.musicLib.mongoUtil.SessionManagerMongo;
 import com.musicLib.repository.AlbumRepository;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
-import java.math.BigInteger;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.*;
@@ -19,55 +19,89 @@ import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.*;
 public class AlbumRepositoryMongo implements AlbumRepository {
 
     private MongoDatabase database;
-    private MongoCollection<Document> artistsDB;
-    private MongoCollection<Document> albumsDB;
-
-    private static BigInteger albumsCounter;
+    private MongoCollection<Document> albumsCollection;
 
     public AlbumRepositoryMongo() {
         database = SessionManagerMongo.getDbFromPropertyFile();
-        artistsDB = database.getCollection(ARTISTS_COLLECTION);
-        albumsDB = database.getCollection(ALBUMS_COLLECTION);
+        albumsCollection = database.getCollection(ALBUMS_COLLECTION);
     }
 
-    @Override
-    public boolean add(Album album) throws SQLException, QueryException {
-        Document fullAlbumForAlbumTable = new Document();
-       // fullAlbumForAlbumTable.append(ALBUM_NAME, album.getName()).append(ALBUM_YEAR_RELEASED, album.getYearReleased());
-        albumsDB.insertOne(fullAlbumForAlbumTable);
 
-        Document albumForArtistTable = new Document();
-       // albumForArtistTable.append(ARTIST_ALBUM_NAME,album.getName());
+    @Override
+    public boolean add(Album album) {
+        Document artistInfo = new Document();
+        artistInfo.append(ALBUM_ARTIST_ID, album.getArtist().getId())
+                .append(ARTIST_NAME, album.getArtist().getName());
+        Document albumToInsert = new Document();
+        albumToInsert.append(ALBUM_ID, MetaDataMongo.getNextSequence(albumsCollection)).append(ALBUM_NAME, album.getName())
+                .append(ALBUM_ARTIST_INFO, artistInfo);
+        System.out.println(albumToInsert.toJson());
+        albumsCollection.insertOne(albumToInsert);
         return true;
     }
 
-    private ObjectId getObjectID(String albumName){
-        Document album = new Document();
-        album.append(ALBUM_NAME, albumName);
-        MongoCursor<Document> foundArtist =  artistsDB.find(album).limit(1).iterator();
-        album = foundArtist.next();
-        //return  album.getObjectId();
-        return null;
+
+    @Override
+    public List<Album> getAlbumsByArtistID(int artistID) {
+        Document artistCondition = new Document();
+        artistCondition.append(ALBUM_ARTIST_ID,artistID);
+        try(MongoCursor<Document> cursor = albumsCollection.find(artistCondition).iterator()){
+            return cursorToAlbum(cursor);
+        }
     }
 
     @Override
-    public List<Album> getAlbumsByArtistID(int artistID) throws SQLException {
-        return null;
+    public List<Album> getByName(String albumName) {
+        Document condition = new Document();
+        condition.append(ALBUM_NAME, albumName);
+        try(MongoCursor<Document> cursor = albumsCollection.find(condition).iterator()){
+            return cursorToAlbum(cursor);
+        }
+    }
+
+    private List<Album> cursorToAlbum(MongoCursor<Document> cursor) {
+        List<Album> albums = new ArrayList<>();
+        while (cursor.hasNext()) {
+            Document docToAlbum = cursor.next();
+            Album tempAlbum = documentToAlbum(docToAlbum);
+            albums.add(tempAlbum);
+        }
+        return albums;
+    }
+
+    private Album documentToAlbum(Document passedDoc) {
+        System.out.println(passedDoc.toJson());
+        Album tempAlbum = new Album();
+        tempAlbum.setId(passedDoc.getInteger(ALBUM_ID));
+        tempAlbum.setName(passedDoc.getString(ALBUM_NAME));
+        Artist tempArtist = new Artist();
+        System.out.println(ALBUM_ARTIST_ID);
+        System.out.println(ALBUM_ARTIST_NAME);
+        //TODO WHY IT HAS NULL POINTER????
+        //System.out.println( passedDoc.get(ALBUM_ARTIST_ID).getClass());
+        tempArtist.setId(passedDoc.getInteger(ALBUM_ARTIST_ID));
+        tempArtist.setName(passedDoc.getString(ALBUM_ARTIST_NAME));
+        tempAlbum.setArtist(tempArtist);
+        return tempAlbum;
     }
 
     @Override
-    public List<Album> getByName(String albumName) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public boolean delete(int albumID, int artistID) throws QueryException, SQLException {
+    public boolean delete(int albumID, int artistID) {
+        Document albumCondition = new Document();
+        albumCondition.append(ALBUM_ID,albumID);
+        Document artistCondition = new Document();
+        artistCondition.append(ALBUM_ARTIST_ID,artistID);
+        DeleteResult result =  albumsCollection.deleteOne(Filters.and(artistCondition,albumCondition));
+        System.out.println(result.toString());
         return false;
     }
 
     @Override
-    public boolean deleteByArtistID(int artistID) throws QueryException {
-        return false;
+    public boolean deleteByArtistID(int artistID) {
+        Document deleteDoc = new Document();
+        deleteDoc.append(ALBUM_ARTIST_ID,artistID);
+        albumsCollection.deleteMany(deleteDoc);
+        return true;
     }
 
     //Should I catch the exception or let it be thrown? Is it better to throw it in this method or in findArtist() ??
