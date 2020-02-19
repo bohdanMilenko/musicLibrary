@@ -8,7 +8,7 @@ import com.musicLib.entities.Song;
 import com.musicLib.mongoUtil.SessionManagerMongo;
 import com.musicLib.repository.MongoDBRepisotory.AlbumRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
-import com.musicLib.repository.MongoDBRepisotory.SongsRepositoryMongo;
+import com.musicLib.repository.MongoDBRepisotory.SongRepositoryMongo;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class Main {
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
         ArtistRepositoryMongo artistRepositoryMongo = new ArtistRepositoryMongo();
         AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
-        SongsRepositoryMongo songsRepositoryMongo = new SongsRepositoryMongo();
+        SongRepositoryMongo songRepositoryMongo = new SongRepositoryMongo();
         Artist validArtist = new Artist();
         validArtist.setName("GRIMES");
         validArtist.setId(3);
@@ -35,9 +35,9 @@ public class Main {
         song.setArtist(validArtist);
         song.setAlbum(album);
         song.setName("We Appreciate Power");
-        songsRepositoryMongo.add(song);
+        songRepositoryMongo.add(song);
 
-        List<Song> songs = songsRepositoryMongo.getByName("War machine");
+        List<Song> songs = songRepositoryMongo.getByName("War machine");
         songs.forEach(v -> System.out.println(v.toString()));
         //albumRepositoryMongo.deleteByArtistID(3);
 
