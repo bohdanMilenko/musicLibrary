@@ -16,14 +16,14 @@ import java.util.List;
 
 import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.*;
 
-public class SongsRepositoryMongo implements SongRepository {
+public class SongRepositoryMongo implements SongRepository {
 
 
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> songsCollection;
 
 
-    public SongsRepositoryMongo() {
+    public SongRepositoryMongo() {
         mongoDatabase = SessionManagerMongo.getDbFromPropertyFile();
         songsCollection = mongoDatabase.getCollection(SONGS_COLLECTION);
     }
