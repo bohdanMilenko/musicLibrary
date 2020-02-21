@@ -48,13 +48,14 @@ public class ArtistRepositoryMongo implements ArtistRepository {
                 addArtist(artistToInsert);
                 validOperation = true;
             } catch (MongoWriteException e) {
+                e.printStackTrace();
                 attempts++;
-                System.out.println("Incorrect ID for Artist");
+                System.out.println("Duplicated ID for Artist " );
                 return true;
             }
         } while (!validOperation || attempts < 3);
         if (attempts == 3) {
-            throw new RuntimeException("Unable to add Artist - Mongo");
+            throw new RuntimeException("Tried to add Artist 3 times - Mongo: " + artist.toString());
         }
         return true;
     }
@@ -96,9 +97,14 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         return artists;
     }
 
+    /**
+     * Maps Documents to Artist entity
+     * @param tempDoc
+     * @return
+     */
     private Artist documentToArtist(Document tempDoc) {
         Artist tempArtist = new Artist();
-        tempArtist.setId(Integer.parseInt(tempDoc.get(ARTIST_ID).toString()));
+        tempArtist.setId(tempDoc.getInteger(ARTIST_ID));
         tempArtist.setName(tempDoc.getString(ARTIST_NAME));
         return tempArtist;
     }

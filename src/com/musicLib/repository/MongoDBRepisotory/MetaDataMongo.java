@@ -14,15 +14,12 @@ public class MetaDataMongo {
 
     static final String ARTIST_ID = "_id";
     static final String ARTIST_NAME = "artistName";
-    static final String ARTIST_ALBUMS_LIST = "albumList";
-
 
     static final String ALBUM_ID = "_id";
     static final String ALBUM_NAME = "albumName";
     static final String ALBUM_ARTIST_INFO = "artistInfo";
     static final String ALBUM_ARTIST_ID = ALBUM_ARTIST_INFO + "." + ARTIST_ID;
-        static final String ALBUM_ARTIST_NAME = ALBUM_ARTIST_INFO + "." + ARTIST_NAME;
-
+    static final String ALBUM_ARTIST_NAME = ALBUM_ARTIST_INFO + "." + ARTIST_NAME;
 
     static final String SONG_ID = "_id";
     static final String SONG_NAME = "songName";

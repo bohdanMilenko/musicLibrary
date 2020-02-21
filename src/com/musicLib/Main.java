@@ -5,16 +5,29 @@ import com.mongodb.client.MongoDatabase;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
+import com.musicLib.exceptions.ServiceException;
 import com.musicLib.mongoUtil.SessionManagerMongo;
+import com.musicLib.repository.AlbumRepository;
+import com.musicLib.repository.ArtistRepository;
 import com.musicLib.repository.MongoDBRepisotory.AlbumRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.SongRepositoryMongo;
+import com.musicLib.repository.SongRepository;
+import com.musicLib.services.*;
+import org.mockito.Mock;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    SongService songServiceMongo;
+    AlbumService albumServiceMongo;
+    ArtistService artistServiceMongo;
+
+    public static void main(String[] args) throws SQLException, ServiceException {
+
+
 
 
         MongoClient mongoClient = SessionManagerMongo.getMongoClient();
@@ -24,7 +37,7 @@ public class Main {
         AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
         SongRepositoryMongo songRepositoryMongo = new SongRepositoryMongo();
         Artist validArtist = new Artist();
-        validArtist.setName("GRIMES");
+        validArtist.setName("Led Zeppelin");
         validArtist.setId(3);
 
         Album album = new Album();
@@ -37,8 +50,14 @@ public class Main {
         song.setName("We Appreciate Power");
         songRepositoryMongo.add(song);
 
-        List<Song> songs = songRepositoryMongo.getByName("War machine");
-        songs.forEach(v -> System.out.println(v.toString()));
+//        List<Song> songs = songRepositoryMongo.getByName("War machine");
+//        songs.forEach(v -> System.out.println(v.toString()));
+
+
+        Main main = new Main();
+        main.initializeServices();
+        main.artistServiceMongo.delete(validArtist);
+
         //albumRepositoryMongo.deleteByArtistID(3);
 
 
@@ -216,6 +235,30 @@ public class Main {
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    private  ArtistService initializeServices() {
+        ArtistRepository artistRepositoryMongo = new ArtistRepositoryMongo();
+        AlbumRepository albumRepositoryMongo = new AlbumRepositoryMongo();
+        SongRepository songRepositoryMongo = new SongRepositoryMongo();
+
+        songServiceMongo = new SongServiceImpl(songRepositoryMongo);
+        albumServiceMongo = new AlbumServiceImpl(albumRepositoryMongo);
+        artistServiceMongo = new ArtistServiceImpl(artistRepositoryMongo);
+
+        RecordValidator recordValidator = new RecordValidator(artistServiceMongo, albumServiceMongo, songServiceMongo);
+
+        songServiceMongo.setAlbumService(albumServiceMongo);
+        songServiceMongo.setRecordValidator(recordValidator);
+
+        artistServiceMongo.setAlbumService(albumServiceMongo);
+        artistServiceMongo.setRecordValidator(recordValidator);
+
+        albumServiceMongo.setSongService(songServiceMongo);
+        albumServiceMongo.setArtistService(artistServiceMongo);
+        albumServiceMongo.setRecordValidator(recordValidator);
+
+        return artistServiceMongo;
     }
 
 
