@@ -123,7 +123,12 @@ public class RecordValidator {
 
     public boolean validateNoSuchArtistPresent(Artist artist) throws ServiceException {
         List<Artist> foundArtists = artistService.getByName(artist);
-        return foundArtists.size() <= 0;
+        if(foundArtists.size()==0){
+            return true;
+
+        }
+        foundArtists.forEach(v -> System.out.println(v.toString()));
+        throw new DuplicatedRecordException();
     }
 
 

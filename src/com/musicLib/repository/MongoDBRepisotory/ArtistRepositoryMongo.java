@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.musicLib.entities.Artist;
+import com.musicLib.exceptions.QueryException;
 import com.musicLib.mongoUtil.SessionManagerMongo;
 import com.musicLib.repository.ArtistRepository;
 import org.bson.Document;
@@ -37,27 +38,20 @@ public class ArtistRepositoryMongo implements ArtistRepository {
      * ObjectId cannot be used as entities are using int to hold id filed.
      */
     @Override
-    public boolean add(Artist artist) {
+    public boolean add(Artist artist) throws QueryException {
         Document artistToInsert = new Document();
         //artistToInsert.append(ARTIST_ID, assignArtistID()).append(ARTIST_NAME, artist.getName());
         artistToInsert.append(ARTIST_ID, MetaDataMongo.getNextSequence(artistCollection)).append(ARTIST_NAME, artist.getName());
         boolean validOperation = false;
-        int attempts = 0;
-        do {
             try {
                 addArtist(artistToInsert);
-                validOperation = true;
-            } catch (MongoWriteException e) {
-                e.printStackTrace();
-                attempts++;
-                System.out.println("Duplicated ID for Artist " );
+                System.out.println("Artist is added to db: " + artistToInsert.toJson());
                 return true;
+            } catch (MongoWriteException e) {
+                System.out.println("Duplicated ID for Artist " + artistToInsert.toJson());
+                throw new QueryException(e);
             }
-        } while (!validOperation || attempts < 3);
-        if (attempts == 3) {
-            throw new RuntimeException("Tried to add Artist 3 times - Mongo: " + artist.toString());
-        }
-        return true;
+
     }
 
     private boolean addArtist(Document artistToInsert) {
