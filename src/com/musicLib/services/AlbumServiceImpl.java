@@ -9,6 +9,7 @@ import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.AlbumRepository;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumServiceImpl implements AlbumService {
@@ -72,12 +73,17 @@ public class AlbumServiceImpl implements AlbumService {
             recordValidator.validateAlbumDeleteMethod(album);
             updateAlbumWithID(album);
             updateAlbumWithArtistID(album);
-            songService.deleteSongsFromAlbum(album);
+            List<Album> albumList = new ArrayList<Album>();
+            albumList.add(album);
+            if (recordValidator.hasDependantSongs(albumList)) {
+                songService.deleteSongsFromAlbum(album);
+            }
             return albumRepo.delete(album.getId(), album.getArtist().getId());
         } catch (SQLException e) {
             throw new ServiceException("Unable to delete album", e);
         }
     }
+
 
     private Album updateAlbumWithID(Album album) throws ServiceException {
         List<Album> foundAlbums = get(album);
@@ -132,19 +138,6 @@ public class AlbumServiceImpl implements AlbumService {
         }
     }
 
-//    private Song updateSongWithArtistID(Song song) throws ServiceException {
-//        if (song.getAlbum().getId() != 0) {
-//            Album albumFromSong = song.getAlbum();
-//            updateAlbumWithArtistID(albumFromSong);
-//            song.setAlbum(albumFromSong);
-//            return song;
-//        } else {
-//            throw new QueryException("Either multiple or no artists found");
-//        }
-//    }
-
-
-    //ASK QUESTION: SHOULD I THROW EXCEPTION IN VALIDATION METHOD OR ALSO HAVE IF CONDITION IN THE METHOD?
     @Override
     public void deleteAlbumsFromArtist(Artist artist) throws ServiceException {
         try {
