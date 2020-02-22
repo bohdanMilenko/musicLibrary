@@ -21,6 +21,10 @@ import java.util.List;
 
 public class Main {
 
+    ArtistRepository artistRepositoryMongo;
+    AlbumRepository albumRepositoryMongo;
+    SongRepository songRepositoryMongo;
+
     SongService songServiceMongo;
     AlbumService albumServiceMongo;
     ArtistService artistServiceMongo;
@@ -38,17 +42,17 @@ public class Main {
         SongRepositoryMongo songRepositoryMongo = new SongRepositoryMongo();
         Artist validArtist = new Artist();
         validArtist.setName("Led Zeppelin");
-        validArtist.setId(3);
+        validArtist.setId(2);
 
         Album album = new Album();
         album.setArtist(validArtist);
-        album.setName("Single");
+        album.setName("Led Zeppelin IV");
 
         Song song = new Song();
         song.setArtist(validArtist);
         song.setAlbum(album);
         song.setName("We Appreciate Power");
-        songRepositoryMongo.add(song);
+        //songRepositoryMongo.add(song);
 
 //        List<Song> songs = songRepositoryMongo.getByName("War machine");
 //        songs.forEach(v -> System.out.println(v.toString()));
@@ -56,165 +60,27 @@ public class Main {
 
         Main main = new Main();
         main.initializeServices();
+
+        //TESTING ARTIST SERVICE FOR MONGODB
+        //main.artistServiceMongo.add(validArtist);
+       // System.out.println("artist added\n");
+//        List<Artist> artists =  main.artistServiceMongo.getAll();
+//        artists.forEach(v -> System.out.println(v.toString()));
+//
+//        List<Artist> artists2 = main.artistServiceMongo.getByName(validArtist);
+//        artists2.forEach(v -> System.out.println(v.toString()));
+//
         main.artistServiceMongo.delete(validArtist);
+//
+//        artists =  main.artistServiceMongo.getAll();
+//        artists.forEach(v -> System.out.println(v.toString()));
 
-        //albumRepositoryMongo.deleteByArtistID(3);
+        //TESTING ALBUM SERVICES FOR MONGODB
+        //main.albumServiceMongo.add(album);
+//        List<Album> albums = main.albumServiceMongo.get(album);
+//        albums.forEach(v -> System.out.println(v.toString()));
+       // main.albumServiceMongo.delete(album);
 
-
-        //artistRepositoryMongo.add(validArtist);
-
-        //List<Artist> artistsMongo =  artistRepositoryMongo.getAll();
-        // artistsMongo.forEach(v -> System.out.println(v.getName()));
-
-
-//        System.out.println( artistRepositoryMongo.add(validArtist));
-//
-//        List<Artist> artistFromDB = artistRepositoryMongo.getByName("Pink Floyd");
-//        artistFromDB.forEach(v -> System.out.println(v.getName() + " " + v.getId()));
-
-        //System.out.println(artistRepositoryMongo.delete("Pink Floyd"));
-//        try {
-//            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Iron Maiden", 1975, "Heavy Metal");
-//        }catch (DuplicatedRecordException e){
-//            System.out.println("Such record already exists: " + e);
-//        }
-//
-//        try {
-//            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Anthrax", 1981, "Thrash Metal");
-//        }catch (DuplicatedRecordException e){
-//            System.out.println("Such record already exists: " + e);
-//        }
-//
-//        try {
-//            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "AC/DC", 1973, "Rock and Roll");
-//        }catch (DuplicatedRecordException e){
-//            System.out.println("Such record already exists: " + e);
-//        }
-//
-//        try {
-//            artistRepositoryMongo.insertNewArtist(db.getCollection("Songs"), "Led Zeppelin", 1968, "Blues Rock");
-//        }catch (DuplicatedRecordException e){
-//            System.out.println("Such record already exists: " + e);
-//        }
-//
-//
-//
-//
-//        List<ArtistRecordMongo> list = artistRepositoryMongo.queryArtistByName(songsDatabase,"Iron Maiden");
-//        for(ArtistRecordMongo record : list){
-//            System.out.println(record.toString());
-//        }
-//
-//        System.out.println();
-//
-//        AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
-//        try {
-//            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Anthrax", "Piece of Mind", 9, 1983);
-//            System.out.println(insertedNewAlbum.toJson());
-//        }catch (ArtistNotFoundException e){
-//            System.out.println("There is no such artist: " + e);
-//        }catch (DuplicatedRecordException e2){
-//            System.out.println("Such album exists");
-//            e2.printStackTrace();
-//        }
-//
-//
-//        try {
-//            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Led Zeppelin", "Led Zeppelin 2", 9, 1969);
-//            System.out.println(insertedNewAlbum.toJson());
-//        }catch (ArtistNotFoundException e){
-//            System.out.println("There is no such artist: " + e);
-//        }catch (DuplicatedRecordException e2){
-//            System.out.println("Such album exists");
-//            e2.printStackTrace();
-//        }
-//
-//        try {
-//            Document insertedNewAlbum = albumRepositoryMongo.insertNewAlbum(songsDatabase, "Anthrax", "For All Kings", 12, 2016);
-//            System.out.println(insertedNewAlbum.toJson());
-//        }catch (ArtistNotFoundException e){
-//            System.out.println("There is no such artist: " + e);
-//        }catch (DuplicatedRecordException e2){
-//            System.out.println("Such album exists");
-//            e2.printStackTrace();
-//        }
-//
-//        try{
-//            albumRepositoryMongo.updateAlbumName(songsDatabase,"Led Zeppelin", "Led Zeppelin 2", "Led Zeppelin 4");
-//        }catch (ArtistNotFoundException e){
-//            System.out.println("There is no such artist: " + e);
-//        }
-
-        // List<ArtistRecordMongo> allRecords = artistRepositoryMongo.queryAllArtists(songsDatabase);
-        //allRecords.forEach(k -> System.out.println(k.toString()));
-
-//        ArtistRecordMongo anthrax = allRecords.get(3);
-//        System.out.println(anthrax.getArtistName());
-//        System.out.println(anthrax.getAlbum().get(0).getAlbumName());
-//
-//        MongoCursor databases = mongoClient.listDatabaseNames().iterator();
-//        while (databases.hasNext()){
-//            System.out.println(databases.next());
-//        }
-//        MongoCursor cursor = songsDatabase.find(new Document(ARTIST_NAME,"Iron Maiden" )).iterator();
-//        Document foundRecord = (Document) cursor.next();
-//        System.out.println(foundRecord.get(MetaDataMongo.ARTIST_NAME));
-
-
-//        SongsRepository songsRepository = new SongsRepository();
-//        ArtistsRepository artistsRepository = new ArtistsRepository();
-//
-//       List<Artist> artists = artistsRepository.queryArtistsTry();;
-//       if(artists == null){
-//           System.out.println("No artists in the database");
-//       } else {
-//           for (Artist artist : artists) {
-//               System.out.println( artist.getId() + " " + artist.getName());
-//           }
-//       }
-//
-//       List<String> albums =  songsRepository.queryAlbumsForArtists("Iron Maiden");
-//       if(albums == null){
-//           System.out.println("No albums found");
-//       } else {
-//           for( String album : albums){
-//               System.out.println(album);
-//           }
-//       }
-//
-//        System.out.println("Please input the song name: ");
-//        String songName = UserInput.getUserInput();
-//        System.out.println(songName);
-//        List<SongArtist> songArtistList = songsRepository.queryArtistBySong(songName);
-//        if(!songArtistList.isEmpty()) {
-//            // Getting 0 only to print out which song User queries. List of all the possible artists is printed after
-//            SongArtist queeredSong =  songArtistList.get(0);
-//            System.out.println("Such artists has song: " + queeredSong.getTrackName());
-//            printResultSet(songArtistList);
-//        }else {
-//            System.out.println("No such song!");
-//        }
-//        System.out.println();
-//
-//        songsRepository.getCountMinMaxInSongsTable("songs");
-//
-//        songsRepository.createArtistsListView();
-//
-//        System.out.println("Please input the song name: ");
-//        String newSong = UserInput.getUserInput();
-//        System.out.println(newSong);
-//        List<SongArtist> songArtistList2 =  songsRepository.queryBySongTitleView(newSong);
-//        printResultSet(songArtistList2);
-//        System.out.println();
-//
-//
-//        songsRepository.insertSong("DAMN", "Kendrick Lamar", "DAMN", 1);
-//
-////        Another way to get path
-////        Path path = FileSystems.getDefault().getPath("music.db");
-////        System.out.println(path.toUri());
-//
-//
     }
 
     private static byte[] parseHexString(final String s) {
@@ -238,9 +104,9 @@ public class Main {
     }
 
     private  ArtistService initializeServices() {
-        ArtistRepository artistRepositoryMongo = new ArtistRepositoryMongo();
-        AlbumRepository albumRepositoryMongo = new AlbumRepositoryMongo();
-        SongRepository songRepositoryMongo = new SongRepositoryMongo();
+        artistRepositoryMongo = new ArtistRepositoryMongo();
+        albumRepositoryMongo = new AlbumRepositoryMongo();
+        songRepositoryMongo = new SongRepositoryMongo();
 
         songServiceMongo = new SongServiceImpl(songRepositoryMongo);
         albumServiceMongo = new AlbumServiceImpl(albumRepositoryMongo);
