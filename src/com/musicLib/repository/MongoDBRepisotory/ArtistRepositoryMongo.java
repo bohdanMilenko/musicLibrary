@@ -108,7 +108,7 @@ public class ArtistRepositoryMongo implements ArtistRepository {
         Document artistToDelete = new Document();
         artistToDelete.append(ARTIST_NAME, artistName);
         DeleteResult dr = artistCollection.deleteMany(artistToDelete);
-        System.out.println(dr.toString());
+        System.out.println("Artist Repo: " + dr.toString());
         return true;
     }
 
