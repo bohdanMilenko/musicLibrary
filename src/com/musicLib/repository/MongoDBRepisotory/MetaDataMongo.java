@@ -7,6 +7,7 @@ import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 
 import javax.print.Doc;
+import java.util.Arrays;
 
 public class MetaDataMongo {
 
@@ -21,8 +22,10 @@ public class MetaDataMongo {
     static final String ALBUM_ID = "_id";
     static final String ALBUM_NAME = "albumName";
     static final String ALBUM_ARTIST_INFO = "artistInfo";
-    static final String ALBUM_ARTIST_ID = ALBUM_ARTIST_INFO + "." + ARTIST_ID;
-    static final String ALBUM_ARTIST_NAME = ALBUM_ARTIST_INFO + "." + ARTIST_NAME;
+    static final String ALBUM_INSERT_ARTIST_ID = ARTIST_ID;
+    static final String ALBUM_INSERT_ARTIST_NAME = ARTIST_NAME;
+    static final String ALBUM_QUERY_ARTIST_ID = ALBUM_ARTIST_INFO + "." + ARTIST_ID;
+    static final String ALBUM_QUERY_ARTIST_NAME =ALBUM_ARTIST_INFO + "." +ARTIST_NAME;
 
     static final String SONG_ID = "_id";
     static final String SONG_NAME = "songName";
