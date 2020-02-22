@@ -42,6 +42,8 @@ public class Artist {
 
     @Override
     public String toString() {
-        return "Artist Name: " + name;
+        return "Artist "
+                +"\n\tID: " + id
+                +"\n\tName: " + name;
     }
 }
