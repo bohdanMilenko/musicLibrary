@@ -23,7 +23,7 @@ import org.hamcrest.SelfDescribing;
 
 import org.mockito.plugins.MockMaker;
 
-@ExtendWith(MockitoExtention.class)
+//@ExtendWith(MockitoExtention.class)
 public class ArtistServiceImplMockTests {
 
     SongService songServiceMongo;

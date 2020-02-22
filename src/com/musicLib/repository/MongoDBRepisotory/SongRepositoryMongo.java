@@ -106,7 +106,7 @@ public class SongRepositoryMongo implements SongRepository {
         Document deleteQuery = new Document();
         deleteQuery.append(SONG_ALBUM_ID, albumId);
         DeleteResult deleteResult = songsCollection.deleteMany(deleteQuery);
-        System.out.println(deleteResult);
+        System.out.println("Songs Repo: " + deleteResult);
         return true;
     }
 

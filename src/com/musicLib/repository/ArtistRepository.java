@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ArtistRepository {
 
-    boolean add(Artist artist) throws SQLException;
+    boolean add(Artist artist) throws SQLException, QueryException;
 
     List<Artist> getAll() throws SQLException;
 
