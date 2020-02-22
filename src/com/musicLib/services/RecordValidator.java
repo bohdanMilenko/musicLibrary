@@ -52,19 +52,19 @@ public class RecordValidator {
 
     public boolean validateArtistDeleteMethod(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
-        validateArtistExistsAndUnique(artist);
+        validateArtistExists(artist);
         return true;
     }
 
     public boolean validateAlbumDeleteMethod(Album album) throws ServiceException {
         validateRecordForNulls(album);
-        validateAlbumExistsAndUnique(album);
+        validateAlbumExists(album);
         return true;
     }
 
     public boolean validateSongDeleteMethod(Song song) throws ServiceException {
         validateRecordForNulls(song);
-        validateSongExistsAndUnique(song);
+        validateSongExists(song);
         return true;
     }
 
@@ -77,7 +77,6 @@ public class RecordValidator {
     private boolean validateRecordForNulls(Album album) throws ServiceException {
         validateIfNotNull(album);
         validateIfNotNull(album.getArtist());
-        validateNoSuchAlbumPresent(album);
         return true;
     }
 
@@ -172,5 +171,36 @@ public class RecordValidator {
             throw new AlbumNotFoundException("There is no such song");
         }
     }
+
+
+    private boolean validateArtistExists(Artist artist) throws ServiceException {
+        List<Artist> artists = artistService.getByName(artist);
+        if  (artists.size() > 0) {
+            return true;
+        } else {
+            throw new ArtistNotFoundException("There is no such artist");
+        }
+    }
+
+
+    private boolean validateAlbumExists(Album album) throws ServiceException {
+        List<Album> albums = albumService.get(album);
+        if (albums.size() > 0) {
+            return true;
+        } else {
+            throw new AlbumNotFoundException("There is no such album");
+        }
+    }
+
+    private boolean validateSongExists(Song song) throws ServiceException {
+        List<Song> songs = songService.get(song);
+        if(songs.size() > 0) {
+            return true;
+        } else {
+            throw new AlbumNotFoundException("There is no such song");
+        }
+    }
+
+
 
 }
