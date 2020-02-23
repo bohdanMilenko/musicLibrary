@@ -97,14 +97,14 @@ public class SongRepositoryMongo implements SongRepository {
         DeleteResult deleteResult = songsCollection.deleteOne(and(eq(SONG_NAME, song.getName()),
                 eq(SONG_QUERY_ARTIST_ID, song.getArtist().getId()),
                 eq(SONG_QUERY_ALBUM_ID, song.getAlbum().getId())));
-        System.out.println(deleteResult.toString());
+        System.out.println("Songs Repo: " + deleteResult.toString());
         return true;
     }
 
     @Override
     public boolean deleteByAlbumId(int albumId) {
         DeleteResult deleteResult = songsCollection.deleteMany(eq(SONG_QUERY_ALBUM_ID, albumId));
-        System.out.println("Songs Repo: " + deleteResult);
+        System.out.println("Songs Repo: " + deleteResult.toString());
         return true;
     }
 
