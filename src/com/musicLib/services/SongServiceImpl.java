@@ -50,11 +50,13 @@ public class SongServiceImpl implements SongService {
     public List<Song> getByAlbum(Album album) throws ServiceException {
         try {
             recordValidator.validateIfNotNull(album);
+            albumService.updateAlbumWithID(album);
             return songRepo.getByAlbumId(album.getId());
         } catch (SQLException e) {
             throw new ServiceException("Unable get songs by album", e);
         }
     }
+
 
     public boolean delete(Song song) throws ServiceException {
         try {
