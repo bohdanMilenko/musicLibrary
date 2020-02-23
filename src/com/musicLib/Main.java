@@ -32,8 +32,6 @@ public class Main {
     public static void main(String[] args) throws SQLException, ServiceException {
 
 
-
-
         MongoClient mongoClient = SessionManagerMongo.getMongoClient();
 
         MongoDatabase db = SessionManagerMongo.getDbFromPropertyFile();
@@ -41,17 +39,17 @@ public class Main {
         AlbumRepositoryMongo albumRepositoryMongo = new AlbumRepositoryMongo();
         SongRepositoryMongo songRepositoryMongo = new SongRepositoryMongo();
         Artist validArtist = new Artist();
-        validArtist.setName("Led Zeppelin");
+        validArtist.setName("Jack White");
         validArtist.setId(2);
 
         Album album = new Album();
         album.setArtist(validArtist);
-        album.setName("Led Zeppelin IV");
+        album.setName("Icky Trump");
 
         Song song = new Song();
         song.setArtist(validArtist);
         song.setAlbum(album);
-        song.setName("We Appreciate Power");
+        song.setName("Icky Trump");
         //songRepositoryMongo.add(song);
 
 //        List<Song> songs = songRepositoryMongo.getByName("War machine");
@@ -62,25 +60,35 @@ public class Main {
         main.initializeServices();
 
         //TESTING ARTIST SERVICE FOR MONGODB
-        //main.artistServiceMongo.add(validArtist);
-       // System.out.println("artist added\n");
+        // main.artistServiceMongo.add(validArtist);
+        // System.out.println("artist added\n");
 //        List<Artist> artists =  main.artistServiceMongo.getAll();
 //        artists.forEach(v -> System.out.println(v.toString()));
 //
 //        List<Artist> artists2 = main.artistServiceMongo.getByName(validArtist);
 //        artists2.forEach(v -> System.out.println(v.toString()));
 //
-        main.artistServiceMongo.delete(validArtist);
+        //main.artistServiceMongo.delete(validArtist);
 //
 //        artists =  main.artistServiceMongo.getAll();
 //        artists.forEach(v -> System.out.println(v.toString()));
 
         //TESTING ALBUM SERVICES FOR MONGODB
         //main.albumServiceMongo.add(album);
-//        List<Album> albums = main.albumServiceMongo.get(album);
-//        albums.forEach(v -> System.out.println(v.toString()));
-       // main.albumServiceMongo.delete(album);
+        List<Album> albums = main.albumServiceMongo.get(album);
+        albums.forEach(v -> System.out.println(v.toString() + "\n" + v.getArtist().toString()));
+        // main.albumServiceMongo.delete(album);
 
+        //TESTING SONGS SERVICES FOR MONGO
+
+        //main.songServiceMongo.add(song);
+//        List<Song> songs = main.songServiceMongo.getByAlbum(album);
+//        songs.forEach(v -> System.out.println(v.toString()));
+//        System.out.println(songs.size());
+
+        List<Song> songs2 = main.songServiceMongo.get(song);
+        songs2.forEach(v -> System.out.println(v.toString() + "\n" + v.getAlbum().toString() + "\n" + v.getArtist().toString()));
+        System.out.println(songs2.size());
     }
 
     private static byte[] parseHexString(final String s) {
@@ -103,7 +111,7 @@ public class Main {
         return new String(hexChars);
     }
 
-    private  ArtistService initializeServices() {
+    private ArtistService initializeServices() {
         artistRepositoryMongo = new ArtistRepositoryMongo();
         albumRepositoryMongo = new AlbumRepositoryMongo();
         songRepositoryMongo = new SongRepositoryMongo();
