@@ -119,7 +119,6 @@ public class AlbumServiceImpl implements AlbumService {
         }
     }
 
-    //TODO
     private Song updateSongWithArtistID(Song song) throws ServiceException {
         if (song.getAlbum().getId() != 0) {
             Artist artistFromSong = song.getArtist();
