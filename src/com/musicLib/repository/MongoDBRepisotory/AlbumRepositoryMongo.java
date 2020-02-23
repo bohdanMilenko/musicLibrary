@@ -32,8 +32,8 @@ public class AlbumRepositoryMongo implements AlbumRepository {
     @Override
     public boolean add(Album album) {
         Document artistInfo = new Document();
-        artistInfo.append(ALBUM_INSERT_ARTIST_ID, album.getArtist().getId())
-                .append(ALBUM_INSERT_ARTIST_NAME, album.getArtist().getName());
+        artistInfo.append(ARTIST_ID, album.getArtist().getId())
+                .append(ARTIST_NAME, album.getArtist().getName());
         Document albumToInsert = new Document();
         albumToInsert.append(ALBUM_ID, MetaDataMongo.getNextSequence(albumsCollection)).append(ALBUM_NAME, album.getName())
                 .append(ALBUM_ARTIST_INFO, artistInfo);
@@ -60,21 +60,24 @@ public class AlbumRepositoryMongo implements AlbumRepository {
     private List<Album> cursorToAlbum(MongoCursor<Document> cursor) {
         List<Album> albums = new ArrayList<>();
         while (cursor.hasNext()) {
-            Document docToAlbum = cursor.next();
-            Album tempAlbum = documentToAlbum(docToAlbum);
+            Document albumFromDB = cursor.next();
+            Document artistFromDB = (Document) albumFromDB.get(ALBUM_ARTIST_INFO);
+            Album tempAlbum = documentToAlbum(artistFromDB, albumFromDB);
             albums.add(tempAlbum);
         }
         return albums;
     }
 
-    private Album documentToAlbum(Document passedDoc) {
-        System.out.println(passedDoc.toJson());
-        Album tempAlbum = new Album();
-        tempAlbum.setId(passedDoc.getInteger(ALBUM_ID));
-        tempAlbum.setName(passedDoc.getString(ALBUM_NAME));
+    private Album documentToAlbum(Document artistDoc,Document albumDoc) {
+        System.out.println(albumDoc.toJson());
         Artist tempArtist = new Artist();
-        tempArtist.setId(passedDoc.getInteger(ALBUM_INSERT_ARTIST_ID));
-        tempArtist.setName(passedDoc.getString(ALBUM_INSERT_ARTIST_NAME));
+        tempArtist.setId(artistDoc.getInteger(ARTIST_ID));
+        tempArtist.setName(artistDoc.getString(ARTIST_NAME));
+
+        Album tempAlbum = new Album();
+        tempAlbum.setId(albumDoc.getInteger(ALBUM_ID));
+        tempAlbum.setName(albumDoc.getString(ALBUM_NAME));
+
         tempAlbum.setArtist(tempArtist);
         return tempAlbum;
     }

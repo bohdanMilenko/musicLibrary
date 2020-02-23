@@ -3,6 +3,7 @@ package com.musicLib.repository.MongoDBRepisotory;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
@@ -14,6 +15,7 @@ import org.bson.Document;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mongodb.client.model.Filters.*;
 import static com.musicLib.repository.MongoDBRepisotory.MetaDataMongo.*;
 
 public class SongRepositoryMongo implements SongRepository {
@@ -39,14 +41,13 @@ public class SongRepositoryMongo implements SongRepository {
         songToAdd.append(SONG_ID, MetaDataMongo.getNextSequence(songsCollection)).append(SONG_NAME, song.getName())
                 .append(SONG_ARTIST_INFO, artistForSong).append(SONG_ALBUM_INFO, albumForSong);
         songsCollection.insertOne(songToAdd);
+        System.out.println("Inserted: " + song.toString());
         return true;
     }
 
     @Override
     public List<Song> getByName(String songName) {
-        Document query = new Document();
-        query.append(SONG_NAME, songName);
-        try (MongoCursor<Document> cursor = songsCollection.find(query).iterator()) {
+        try (MongoCursor<Document> cursor = songsCollection.find(eq(SONG_NAME, songName)).iterator()) {
             return cursorToSongs(cursor);
         }
 
@@ -54,9 +55,8 @@ public class SongRepositoryMongo implements SongRepository {
 
     @Override
     public List<Song> getByAlbumId(int albumId) {
-        Document query = new Document();
-        query.append(SONG_ALBUM_ID, albumId);
-        try (MongoCursor<Document> cursor = songsCollection.find(query).iterator()) {
+        System.out.println(albumId);
+        try (MongoCursor<Document> cursor = songsCollection.find(eq(SONG_QUERY_ALBUM_ID, albumId)).iterator()) {
             return cursorToSongs(cursor);
         }
     }
@@ -64,48 +64,46 @@ public class SongRepositoryMongo implements SongRepository {
     private List<Song> cursorToSongs(MongoCursor<Document> cursor) {
         List<Song> songsToReturn = new ArrayList<>();
         while (cursor.hasNext()) {
-            Document tempDoc = cursor.next();
-            Song tempSong = documentToSong(tempDoc);
+            Document songFromDB = cursor.next();
+            Document artistFromDB = (Document) songFromDB.get(SONG_ARTIST_INFO);
+            Document albumFromDB = (Document) songFromDB.get(SONG_ALBUM_INFO);
+            Song tempSong = documentToSong(artistFromDB, albumFromDB, songFromDB);
             songsToReturn.add(tempSong);
         }
         return songsToReturn;
     }
 
-    private Song documentToSong(Document passedDoc) {
+    private Song documentToSong(Document artistDoc, Document albumDoc, Document songDoc) {
         Song songToReturn = new Song();
         Artist artist = new Artist();
         Album album = new Album();
 
-//        artist.setId(passedDoc.getInteger(SONG_ARTIST_ID));
-        artist.setName(passedDoc.getString(SONG_ARTIST_NAME));
+        artist.setId(artistDoc.getInteger(ARTIST_ID));
+        artist.setName(artistDoc.getString(ARTIST_NAME));
 
-//        album.setId(passedDoc.getInteger(SONG_ALBUM_ID));
-        album.setName(passedDoc.getString(SONG_ALBUM_NAME));
+        album.setId(albumDoc.getInteger(ALBUM_ID));
+        album.setName(albumDoc.getString(ALBUM_NAME));
 
-        songToReturn.setId(passedDoc.getInteger(SONG_ID));
-        songToReturn.setName(passedDoc.getString(SONG_NAME));
+        songToReturn.setId(songDoc.getInteger(SONG_ID));
+        songToReturn.setName(songDoc.getString(SONG_NAME));
         songToReturn.setArtist(artist);
         songToReturn.setAlbum(album);
-
         return songToReturn;
     }
 
 
     @Override
     public boolean delete(Song song) {
-        Document deleteQuery = new Document();
-        deleteQuery.append(SONG_NAME, song.getName()).append(SONG_ARTIST_ID, song.getArtist().getId())
-                .append(SONG_ALBUM_ID, song.getAlbum().getId());
-        DeleteResult deleteResult = songsCollection.deleteOne(deleteQuery);
+        DeleteResult deleteResult = songsCollection.deleteOne(and(eq(SONG_NAME, song.getName()),
+                eq(SONG_QUERY_ARTIST_ID, song.getArtist().getId()),
+                eq(SONG_QUERY_ALBUM_ID, song.getAlbum().getId())));
         System.out.println(deleteResult.toString());
         return true;
     }
 
     @Override
     public boolean deleteByAlbumId(int albumId) {
-        Document deleteQuery = new Document();
-        deleteQuery.append(SONG_ALBUM_ID, albumId);
-        DeleteResult deleteResult = songsCollection.deleteMany(deleteQuery);
+        DeleteResult deleteResult = songsCollection.deleteMany(eq(SONG_QUERY_ALBUM_ID, albumId));
         System.out.println("Songs Repo: " + deleteResult);
         return true;
     }
