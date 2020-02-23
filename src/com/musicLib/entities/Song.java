@@ -59,6 +59,7 @@ public class Song {
     @Override
     public String toString() {
         return "Song " +
+                "\n\tID: " + id +
                 "\n\tName: " + name +
                 "\n\tTrack Number: " + trackNumber;
     }
