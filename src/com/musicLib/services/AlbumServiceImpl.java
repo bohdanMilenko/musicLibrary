@@ -64,7 +64,7 @@ public class AlbumServiceImpl implements AlbumService {
             artist = artistService.updateArtistID(artist);
             return albumRepo.getAlbumsByArtistID(artist.getId());
         } catch (SQLException e) {
-            throw new ServiceException("Unable t get albums by artist", e);
+            throw new ServiceException("Unable to get albums by artist:\n\t" + artist.toString(), e);
         }
     }
 
@@ -84,18 +84,16 @@ public class AlbumServiceImpl implements AlbumService {
         }
     }
 
-
-    private Album updateAlbumWithID(Album album) throws ServiceException {
+    @Override
+    public Album updateAlbumWithID(Album album) throws ServiceException {
         List<Album> foundAlbums = get(album);
         if (foundAlbums.size() == 1) {
             album.setId(foundAlbums.get(0).getId());
             return album;
         }
         throw new ServiceException("Unable to update album with ID from DB");
-
     }
 
-    //TODO THIS METHOD SHOULD RETURN ALBUM, NOT SONG. UPDATING ARTIST ID SHOULD BE IN ARTIST SERVICE
     @Override
     public Song updateSongWithID(Song song) throws ServiceException {
         recordValidator.validateIfNotNull(song);
@@ -104,22 +102,20 @@ public class AlbumServiceImpl implements AlbumService {
         return song;
     }
 
-    //TODO
     private Song updateSongWithAlbumID(Song song) throws ServiceException {
         try {
             Album albumFromSong = song.getAlbum();
             List<Album> foundAlbums = albumRepo.getByName(albumFromSong.getName());
             if (foundAlbums.size() == 1) {
-                System.out.println("Album name: " + albumFromSong.getName());
-                System.out.println("Album id fund in db: " + foundAlbums.get(0).getId() + ", " + foundAlbums.get(0).getName());
                 albumFromSong.setId(foundAlbums.get(0).getId());
                 song.setAlbum(albumFromSong);
                 return song;
             } else {
-                throw new QueryException("Either multiple or none albums with the same name");
+                throw new QueryException("Unable to update Songs with ids: Either multiple or none albums with the same name:\n" +
+                        song.toString());
             }
         } catch (SQLException e) {
-            throw new ServiceException("Unable to update song with album ID", e);
+            throw new ServiceException("Unable to update song with album ID:\n" + song.toString(), e);
         }
     }
 

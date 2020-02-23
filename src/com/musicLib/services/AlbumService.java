@@ -17,6 +17,8 @@ public interface AlbumService {
 
     boolean delete(Album album) throws ServiceException;
 
+    Album updateAlbumWithID(Album album) throws ServiceException;
+
     Song updateSongWithID(Song song) throws ServiceException;
 
     void setArtistService(ArtistService artistService);
