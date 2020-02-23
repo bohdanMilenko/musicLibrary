@@ -72,6 +72,7 @@ public class SongServiceImpl implements SongService {
     public void deleteSongsFromAlbum(Album album) throws ServiceException {
         try {
             recordValidator.validateIfNotNull(album);
+            albumService.updateAlbumWithID(album);
             songRepo.deleteByAlbumId(album.getId());
         } catch (SQLException e) {
             throw new ServiceException("Unable to delete songs from album", e);
