@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface ArtistService {
 
-    boolean add(Artist artist) throws QueryException, ServiceException;
+    boolean add(Artist artist) throws ServiceException;
 
-    List<Artist> getAll() throws QueryException, ServiceException;
+    List<Artist> getAll() throws ServiceException;
 
     List<Artist> getByName(Artist artist) throws ServiceException;
 
-    boolean delete(Artist artist) throws SQLException, QueryException, ServiceException;
+    boolean delete(Artist artist) throws SQLException, ServiceException;
 
     void setRecordValidator(RecordValidator recordValidator);
 
