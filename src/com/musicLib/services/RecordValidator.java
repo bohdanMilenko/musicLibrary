@@ -23,46 +23,46 @@ public class RecordValidator {
     }
 
 
-    public boolean validateArtistAddMethod(Artist artist) throws ServiceException {
+     boolean validateArtistAddMethod(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateNoSuchArtistPresent(artist);
         return true;
     }
 
-    public boolean validateAlbumAddMethod(Album album) throws ServiceException {
+     boolean validateAlbumAddMethod(Album album) throws ServiceException {
         validateRecordForNulls(album);
         validateNoSuchAlbumPresent(album);
+        validateIfNotNull(album.getArtist());
         validateArtistExistsAndUnique(album.getArtist());
         return true;
     }
 
-    //TODO VOID METHOD
-    public boolean validateSongAddMethod(Song song) throws ServiceException {
+     boolean validateSongAddMethod(Song song) throws ServiceException {
         validateRecordForNulls(song);
         validateNoSuchSongPresent(song);
         validateAlbumExistsAndUnique(song.getAlbum());
         return true;
     }
 
-    public boolean validateGetAlbumByArtist(Artist artist) throws ServiceException {
+     boolean validateGetAlbumByArtist(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateArtistExistsAndUnique(artist);
         return true;
     }
 
-    public boolean validateArtistDeleteMethod(Artist artist) throws ServiceException {
+     boolean validateArtistDeleteMethod(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateArtistExists(artist);
         return true;
     }
 
-    public boolean validateAlbumDeleteMethod(Album album) throws ServiceException {
+     boolean validateAlbumDeleteMethod(Album album) throws ServiceException {
         validateRecordForNulls(album);
         validateAlbumExists(album);
         return true;
     }
 
-    public boolean validateSongDeleteMethod(Song song) throws ServiceException {
+     boolean validateSongDeleteMethod(Song song) throws ServiceException {
         validateRecordForNulls(song);
         validateSongExists(song);
         return true;
@@ -126,7 +126,6 @@ public class RecordValidator {
             return true;
 
         }
-        foundArtists.forEach(v -> System.out.println(v.toString()));
         throw new DuplicatedRecordException();
     }
 
@@ -199,6 +198,12 @@ public class RecordValidator {
         } else {
             throw new AlbumNotFoundException("There is no such song");
         }
+    }
+
+    void validateUpdateSongWithID(Song song) throws ServiceException {
+        validateIfNotNull(song);
+        validateIfNotNull(song.getAlbum());
+        validateIfNotNull(song.getArtist());
     }
 
 
