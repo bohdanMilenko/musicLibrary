@@ -21,6 +21,16 @@ public class SongServiceImpl implements SongService {
     public SongServiceImpl() {
     }
 
+    /**
+     * Method to add song to DB.
+     * Validation: passed song object along with enclosed Artist and Album are not Nulls &&
+     * If required album present in DB && if song with such name doesn't exist in DB.
+     * Updates enclosed Artist and Album with IDs from db
+     *
+     * @param song
+     * @return
+     * @throws ServiceException
+     */
     public boolean add(Song song) throws ServiceException {
         try {
             recordValidator.validateSongAddMethod(song);
@@ -36,7 +46,14 @@ public class SongServiceImpl implements SongService {
         return albumService.updateSongWithID(song);
     }
 
-
+    /**
+     * Method to get song from DB based on it's name
+     * Validation: if passed object is not Null
+     *
+     * @param song
+     * @return
+     * @throws ServiceException
+     */
     public List<Song> get(Song song) throws ServiceException {
         try {
             recordValidator.validateIfNotNull(song);
@@ -46,6 +63,16 @@ public class SongServiceImpl implements SongService {
         }
     }
 
+    /**
+     * Method to get all songs for a certain Album
+     * Validation: if passed object is not Null
+     * Updates Album with IDs from db
+     * Retrieves songs by Album ID
+     *
+     * @param album
+     * @return
+     * @throws ServiceException
+     */
     @Override
     public List<Song> getByAlbum(Album album) throws ServiceException {
         try {
@@ -58,9 +85,19 @@ public class SongServiceImpl implements SongService {
     }
 
 
+    /**
+     * Deletes song from songs table.
+     * Song name && artists' id && albums' IDs are required.
+     * Validation: if passed song and enclosed Artist & Album are not Nulls.
+     * Updates enclosed Artist and Album with IDs from db
+     *
+     * @param song
+     * @return
+     * @throws ServiceException
+     */
     public boolean delete(Song song) throws ServiceException {
         try {
-            recordValidator.validateSongDeleteMethod(song);
+            recordValidator.validateRecordForNulls(song);
             updateSongWithRequiredID(song);
             return songRepo.delete(song);
         } catch (SQLException e) {
@@ -68,6 +105,15 @@ public class SongServiceImpl implements SongService {
         }
     }
 
+    /**
+     * Deletes songs from songs table by Album ID.
+     * Albums' ID is required.
+     * Validation: if Album is not Null.
+     * Updates Album with IDs from db
+     * Deletes songs by album ID
+     * @param album
+     * @throws ServiceException
+     */
     @Override
     public void deleteSongsFromAlbum(Album album) throws ServiceException {
         try {
