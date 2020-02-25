@@ -13,7 +13,6 @@ import com.musicLib.repository.SongRepository;
 import com.musicLib.services.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ApplicationMain {
@@ -70,7 +69,7 @@ public class ApplicationMain {
         albumList2.forEach(v -> System.out.println(v.getName()));
 
         albumServiceSQL.delete(albumGoingToCalifornia);
-        albumServiceSQL.deleteAlbumsFromArtist(artistDrake);
+        albumServiceSQL.deleteAlbumsForArtist(artistDrake);
 
 
 
