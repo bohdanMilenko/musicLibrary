@@ -144,7 +144,7 @@ public class AlbumServiceImpl implements AlbumService {
      */
     @Override
     public Song updateSongWithID(Song song) throws ServiceException {
-        recordValidator.validateUpdateSongWithID(song);
+        recordValidator.validateRecordForNulls(song);
         updateSongWithAlbumID(song);
         updateSongWithArtistID(song);
         return song;
