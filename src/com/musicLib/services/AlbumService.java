@@ -27,5 +27,5 @@ public interface AlbumService {
 
     void setRecordValidator(RecordValidator recordValidator);
 
-    void deleteAlbumsFromArtist(Artist artist) throws ServiceException;
+    void deleteAlbumsForArtist(Artist artist) throws ServiceException;
 }

@@ -211,7 +211,7 @@ public class AlbumServiceImpl implements AlbumService {
      * @throws ServiceException
      */
     @Override
-    public void deleteAlbumsFromArtist(Artist artist) throws ServiceException {
+    public void deleteAlbumsForArtist(Artist artist) throws ServiceException {
         try {
             if (recordValidator.validateIfNotNull(artist)) {
                 if (artist.getId() > 0) {
