@@ -91,7 +91,7 @@ public class ArtistServiceImpl implements ArtistService {
             if (recordValidator.hasDependantAlbums(artist)) {
                 System.out.println("Artist has dependant albums");
                 artist = updateAlbums(artist);
-                albumService.deleteAlbumsFromArtist(artist);
+                albumService.deleteAlbumsForArtist(artist);
             }
             return artistRepo.delete(artist.getName());
         } catch (SQLException e) {
