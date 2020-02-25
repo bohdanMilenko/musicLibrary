@@ -23,13 +23,13 @@ public class RecordValidator {
     }
 
 
-     boolean validateArtistAddMethod(Artist artist) throws ServiceException {
+    boolean validateArtistAddMethod(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateNoSuchArtistPresent(artist);
         return true;
     }
 
-     boolean validateAlbumAddMethod(Album album) throws ServiceException {
+    boolean validateAlbumAddMethod(Album album) throws ServiceException {
         validateRecordForNulls(album);
         validateNoSuchAlbumPresent(album);
         validateIfNotNull(album.getArtist());
@@ -37,32 +37,32 @@ public class RecordValidator {
         return true;
     }
 
-     boolean validateSongAddMethod(Song song) throws ServiceException {
+    boolean validateSongAddMethod(Song song) throws ServiceException {
         validateRecordForNulls(song);
         validateNoSuchSongPresent(song);
         validateAlbumExistsAndUnique(song.getAlbum());
         return true;
     }
 
-     boolean validateGetAlbumByArtist(Artist artist) throws ServiceException {
+    boolean validateGetAlbumByArtist(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateArtistExistsAndUnique(artist);
         return true;
     }
 
-     boolean validateArtistDeleteMethod(Artist artist) throws ServiceException {
+    boolean validateArtistDeleteMethod(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateArtistExists(artist);
         return true;
     }
 
-     boolean validateAlbumDeleteMethod(Album album) throws ServiceException {
+    boolean validateAlbumDeleteMethod(Album album) throws ServiceException {
         validateRecordForNulls(album);
         validateAlbumExists(album);
         return true;
     }
 
-     boolean validateSongDeleteMethod(Song song) throws ServiceException {
+    boolean validateSongDeleteMethod(Song song) throws ServiceException {
         validateRecordForNulls(song);
         validateSongExists(song);
         return true;
@@ -80,7 +80,7 @@ public class RecordValidator {
         return true;
     }
 
-    private boolean validateRecordForNulls(Song song) throws ServiceException {
+    boolean validateRecordForNulls(Song song) throws ServiceException {
         validateIfNotNull(song);
         validateIfNotNull(song.getArtist());
         validateIfNotNull(song.getAlbum());
@@ -122,7 +122,7 @@ public class RecordValidator {
 
     public boolean validateNoSuchArtistPresent(Artist artist) throws ServiceException {
         List<Artist> foundArtists = artistService.getByName(artist);
-        if(foundArtists.size()==0){
+        if (foundArtists.size() == 0) {
             return true;
 
         }
@@ -174,7 +174,7 @@ public class RecordValidator {
 
     private boolean validateArtistExists(Artist artist) throws ServiceException {
         List<Artist> artists = artistService.getByName(artist);
-        if  (artists.size() > 0) {
+        if (artists.size() > 0) {
             return true;
         } else {
             throw new ArtistNotFoundException("There is no such artist");
@@ -193,19 +193,10 @@ public class RecordValidator {
 
     private boolean validateSongExists(Song song) throws ServiceException {
         List<Song> songs = songService.get(song);
-        if(songs.size() > 0) {
+        if (songs.size() > 0) {
             return true;
         } else {
             throw new AlbumNotFoundException("There is no such song");
         }
     }
-
-    void validateUpdateSongWithID(Song song) throws ServiceException {
-        validateIfNotNull(song);
-        validateIfNotNull(song.getAlbum());
-        validateIfNotNull(song.getArtist());
-    }
-
-
-
 }
