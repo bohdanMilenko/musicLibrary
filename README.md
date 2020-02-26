@@ -8,14 +8,14 @@ This application is designed for users to perform CRUD opertaions on music recor
 	- Custom Exceptions module supports the progrm workflow
 	- All Service implementations are covered with integration tests (JUnit and Mockito)
 	- Maven for managing dependencies
-	- Docker Image with application inside: [Take me to docker hub!](https://hub.docker.com/)
+	- Docker Image with application inside: [DockerHub](https://hub.docker.com/)
 	
 
 
 ## High Level Architecture
 
 <p align="center">
-   <img src ="readMeSource/High Level Architecture Music Repo.png" width="700">
+   <img src ="readMeSource/High Level Architecture Music Repo.png" width="600">
 </p>
 
 <p align="center">
