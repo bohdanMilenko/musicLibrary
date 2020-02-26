@@ -1,28 +1,30 @@
-# Music Library
+# Music Repository API
 
-Welcome to the app that give you an opportunity to perform various queries to the database with information about artists, their songs and albums
+This application is designed for users to perform CRUD opertaions on music records. 
 
 ## Main features:
-	- Insert new songs ( if song with such artist and album already exists, nothing is commited)
-	- In case of SQLException .rollback is performed
-	- Path to database is extracted from .properties file. Default path is hardcoded in case of file is not availaible
+	- Architecture is built on Inversion of Control principles by implementing Service Pattern
+	- Supports multiple databases integration for scalability purpose(currently MongoDB and SQLite3 modules availaibe)
+	- Custom Exceptions module supports the progrm workflow
+	- All Service implementations are covered with integration tests (JUnit and Mockito)
+	- Maven for managing dependencies
+	- Docker Image with application inside: [_Take me to docker hub!_](https://hub.docker.com/)
+	- Connections to databases are configured with .properties files
 	- Using Prepared statements to prevent SQL injections
-	- Only one connection is active per query. Each new query creates a new connection and closes when it is performed
+	- 
 
-## DB Structure
+## High Level Architecture
 
-### Artists:
-	- id - Integer, key
-	- name - String, the name of the artist
+<p align="center">
+   <img src ="readMeSource/High Level Architecture Music Repo.png" width="700">
+</p>
 
-### Songs:
-	- id - Integer, key
-	- track - Integer, the position of the track in the album
-	- title - String, the title of the song
-	- album - Integer, the id of the album this song belongs to
+Receives requests from User, validates,
+ applies business logic and passes
+ request to Repositories Level
 
-### Albums:
-	- id - Integer, key
-	- name - String, the name of the album
-	- artist - Integer, the id of the artist this album belongs to
+Receives requests from Service Layer, 
+retrieves data from DB, maps it to entities
+and returns back to Service Layer
+
 
