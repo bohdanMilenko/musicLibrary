@@ -7,7 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.QueryException;
-import com.musicLib.mongoUtil.SessionManagerMongo;
+import com.musicLib.repository.mongoUtil.SessionManagerMongo;
 import com.musicLib.repository.ArtistRepository;
 import org.bson.Document;
 

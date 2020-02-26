@@ -1,4 +1,4 @@
-package com.musicLib.SQLUtil;
+package com.musicLib.repository.SQLUtil;
 
 import java.io.FileInputStream;
 import java.io.IOException;

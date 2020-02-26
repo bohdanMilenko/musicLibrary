@@ -1,4 +1,4 @@
-package com.musicLib.mongoUtil;
+package com.musicLib.repository.mongoUtil;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;

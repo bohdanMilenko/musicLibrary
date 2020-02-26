@@ -1,6 +1,6 @@
 package com.musicLib.repository.SQLightRepository;
 
-import com.musicLib.SQLUtil.SessionManagerSQLite;
+import com.musicLib.repository.SQLUtil.SessionManagerSQLite;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.QueryException;

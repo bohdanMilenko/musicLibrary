@@ -3,11 +3,10 @@ package com.musicLib.repository.MongoDBRepisotory;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
-import com.musicLib.mongoUtil.SessionManagerMongo;
+import com.musicLib.repository.mongoUtil.SessionManagerMongo;
 import com.musicLib.repository.AlbumRepository;
 import org.bson.Document;
 
