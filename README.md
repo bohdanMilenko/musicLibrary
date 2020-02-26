@@ -3,15 +3,15 @@
 This application is designed for users to perform CRUD opertaions on music records. 
 
 ## Main features:
-	- Architecture is built on Inversion of Control principles by implementing Service Pattern
-	- Supports multiple databases integration for scalability purpose(currently MongoDB and SQLite3 modules availaibe)
-	- Custom Exceptions module supports the progrm workflow
+	* Architecture is built on Inversion of Control principles by implementing Service Pattern
+	* Supports multiple databases integration for scalability purpose(currently MongoDB and SQLite3 modules availaibe)
+	*Custom Exceptions module supports the progrm workflow
 	- All Service implementations are covered with integration tests (JUnit and Mockito)
 	- Maven for managing dependencies
 	- Docker Image with application inside: *[Take me to docker hub!](https://hub.docker.com/)*
 	- Connections to databases are configured with .properties files
 	- Using Prepared statements to prevent SQL injections
-	- 
+
 
 ## High Level Architecture
 
