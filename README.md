@@ -8,7 +8,7 @@ This application is designed for users to perform CRUD opertaions on music recor
 	- Custom Exceptions module supports the progrm workflow
 	- All Service implementations are covered with integration tests (JUnit and Mockito)
 	- Maven for managing dependencies
-	- Docker Image with application inside: [_Take me to docker hub!_](https://hub.docker.com/)
+	- Docker Image with application inside: *[Take me to docker hub!](https://hub.docker.com/)*
 	- Connections to databases are configured with .properties files
 	- Using Prepared statements to prevent SQL injections
 	- 
