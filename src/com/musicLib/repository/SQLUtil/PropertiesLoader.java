@@ -15,10 +15,6 @@ public class PropertiesLoader {
             if(readingProperties!=null) {
                 p.load(readingProperties);
                 p.forEach(( key,value)-> stringStringHashMap.put((String) key, (String) value));
-//                String DB_NAME = p.getProperty("DB_NAME");
-//                String CONNECTION_STRING = p.getProperty("CONNECTION_STRING");
-//                stringStringHashMap.put("DB_NAME", DB_NAME);
-//                stringStringHashMap.put("CONNECTION_STRING", CONNECTION_STRING);
             }else {
                 System.out.println("Cannot load .properties file!");
             }
