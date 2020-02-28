@@ -12,22 +12,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.musicLib.repository.SQLightRepository.MetaData.*;
+import static com.musicLib.repository.SQLightRepository.MetaDataSQL.*;
 
 public class SongRepositorySQL implements SongRepository {
 
 
-    private SessionManagerSQLite SessionManagerSQLite = new SessionManagerSQLite();
+    private SessionManagerSQLite sessionManagerSQLite = new SessionManagerSQLite();
+    private PreparedStatement insertSong;
     private PreparedStatement queryByAlbumId;
     private PreparedStatement queryBySongName;
-    private PreparedStatement insertSong;
     private PreparedStatement deleteQueryByAlbumID;
     private PreparedStatement deleteQueryBySongName;
 
     @Override
     public boolean add(Song song) throws SQLException {
         String query = buildInsertQuery();
-        insertSong = SessionManagerSQLite.getPreparedStatement(query);
+        insertSong = sessionManagerSQLite.getPreparedStatement(query);
         insertSong.setInt(1, song.getTrackNumber());
         insertSong.setString(2, song.getName());
         insertSong.setInt(3, song.getAlbum().getId());
@@ -48,7 +48,7 @@ public class SongRepositorySQL implements SongRepository {
     public List<Song> getByName(String songName) throws SQLException {
         List<Song> returnList = new ArrayList<>();
         String query = buildQueryByName();
-        queryBySongName = SessionManagerSQLite.getPreparedStatement(query);
+        queryBySongName = sessionManagerSQLite.getPreparedStatement(query);
         queryBySongName.setString(1, songName);
         ResultSet rs = queryBySongName.executeQuery();
         returnList = resultSetToSong(rs);
@@ -74,7 +74,7 @@ public class SongRepositorySQL implements SongRepository {
         //StringBuilder query = QueryBuilder.buildQueryWithCondition(QUERY_BODY, TABLE_ALBUMS, COLUMN_ALBUMS_ID);
         String query = buildQueryByAlbumID();
         System.out.println(query);
-        queryByAlbumId = SessionManagerSQLite.getPreparedStatement(query);
+        queryByAlbumId = sessionManagerSQLite.getPreparedStatement(query);
         queryByAlbumId.setInt(1, albumId);
         ResultSet rs = queryByAlbumId.executeQuery();
         listToReturn = resultSetToSong(rs);
@@ -107,7 +107,7 @@ public class SongRepositorySQL implements SongRepository {
     @Override
     public boolean delete(Song song) throws SQLException {
         String query = buildDeleteBySongName();
-        deleteQueryBySongName = SessionManagerSQLite.getPreparedStatement(query);
+        deleteQueryBySongName = sessionManagerSQLite.getPreparedStatement(query);
         deleteQueryBySongName.setString(1, song.getName());
         deleteQueryBySongName.executeUpdate();
         return true;
@@ -125,7 +125,7 @@ public class SongRepositorySQL implements SongRepository {
 
     public boolean deleteByAlbumId(int albumId) throws SQLException {
         String query = buildDeleteByAlbumID();
-        deleteQueryByAlbumID = SessionManagerSQLite.getPreparedStatement(query);
+        deleteQueryByAlbumID = sessionManagerSQLite.getPreparedStatement(query);
         deleteQueryByAlbumID.setInt(1, albumId);
         deleteQueryByAlbumID.executeUpdate();
         return true;
