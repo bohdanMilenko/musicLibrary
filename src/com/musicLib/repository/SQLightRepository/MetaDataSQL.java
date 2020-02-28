@@ -1,6 +1,6 @@
 package com.musicLib.repository.SQLightRepository;
 
-public class MetaData {
+public class MetaDataSQL {
 
     static final String TABLE_ALBUMS = "albums";
     static final String COLUMN_ALBUMS_ID = "_id";
