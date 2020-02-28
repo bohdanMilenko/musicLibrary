@@ -4,7 +4,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import static com.musicLib.repository.SQLightRepository.MetaData.*;
+import static com.musicLib.repository.SQLightRepository.MetaDataSQL.*;
 
 public class UserInput {
 
