@@ -72,3 +72,10 @@ This section will guide you module by module following the application flow. Fas
 - Connections to databases are configured with .properties files
 - Repositories for each DB implement interfaces, to ensure each new module added would have identical structure and functionality
 - Using Prepared statements to prevent SQL injections
+- QueryBuilder implements Builder pattern and supports SQL query creation for SQLiteRepository
+- MetaDataSQLite contains all the final strings with tables and colums naming
+
+<p align="center">
+   <img src ="readMeSource/RepoLayer.png" width="750">
+</p>
+
