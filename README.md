@@ -58,7 +58,7 @@ This section will guide you module by module following the application flow. Fas
 - Require entities to be passed into methods
 
 <p align="center">
-   <img src ="readMeSource/ServiceLayerRecent.png" width="600">
+   <img src ="readMeSource/ServiceLayerRecent2.png" width="600">
 </p>
 
 
