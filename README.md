@@ -1,17 +1,17 @@
 # Music Repository API
 
-This application is designed for users to perform CRUD opertaions on music records. 
+This application is designed for users to perform CRUD opertaions on music records. You can do CRUD operations on Artists, Albums and Songs.
 
 ## Main features:
 - Architecture is built on Inversion of Control principles by implementing Service Pattern
 - Supports multiple databases integration for scalability and portability purposes 
 (MongoDB and SQLite3 modules availaibe)
-- Custom Exceptions module supports the progrm workflow
+- Custom Exceptions module supports the program workflow
 - All Service implementations are covered with integration tests (JUnit and Mockito)
 - Maven for managing dependencies
 - Docker Image with application inside availaible at DockerHub 
 
-[Please take me to DockerHub!](https://hub.docker.com/)
+*[Take me to DockerHub!](https://hub.docker.com/)*
 	
 
 ## High Level Architecture
@@ -57,11 +57,18 @@ This section will guide you module by module following the application flow. Fas
 - Performs Cascade deletion of data (i.e. If Artist is deleted -> validates if DB has Albums for this Artist -> if Yes deletes Albums and Songs)
 - Require entities to be passed into methods
 
+<p align="center">
+   <img src ="readMeSource/ServiceLayerRecent.png" width="600">
+</p>
+
+
 ### Repository Layer
 
-**Purpose:**
+**Purpose:** Serves as a tool for Service layer to write/read/delete to DBs.
 
 **Features:**
 
+- Each DB module has Util class that helps them to establish and manage pool of connections
 - Connections to databases are configured with .properties files
+- Repositories for each DB implement interfaces, to ensure each new module added would have identical structure and functionality
 - Using Prepared statements to prevent SQL injections
