@@ -76,5 +76,5 @@ This section will guide you module by module following the application flow. Fas
 - MetaDataSQLite contains all the final strings with tables and colums naming
 
 <p align="center">
-   <img src ="readMeSource/repoLevelOverview.png" width="900">
+   <img src ="readMeSource/repoLevelOverview2.png" width="900">
 </p>
