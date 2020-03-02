@@ -52,10 +52,10 @@ This section will guide you module by module following the application flow. Fas
 **Features:**
 
 - Each Service requires an instance of the corresponding Repository and neighboring Service (i.e. SongService requires instance of AlbumService)
-- Data fetching is based on Lazy Initialization of entities.
+- Lazy Initialization is used for fetching data from DB
 - Validation logic is outsourced to RecordValidation class that does various checks utilizing all three Services
 - Performs Cascade deletion of data (i.e. If Artist is deleted -> validates if DB has Albums for this Artist -> if Yes deletes Albums and Songs)
-- Require entities to be passed into methods
+- Service level methods require and operate on enitites described above, not primitives
 
 <p align="center">
    <img src ="readMeSource/ServiceLayerRecent2.png" width="600">
@@ -76,6 +76,9 @@ This section will guide you module by module following the application flow. Fas
 - MetaDataSQLite contains all the final strings with tables and colums naming
 
 <p align="center">
-   <img src ="readMeSource/RepoLayer.png" width="750">
+   <img src ="readMeSource/RepoLayer.png" width="900">
 </p>
 
+<p align="center">
+   <img src ="readMeSource/repoLevelOverview.png" width="900">
+</p>
