@@ -22,7 +22,7 @@ public class SessionManagerMongo {
 
     private static String loadMongoProperties() {
         String returnString = "";
-        try (FileInputStream inputStream = new FileInputStream("mongoProperties.txt")) {
+        try (FileInputStream inputStream = new FileInputStream("connectionMongo.property")) {
             Properties p = new Properties();
             p.load(inputStream);
             returnString = p.getProperty("dbName");

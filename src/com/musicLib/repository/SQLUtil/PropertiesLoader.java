@@ -10,7 +10,7 @@ public class PropertiesLoader {
 
      static Map<String, String> getProperties() {
          Map<String, String> stringStringHashMap = new HashMap<>();
-        try (FileInputStream readingProperties = new FileInputStream("connection.property")){
+        try (FileInputStream readingProperties = new FileInputStream("connectionSQL.property")){
             Properties p = new Properties();
             if(readingProperties!=null) {
                 p.load(readingProperties);
