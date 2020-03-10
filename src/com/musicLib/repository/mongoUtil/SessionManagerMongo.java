@@ -1,6 +1,7 @@
 package com.musicLib.repository.mongoUtil;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 
 import java.io.FileInputStream;
@@ -9,7 +10,7 @@ import java.util.Properties;
 
 public class SessionManagerMongo {
 
-    private static final MongoClient mongoClient = new MongoClient();
+    private static final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
     private static final String databaseName = loadMongoProperties();
 
     public static MongoClient getMongoClient(){
