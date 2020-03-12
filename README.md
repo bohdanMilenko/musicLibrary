@@ -3,25 +3,25 @@
 This application is designed as a back-end application to allow users to perform CRUD operations on music records. It is possible to operate on Artists, Albums and Songs.
 
 ## Main features:
-- Architecture is built on Inversion of Control principles by implementing Service Pattern
-- Supports multiple databases integration for scalability and portability purposes 
-(MongoDB and SQLite3 modules available)
+- Architecture is built on Inversion of Control principles by implementing Repository-Service Pattern
+- Built on Interfaces which gives flexibility in switching to another database with minimal development required (MongoDB and SQLite3 modules available)
+- Major functionality is covered with integration and unit tests (JUnit and Mockito)
 - Custom Exceptions module supports the program workflow
-- All Service implementations are covered with integration tests (JUnit and Mockito)
 - Maven for managing dependencies
-- Docker Image with the application inside available at DockerHub 
+- Docker Image with the application inside available at DockerHub
 
+You can deploy it from your machine if Docker is installed. Click the link below to get instructions how to deploy it with docker-compose or swarm 
 *[Take me to DockerHub!](https://hub.docker.com/)*
-	
+
 
 ## High-Level Architecture
 
 <p align="center">
-   <img src ="readMeSource/High Level Architecture Music Repo.png" width="600">
+ï¿½ ï¿½<img src ="readMeSource/High Level Architecture Music Repo.png" width="600">
 </p>
 
 <p align="center">
-   <i>"High level overview of the architecture"</i>
+ï¿½ ï¿½<i>"High level overview of the architecture"</i>
 </p>
 
 
@@ -41,7 +41,7 @@ This section will guide you module by module following the application flow. Fas
 - Lazy initialization of entities when retrieved from DB
 
 <p align="center">
-   <img src ="readMeSource/Entities.png" width="600">
+ï¿½ ï¿½<img src ="readMeSource/Entities.png" width="600">
 </p>
 
 
@@ -58,7 +58,7 @@ This section will guide you module by module following the application flow. Fas
 - Service level methods require and operate on entities described above, not primitives
 
 <p align="center">
-   <img src ="readMeSource/ServiceLayerRecent2.png" width="600">
+ï¿½ ï¿½<img src ="readMeSource/ServiceLayerRecent2.png" width="600">
 </p>
 
 
@@ -76,5 +76,5 @@ This section will guide you module by module following the application flow. Fas
 - MetaDataSQLite and MetaDataMongo contain all the final strings with table and column names
 
 <p align="center">
-   <img src ="readMeSource/repoLevelOverview2.png" width="900">
+ï¿½ ï¿½<img src ="readMeSource/repoLevelOverview2.png" width="900">
 </p>
