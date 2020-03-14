@@ -6,11 +6,12 @@ This application is designed as a back-end application to allow users to perform
 - Architecture is built on Inversion of Control principles by implementing Repository-Service Pattern
 - Built on Interfaces which gives flexibility in switching to another database with minimal development required (MongoDB and SQLite3 modules available)
 - Major functionality is covered with integration and unit tests (JUnit and Mockito)
+- Builder pattern is used to facilitate SQL queries creation (QueryBuilder class)
 - Custom Exceptions module supports the program workflow
 - Maven for managing dependencies
 - Docker Image with the application inside available at DockerHub
 
-You can deploy it from your machine if Docker is installed. Click the link below to get instructions how to deploy it with docker-compose or swarm 
+You can deploy it from your machine if Docker is installed. Click the link below to get instructions how to deploy it with docker-compose or swarm
 *[Take me to DockerHub!](https://hub.docker.com/)*
 
 
