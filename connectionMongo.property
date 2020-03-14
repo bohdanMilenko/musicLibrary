@@ -3,3 +3,4 @@ ip = 10.0.75.1
 externalPort = 27018
 MONGO_INITDB_ROOT_USERNAME = root
 MONGO_INITDB_ROOT_PASSWORD = password123
+adminDB = admin
