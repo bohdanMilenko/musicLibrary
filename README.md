@@ -42,7 +42,7 @@ This section will guide you module by module following the application flow. Fas
 - Lazy initialization of entities when retrieved from DB
 
 <p align="center">
-� �<img src ="readMeSource/Entities.png" width="600">
+   <img src ="readMeSource/Entities.png" width="600">
 </p>
 
 <p align="center">
@@ -63,7 +63,7 @@ This section will guide you module by module following the application flow. Fas
 - Service level methods require and operate on entities described above, not primitives
 
 <p align="center">
-� �<img src ="readMeSource/ServiceLayerRecent2.png" width="600">
+   <img src ="readMeSource/ServiceLayerRecent2.png" width="600">
 </p>
 
 <p align="center">
@@ -85,7 +85,7 @@ This section will guide you module by module following the application flow. Fas
 - MetaDataSQLite and MetaDataMongo contain all the final strings with table and column names
 
 <p align="center">
-� �<img src ="readMeSource/repoLevelOverview2.png" width="900">
+   <img src ="readMeSource/repoLevelOverview2.png" width="900">
 </p>
 
 <p align="center">
