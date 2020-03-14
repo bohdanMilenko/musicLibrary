@@ -1,5 +1,11 @@
 package com.musicLib;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.entities.Song;
@@ -11,7 +17,10 @@ import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.SongRepositoryMongo;
 import com.musicLib.repository.SongRepository;
 import com.musicLib.services.*;
+import org.bson.Document;
 
+import javax.print.Doc;
+import java.lang.annotation.Documented;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -25,7 +34,36 @@ public class Main {
     AlbumService albumServiceMongo;
     ArtistService artistServiceMongo;
 
+//    private static final String mongoClientURIAdmin = "mongodb://root:password123@10.0.75.1:27018/admin";
+//    private static final String mongoClientURI = "mongodb://root:password123@10.0.75.1:27018/TOP100SongsUK";
+//    //private static MongoDatabase db =
+//    private static MongoClient mongoClient;
+//    private static MongoClient mongoClient2;
+//    private static MongoDatabase actualDB;
+//    private static MongoCollection<Document> artistCollection;
+//
+//    private static boolean loginToMongo(){
+//        mongoClient = new MongoClient(new MongoClientURI(mongoClientURIAdmin));
+//        MongoDatabase db = mongoClient.getDatabase("admin");
+//        MongoCursor<String> dbs = mongoClient.listDatabaseNames().iterator();
+//        while (dbs.hasNext()){
+//            System.out.println( dbs.next());
+//        }
+//        actualDB = mongoClient.getDatabase("TOP100SongsUK");
+//        artistCollection = actualDB.getCollection("bla");
+//        artistCollection.insertOne(new Document().append("name", "Vasiliy"));
+//        MongoCursor<String> dbs2 = mongoClient.listDatabaseNames().iterator();
+//        while (dbs2.hasNext()){
+//            System.out.println( dbs2.next());
+//        }
+//        return true;
+//    }
     public static void main(String[] args) throws SQLException, ServiceException {
+
+        //loginToMongo();
+
+
+
 
         Artist validArtist = new Artist();
         validArtist.setName("Jack White");
