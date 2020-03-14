@@ -36,7 +36,6 @@ public class SessionManagerMongo {
         try {
             properties = loadMongoProperties();
             adminDBName = properties.get(adminDbNameProperty);
-            System.out.println(adminDBName);
             databaseName = properties.get(databaseNameProperty);
             ip = properties.get(dockerIpProperty);
             externalPort = Integer.parseInt(properties.get(mongoPortExternalProperty));
@@ -52,7 +51,7 @@ public class SessionManagerMongo {
 
     private static Map<String, String> loadMongoProperties() throws DbConnectionException {
         Map<String, String> returnMap = new HashMap<>();
-        try (FileInputStream inputStream = new FileInputStream("connectionMongo.property")) {
+        try (FileInputStream inputStream = new FileInputStream("properties/connectionMongo.property")) {
             Properties p = new Properties();
             p.load(inputStream);
             returnMap.put(databaseNameProperty, p.getProperty(databaseNameProperty));

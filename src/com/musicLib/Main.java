@@ -90,7 +90,7 @@ public class Main {
         List<Artist> artists2 = main.artistServiceMongo.getByName(validArtist);
         artists2.forEach(v -> System.out.println(v.toString()));
 
-        main.artistServiceMongo.delete(validArtist);
+        //main.artistServiceMongo.delete(validArtist);
 
 //      TESTING ALBUM SERVICES FOR MONGODB
         main.albumServiceMongo.add(album);
@@ -98,7 +98,7 @@ public class Main {
         List<Album> albums = main.albumServiceMongo.get(album);
         albums.forEach(v -> System.out.println(v.toString() + "\n" + v.getArtist().toString()));
 
-        main.albumServiceMongo.delete(album);
+        //main.albumServiceMongo.delete(album);
 
 //      TESTING SONGS SERVICES FOR MONGO
         main.songServiceMongo.add(song);
@@ -109,9 +109,9 @@ public class Main {
         List<Song> songs2 = main.songServiceMongo.get(song);
         songs2.forEach(v -> System.out.println(v.toString() + "\n" + v.getAlbum().toString() + "\n" + v.getArtist().toString()));
 
-        main.songServiceMongo.deleteSongsFromAlbum(album);
+        //main.songServiceMongo.deleteSongsFromAlbum(album);
 
-        main.songServiceMongo.delete(song);
+        //main.songServiceMongo.delete(song);
     }
 
     private static byte[] parseHexString(final String s) {
