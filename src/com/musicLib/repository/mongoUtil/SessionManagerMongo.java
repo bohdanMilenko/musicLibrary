@@ -2,8 +2,10 @@ package com.musicLib.repository.mongoUtil;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.musicLib.exceptions.DbConnectionException;
+import org.bson.Document;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,33 +15,40 @@ import java.util.Properties;
 
 public class SessionManagerMongo {
 
+    private static final String adminDbNameProperty = "adminDB";
     private static final String databaseNameProperty = "dbName";
     private static final String dockerIpProperty = "ip";
     private static final String mongoPortExternalProperty = "externalPort";
     private static final String mongoUserNameProperty = "MONGO_INITDB_ROOT_USERNAME";
     private static final String mongoPasswordProperty = "MONGO_INITDB_ROOT_PASSWORD";
-    //    private static final MongoCredential credentials = MongoCredential.createCredential(mongoUser, databaseName, mongoPassword);
-//    private static final MongoClient mongoClient = new MongoClient(new ServerAddress(ip, externalPort), Arrays.asList(credentials));
 
     private static Map<String, String> properties;
-    private static final String databaseName = properties.get(databaseNameProperty);
-    private static final String ip = properties.get(dockerIpProperty);
-    private static final int externalPort = Integer.parseInt(properties.get(mongoPortExternalProperty));
-    private static final String mongoUser = properties.get(mongoUserNameProperty);
-    private static final char[] mongoPassword = properties.get(mongoPasswordProperty).toCharArray();
-    private static final String mongoClientURI = "mongodb://" + mongoUser + ":" + mongoPassword + "@" + ip + ":" + externalPort + "/" + databaseName;
-    private static final MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoClientURI));
+    private static String adminDBName;
+    private static String databaseName;
+    private static String ip;
+    private static int externalPort;
+    private static String mongoUser;
+    private static String mongoPassword;
+    private static String mongoClientURIAdmin;
+    private static MongoClient mongoClientAdmin;
 
     static {
         try {
-            System.out.println(mongoClientURI);
             properties = loadMongoProperties();
-
+            adminDBName = properties.get(adminDbNameProperty);
+            System.out.println(adminDBName);
+            databaseName = properties.get(databaseNameProperty);
+            ip = properties.get(dockerIpProperty);
+            externalPort = Integer.parseInt(properties.get(mongoPortExternalProperty));
+            mongoUser = properties.get(mongoUserNameProperty);
+            mongoPassword = properties.get(mongoPasswordProperty);
+            mongoClientURIAdmin = "mongodb://" + mongoUser + ":" + mongoPassword + "@" + ip + ":" + externalPort + "/" + adminDBName;
+            mongoClientAdmin = new MongoClient(new MongoClientURI(mongoClientURIAdmin));
+            MongoDatabase db = mongoClientAdmin.getDatabase(databaseName);
         } catch (DbConnectionException e) {
             e.printStackTrace();
         }
     }
-
 
     private static Map<String, String> loadMongoProperties() throws DbConnectionException {
         Map<String, String> returnMap = new HashMap<>();
@@ -51,6 +60,7 @@ public class SessionManagerMongo {
             returnMap.put(mongoPortExternalProperty, p.getProperty(mongoPortExternalProperty));
             returnMap.put(mongoUserNameProperty, p.getProperty(mongoUserNameProperty));
             returnMap.put(mongoPasswordProperty, p.getProperty(mongoPasswordProperty));
+            returnMap.put(adminDbNameProperty, p.getProperty(adminDbNameProperty));
             returnMap.forEach((k, v) -> System.out.println(k + ": " + v));
             return returnMap;
         } catch (IOException e) {
@@ -61,24 +71,11 @@ public class SessionManagerMongo {
     }
 
     public static MongoClient getMongoClient() {
-        return mongoClient;
+        return mongoClientAdmin;
     }
 
     public static MongoDatabase getDbFromPropertyFile() {
-        return mongoClient.getDatabase(databaseName);
+        return mongoClientAdmin.getDatabase(databaseName);
     }
 
-//    private static String loadMongoProperties() {
-//        String returnString = "";
-//        try (FileInputStream inputStream = new FileInputStream("connectionMongo.property")) {
-//            Properties p = new Properties();
-//            p.load(inputStream);
-//            returnString = p.getProperty("dbName");
-//
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage()+ ": Cannot load Mongo Properties");
-//            e.printStackTrace();
-//        }
-//        return returnString;
-//    }
 }
