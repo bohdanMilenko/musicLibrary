@@ -18,11 +18,11 @@ You can deploy it from your machine if Docker is installed. Click the link below
 ## High-Level Architecture
 
 <p align="center">
-� �<img src ="readMeSource/High Level Architecture Music Repo.png" width="600">
+   <img src ="readMeSource/High Level Architecture Music Repo.png" width="600">
 </p>
 
 <p align="center">
-� �<i>"High level overview of the architecture"</i>
+   <i>"High level overview of the architecture"</i>
 </p>
 
 
@@ -45,6 +45,10 @@ This section will guide you module by module following the application flow. Fas
 � �<img src ="readMeSource/Entities.png" width="600">
 </p>
 
+<p align="center">
+   <i>"Entities Relations"</i>
+</p>
+
 
 ### Service Layer
 
@@ -60,6 +64,10 @@ This section will guide you module by module following the application flow. Fas
 
 <p align="center">
 � �<img src ="readMeSource/ServiceLayerRecent2.png" width="600">
+</p>
+
+<p align="center">
+   <i>"Service Level UML"</i>
 </p>
 
 
@@ -78,4 +86,8 @@ This section will guide you module by module following the application flow. Fas
 
 <p align="center">
 � �<img src ="readMeSource/repoLevelOverview2.png" width="900">
+</p>
+
+<p align="center">
+   <i>"Repositories Level UML"</i>
 </p>
