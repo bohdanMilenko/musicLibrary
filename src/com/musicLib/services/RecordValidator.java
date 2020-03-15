@@ -23,13 +23,13 @@ public class RecordValidator {
     }
 
 
-    boolean validateArtistAddMethod(Artist artist) throws ServiceException {
+    public boolean validateArtistAddMethod(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateNoSuchArtistPresent(artist);
         return true;
     }
 
-    boolean validateAlbumAddMethod(Album album) throws ServiceException {
+    public boolean validateAlbumAddMethod(Album album) throws ServiceException {
         validateRecordForNulls(album);
         validateNoSuchAlbumPresent(album);
         validateIfNotNull(album.getArtist());
@@ -37,32 +37,32 @@ public class RecordValidator {
         return true;
     }
 
-    boolean validateSongAddMethod(Song song) throws ServiceException {
+    public boolean validateSongAddMethod(Song song) throws ServiceException {
         validateRecordForNulls(song);
         validateNoSuchSongPresent(song);
         validateAlbumExistsAndUnique(song.getAlbum());
         return true;
     }
 
-    boolean validateGetAlbumByArtist(Artist artist) throws ServiceException {
+    public boolean validateGetAlbumByArtist(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateArtistExistsAndUnique(artist);
         return true;
     }
 
-    boolean validateArtistDeleteMethod(Artist artist) throws ServiceException {
+    public boolean validateArtistDeleteMethod(Artist artist) throws ServiceException {
         validateRecordForNulls(artist);
         validateArtistExists(artist);
         return true;
     }
 
-    boolean validateAlbumDeleteMethod(Album album) throws ServiceException {
+    public boolean validateAlbumDeleteMethod(Album album) throws ServiceException {
         validateRecordForNulls(album);
         validateAlbumExists(album);
         return true;
     }
 
-    boolean validateSongDeleteMethod(Song song) throws ServiceException {
+    public boolean validateSongDeleteMethod(Song song) throws ServiceException {
         validateRecordForNulls(song);
         validateSongExists(song);
         return true;
