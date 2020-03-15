@@ -83,7 +83,6 @@ public class ArtistServiceImpl implements ArtistService {
      * @return boolean
      * @throws ServiceException
      */
-    //TODO CASCADE REMOVAL - ADD TO README
     public boolean delete(Artist artist) throws ServiceException {
         try {
             recordValidator.validateArtistDeleteMethod(artist);
