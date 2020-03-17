@@ -2,6 +2,8 @@ package com.musicLib.repository.mongoUtil;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.musicLib.exceptions.DbConnectionException;
@@ -9,6 +11,7 @@ import org.bson.Document;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -42,7 +45,11 @@ public class SessionManagerMongo {
             mongoUser = properties.get(mongoUserNameProperty);
             mongoPassword = properties.get(mongoPasswordProperty);
             mongoClientURIAdmin = "mongodb://" + mongoUser + ":" + mongoPassword + "@" + ip + ":" + externalPort + "/" + adminDBName;
-            mongoClientAdmin = new MongoClient(new MongoClientURI(mongoClientURIAdmin));
+            MongoCredential credential = MongoCredential.createCredential(mongoUser,adminDBName,mongoPassword.toCharArray());
+            //mongoClientURIAdmin = "mongodb://" + mongoUser + ":" + mongoPassword + "@" + "host.docker.internal" + ":" + 27018 + "/" + adminDBName;
+            System.out.println("CURRENT MONGOURI: " + mongoClientURIAdmin);
+            //mongoClientAdmin = new MongoClient( new ServerAddress(ip,externalPort), Arrays.asList(credential));
+            mongoClientAdmin = new MongoClient(mongoClientURIAdmin);
             MongoDatabase db = mongoClientAdmin.getDatabase(databaseName);
         } catch (DbConnectionException e) {
             e.printStackTrace();
@@ -51,7 +58,7 @@ public class SessionManagerMongo {
 
     private static Map<String, String> loadMongoProperties() throws DbConnectionException {
         Map<String, String> returnMap = new HashMap<>();
-        try (FileInputStream inputStream = new FileInputStream("properties/connectionMongo.property")) {
+        try (FileInputStream inputStream = new FileInputStream("/usr/local/bin/connectionMongo.property")) {
             Properties p = new Properties();
             p.load(inputStream);
             returnMap.put(databaseNameProperty, p.getProperty(databaseNameProperty));
