@@ -49,22 +49,8 @@ public class SessionManagerSQLite {
         }
     }
 
-//    private void initPrepStatements() {
-//        try {
-//            insertArtist = conn.prepareStatement(sqlStatements.getINSERT_ARTIST(), Statement.RETURN_GENERATED_KEYS);
-//            insertAlbum = conn.prepareStatement(sqlStatements.getINSERT_ALBUM(), Statement.RETURN_GENERATED_KEYS);
-//            insertSong = conn.prepareStatement(sqlStatements.getINSERT_SONG());
-//            queryArtistBySong = conn.prepareStatement(sqlStatements.getQUERY_VIEW_ARTISTS_LIST_PREP());
-//            queryArtists = conn.prepareStatement(sqlStatements.getQUERY_ARTISTS());
-//            queryAlbums = conn.prepareStatement(sqlStatements.getQUERY_ALBUMS());
-//        } catch (SQLException e) {
-//            System.out.println("Issue with Preparing Statements :" + e.getMessage());
-//            e.printStackTrace();
-//        }
-//    }
 
     public static void closeSession(ResultSet resultSet, Statement statement) {
-        //SongsRepository.closingAllPrepStatements();
         closeResultSet(resultSet);
         closeStatement(statement);
         closeConnection();
