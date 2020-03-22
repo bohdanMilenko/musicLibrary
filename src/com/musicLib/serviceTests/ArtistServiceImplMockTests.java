@@ -10,8 +10,11 @@ import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.SongRepositoryMongo;
 import com.musicLib.repository.SongRepository;
 import com.musicLib.services.*;
+
+import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.ExpectedException;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -35,47 +38,51 @@ public class ArtistServiceImplMockTests {
 
     private ArtistRepository artistRepositoryMock;
     private RecordValidator recordValidator;
-    private ArtistService artistServiceMock;
+    private ArtistService classToTest;
     private Artist artist;
 
     @BeforeEach
     public void setUp() {
         artistRepositoryMock = mock(ArtistRepository.class);
         recordValidator = mock(RecordValidator.class);
-        artistServiceMock = new ArtistServiceImpl(artistRepositoryMock);
-        artistServiceMock.setRecordValidator(recordValidator);
+        classToTest = new ArtistServiceImpl(artistRepositoryMock);
+        classToTest.setRecordValidator(recordValidator);
         albumService = mock(AlbumService.class);
-        artistServiceMock.setAlbumService(albumService);
+        classToTest.setAlbumService(albumService);
 
         artist = new Artist();
         artist.setName("Bob Dylan");
     }
 
     @Test
-    public void testAddValidationPassedObjectAddedToDB() throws ServiceException {
+    public void testAddValidationPassedObjectAddedToDB() throws ServiceException, SQLException {
         when(recordValidator.validateArtistAddMethod(artist)).thenReturn(true);
-        when(artistServiceMock.add(artist)).thenReturn(true);
-        assertTrue(artistServiceMock.add(artist));
+        when(artistRepositoryMock.add(artist)).thenReturn(true);
+        assertTrue(classToTest.add(artist));
     }
+
 
     @Test
     public void testAddValidationNotPassed() throws ServiceException {
         when(recordValidator.validateArtistAddMethod(artist)).thenThrow(ServiceException.class);
-        assertThrows(ServiceException.class, () -> artistServiceMock.add(artist));
+        ServiceException exception = assertThrows(ServiceException.class, () -> classToTest.add(artist));
+        assertNull(exception.getMessage());
     }
+    
+    //TODO ADD SQL EXCEPTION
 
     @Test
     public void testAddValidationPassedObjectNotAddedToDB() throws ServiceException {
         when(recordValidator.validateArtistAddMethod(artist)).thenReturn(true);
-        when(artistServiceMock.add(artist)).thenThrow(QueryException.class);
-        assertThrows(ServiceException.class, () -> artistServiceMock.add(artist));
+        when(classToTest.add(artist)).thenThrow(QueryException.class);
+        assertThrows(ServiceException.class, () -> classToTest.add(artist));
     }
 
     @Test
     public void testAddValidationPassedObjectNotAddedToDBSQL() throws ServiceException {
         when(recordValidator.validateArtistAddMethod(artist)).thenReturn(true);
-        when(artistServiceMock.add(artist)).thenThrow(SQLException.class);
-        assertThrows(ServiceException.class, () -> artistServiceMock.add(artist));
+        when(classToTest.add(artist)).thenThrow(SQLException.class);
+        assertThrows(ServiceException.class, () -> classToTest.add(artist));
     }
 
     @Test
@@ -86,8 +93,8 @@ public class ArtistServiceImplMockTests {
 
     @Test
     public void testGetAllUsingMock() throws ServiceException {
-        when(artistServiceMock.getAll()).thenReturn(Arrays.asList(new Artist(), new Artist()));
-        List<Artist> returnedArtists = artistServiceMock.getAll();
+        when(classToTest.getAll()).thenReturn(Arrays.asList(new Artist(), new Artist()));
+        List<Artist> returnedArtists = classToTest.getAll();
         assertEquals(2, returnedArtists.size());
         assertEquals(returnedArtists.get(0).getClass(), Artist.class);
     }
@@ -95,28 +102,28 @@ public class ArtistServiceImplMockTests {
     @Test
     public void testGetAllValidationPassedRepoFailedSQL() throws ServiceException {
         when(recordValidator.validateIfNotNull(any())).thenReturn(true);
-        when(artistServiceMock.getAll()).thenThrow(SQLException.class);
-        assertThrows(ServiceException.class, () -> artistServiceMock.getAll());
+        when(classToTest.getAll()).thenThrow(SQLException.class);
+        assertThrows(ServiceException.class, () -> classToTest.getAll());
     }
 
     @Test
     public void testGetByNameValidationPassedRepoWorkedAsExpected() throws ServiceException {
         when(recordValidator.validateIfNotNull(any())).thenReturn(true);
-        when(artistServiceMock.getByName(artist)).thenReturn(Arrays.asList(new Artist(), new Artist()));
-        assertEquals(2, artistServiceMock.getByName(artist).size());
+        when(classToTest.getByName(artist)).thenReturn(Arrays.asList(new Artist(), new Artist()));
+        assertEquals(2, classToTest.getByName(artist).size());
     }
 
     @Test
     public void testGetByNameValidationNotPassed() throws ServiceException {
         when(recordValidator.validateIfNotNull(any())).thenThrow(ServiceException.class);
-        assertThrows(ServiceException.class, () -> artistServiceMock.getByName(artist));
+        assertThrows(ServiceException.class, () -> classToTest.getByName(artist));
     }
 
     @Test
     public void testGetByNameValidationPassedRepoFailed() throws ServiceException {
         when(recordValidator.validateIfNotNull(any())).thenReturn(true);
-        when(artistServiceMock.getByName(artist)).thenThrow(SQLException.class);
-        assertThrows(ServiceException.class, () -> artistServiceMock.getByName(artist));
+        when(classToTest.getByName(artist)).thenThrow(SQLException.class);
+        assertThrows(ServiceException.class, () -> classToTest.getByName(artist));
     }
 
     @Test
@@ -125,13 +132,13 @@ public class ArtistServiceImplMockTests {
         when(recordValidator.hasDependantAlbums(artist)).thenReturn(true);
         //Ask how to test if it returns void, should I change the return type here?
         //when(albumService.deleteAlbumsForArtist(artist)).thenThrow(ServiceException.class);
-        assertTrue(artistServiceMock.delete(artist));
+        assertTrue(classToTest.delete(artist));
     }
 
     @Test
     public void testDeleteValidationPassedRepoWorkedAsExpected2() throws ServiceException {
         when(recordValidator.validateArtistDeleteMethod(any())).thenThrow(ServiceException.class);
-        assertThrows(ServiceException.class, () -> artistServiceMock.delete(artist));
+        assertThrows(ServiceException.class, () -> classToTest.delete(artist));
     }
 
 
