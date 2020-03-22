@@ -91,3 +91,6 @@ This section will guide you module by module following the application flow. Fas
 <p align="center">
    <i>"Repositories Level UML"</i>
 </p>
+
+<script type="text/javascript" src="https://platform.linkedin.com/badges/js/profile.js" async defer></script>
+<div class="LI-profile-badge"  data-version="v1" data-size="large" data-locale="en_US" data-type="vertical" data-theme="dark" data-vanity="bohdan-m"><a class="LI-simple-link" href='https://ca.linkedin.com/in/bohdan-m?trk=profile-badge'>Bohdan Milenko</a></div>
