@@ -46,8 +46,7 @@ public class ArtistServiceImpl implements ArtistService {
      */
     public List<Artist> getAll() throws ServiceException {
         try {
-            List<Artist> artists = artistRepo.getAll();
-            return artists;
+            return artistRepo.getAll();
         } catch (SQLException e) {
             throw new ServiceException("Issue with getting all Artists", e);
         }
