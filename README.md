@@ -3,16 +3,27 @@
 This application is designed as a back-end application to allow users to perform CRUD operations on music records. It is possible to operate on Artists, Albums and Songs.
 
 ## Main features:
+- Supports operations with SQL (MySQL) & NoSQL (MongoDB) databases
+- Deployment using Docker with implicit per-container data storage (VOLUME)
+- Service Layer functionality is covered with integration and unit tests (JUnit5 and Mockito)
+- Maven for managing dependencies
 - Architecture is built on Inversion of Control principles by implementing Repository-Service Pattern
 - Built on Interfaces which gives flexibility in switching to another database with minimal development required (MongoDB and SQLite3 modules available)
-- Major functionality is covered with integration and unit tests (JUnit and Mockito)
 - Builder pattern is used to facilitate SQL queries creation (QueryBuilder class)
 - Custom Exceptions module supports the program workflow
-- Maven for managing dependencies
-- Docker Image with the application inside available at DockerHub
+
+## Deployment
 
 You can deploy it from your machine if Docker is installed. Click the link below to get instructions how to deploy it with docker-compose or swarm
 *[Take me to DockerHub!](https://hub.docker.com/)*
+
+__Highlights:__
+
+- Application is deployed using 3 containers
+- Build custom image with JAR file based on Alpine with preinstalled JDK11
+- Container with application utilizes MongoDB and MySQL images
+- VOLUME for data persistence and management
+- Containers use overlay network to communicate with each other  
 
 
 ## High-Level Architecture
@@ -92,5 +103,5 @@ This section will guide you module by module following the application flow. Fas
    <i>"Repositories Level UML"</i>
 </p>
 
-<script type="text/javascript" src="https://platform.linkedin.com/badges/js/profile.js" async defer></script>
+__Connect with me on LinkedIn:__
 <div class="LI-profile-badge"  data-version="v1" data-size="large" data-locale="en_US" data-type="vertical" data-theme="dark" data-vanity="bohdan-m"><a class="LI-simple-link" href='https://ca.linkedin.com/in/bohdan-m?trk=profile-badge'>Bohdan Milenko</a></div>
