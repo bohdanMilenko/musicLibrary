@@ -10,11 +10,8 @@ import com.musicLib.repository.MongoDBRepisotory.ArtistRepositoryMongo;
 import com.musicLib.repository.MongoDBRepisotory.SongRepositoryMongo;
 import com.musicLib.repository.SongRepository;
 import com.musicLib.services.*;
-
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -25,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ArtistServiceImplMockTests {
+public class ArtistServiceImplUnitTests {
 
 
     //ArtistServiceImp - SUT System under Test
@@ -68,8 +65,7 @@ public class ArtistServiceImplMockTests {
         ServiceException exception = assertThrows(ServiceException.class, () -> classToTest.add(artist));
         assertNull(exception.getMessage());
     }
-    
-    //TODO ADD SQL EXCEPTION
+
 
     @Test
     public void testAddValidationPassedObjectNotAddedToDB() throws ServiceException {
@@ -78,11 +74,14 @@ public class ArtistServiceImplMockTests {
         assertThrows(ServiceException.class, () -> classToTest.add(artist));
     }
 
+
     @Test
-    public void testAddValidationPassedObjectNotAddedToDBSQL() throws ServiceException {
+    public void testAddSQLExceptionThrown() throws ServiceException, SQLException {
         when(recordValidator.validateArtistAddMethod(artist)).thenReturn(true);
-        when(classToTest.add(artist)).thenThrow(SQLException.class);
-        assertThrows(ServiceException.class, () -> classToTest.add(artist));
+        when(artistRepositoryMock.add(artist)).thenThrow(SQLException.class);
+        ServiceException exception = assertThrows(ServiceException.class, () -> classToTest.add(artist));
+        assertEquals("Cannot insert artist to db", exception.getMessage());
+        assertEquals(SQLException.class, exception.getCause().getClass());
     }
 
     @Test
