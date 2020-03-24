@@ -20,11 +20,10 @@ You can deploy it from your machine if Docker is installed. Click the link below
 __Highlights:__
 
 - Application is deployed using 3 containers
-- Build custom image with JAR file based on Alpine with preinstalled JDK11
+- Custom built image contains JAR file and based on Alpine with preinstalled JDK11
 - Container with application utilizes MongoDB and MySQL images
 - VOLUME for data persistence and management
 - Containers use overlay network to communicate with each other  
-
 
 ## High-Level Architecture
 
@@ -35,8 +34,6 @@ __Highlights:__
 <p align="center">
    <i>"High level overview of the architecture"</i>
 </p>
-
-
 
 ## Modules Overview
 
