@@ -207,19 +207,21 @@ public class AlbumServiceImpl implements AlbumService {
      * Validation: if artist is not Null &&  if passed artist has an ID.
      * Invokes method that deletes Songs for passed Artist (must have non-empty list of Albums)
      * Then removes all Albums for passed Artist
+     *
      * @param artist
+     * @return
      * @throws ServiceException
      */
     @Override
-    public void deleteAlbumsForArtist(Artist artist) throws ServiceException {
+    public boolean deleteAlbumsForArtist(Artist artist) throws ServiceException {
         try {
-            if (recordValidator.validateIfNotNull(artist)) {
-                if (artist.getId() > 0) {
-                    removeDependantSongs(artist);
-                    albumRepo.deleteByArtistID(artist.getId());
-                }
-                throw new ServiceException("Artist has empty id: " + artist.toString());
+            recordValidator.validateIfNotNull(artist);
+            if (artist.getId() > 0) {
+                removeDependantSongs(artist);
+                albumRepo.deleteByArtistID(artist.getId());
+                return true;
             }
+            throw new ServiceException("Artist has empty id: " + artist.toString());
         } catch (QueryException e) {
             throw new ServiceException("Unable to delete dependant albums for artist: " + artist.getName(), e);
         }
@@ -229,6 +231,7 @@ public class AlbumServiceImpl implements AlbumService {
      * Deletes songs for each Album
      * Validation: if passed album list is not empty (cuz ArtistService is supposed to verify if artist has dependant albums
      * if code reaches this method, Artist MUST have albums. So if albums are empty - means that they were not updated from DB)
+     *
      * @param artist
      * @throws ServiceException
      */
