@@ -1,8 +1,7 @@
 package com.musicLib.serviceTests;
 
 import com.musicLib.entities.Artist;
-import com.musicLib.exceptions.QueryException;
-import com.musicLib.exceptions.ServiceException;
+import com.musicLib.exceptions.*;
 import com.musicLib.repository.AlbumRepository;
 import com.musicLib.repository.ArtistRepository;
 import com.musicLib.repository.MongoDBRepisotory.AlbumRepositoryMongo;
@@ -14,13 +13,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ArtistServiceImplUnitTests {
 
@@ -102,43 +102,87 @@ public class ArtistServiceImplUnitTests {
     public void testGetAllValidationPassedRepoFailedSQL() throws ServiceException {
         when(recordValidator.validateIfNotNull(any())).thenReturn(true);
         when(classToTest.getAll()).thenThrow(SQLException.class);
-        assertThrows(ServiceException.class, () -> classToTest.getAll());
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.getAll());
+        assertEquals("Issue with getting all Artists" , e.getMessage());
     }
 
     @Test
     public void testGetByNameValidationPassedRepoWorkedAsExpected() throws ServiceException {
         when(recordValidator.validateIfNotNull(any())).thenReturn(true);
         when(classToTest.getByName(artist)).thenReturn(Arrays.asList(new Artist(), new Artist()));
-        assertEquals(2, classToTest.getByName(artist).size());
+        List<Artist> returnedArtists = classToTest.getByName(artist);
+        assertEquals(2, returnedArtists.size());
+        assertEquals(returnedArtists.get(0).getClass(), Artist.class);
     }
 
     @Test
     public void testGetByNameValidationNotPassed() throws ServiceException {
         when(recordValidator.validateIfNotNull(any())).thenThrow(ServiceException.class);
-        assertThrows(ServiceException.class, () -> classToTest.getByName(artist));
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.getByName(artist));
+        assertEquals("Passed object is null" , e.getMessage());
     }
 
     @Test
     public void testGetByNameValidationPassedRepoFailed() throws ServiceException {
         when(recordValidator.validateIfNotNull(any())).thenReturn(true);
         when(classToTest.getByName(artist)).thenThrow(SQLException.class);
-        assertThrows(ServiceException.class, () -> classToTest.getByName(artist));
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.getByName(artist));
+        assertEquals("Failed to get Artist by Name", e.getMessage());
+        assertEquals(SQLException.class, e.getCause().getClass());
     }
 
+
+    //TODO NOT FINISHED
     @Test
-    public void testDeleteValidationPassedRepoWorkedAsExpected() throws ServiceException, SQLException {
+    public void testDeleteValidationPassedRepoWorkedAsExpectedHasDependantAlbums() throws ServiceException, SQLException {
         when(recordValidator.validateArtistDeleteMethod(artist)).thenReturn(true);
+        when(classToTest.updateArtistID(artist)).thenReturn(artist);
         when(recordValidator.hasDependantAlbums(artist)).thenReturn(true);
-        //Ask how to test if it returns void, should I change the return type here?
-        //when(albumService.deleteAlbumsForArtist(artist)).thenThrow(ServiceException.class);
+        when(albumService.deleteAlbumsForArtist(artist)).thenReturn(true);
         assertTrue(classToTest.delete(artist));
     }
 
     @Test
-    public void testDeleteValidationPassedRepoWorkedAsExpected2() throws ServiceException {
-        when(recordValidator.validateArtistDeleteMethod(any())).thenThrow(ServiceException.class);
-        assertThrows(ServiceException.class, () -> classToTest.delete(artist));
+    public void testDeleteValidationFailed() throws ServiceException {
+        when(recordValidator.validateArtistDeleteMethod(artist)).thenThrow(ArtistNotFoundException.class);
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.delete(artist));
+        assertEquals("Unable to delete artist: " + artist.getName(), e.getMessage());
     }
+
+    //No message is returned, is it supposed to be so?
+    @Test
+    public void testDeleteValidationFailed2() throws ServiceException {
+        when(recordValidator.validateArtistDeleteMethod(artist)).thenThrow(ServiceException.class);
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.delete(artist));
+        assertEquals("Passed object is null", e.getMessage());
+    }
+
+
+    //I am trying here to test classToTest, but not mocked objects. Am I supposed to test only dependencies?
+//    @Test
+//    public void testDeleteValidationPassedUpdateFailed() throws ServiceException {
+//        when(recordValidator.validateArtistDeleteMethod(artist)).thenReturn(true);
+//        doThrow(ServiceException.class).when(classToTest.updateArtistID(artist));
+//        //when(classToTest.updateArtistID(artist)).thenThrow(ServiceException.class);
+//        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.delete(artist));
+//    }
+
+
+    @Test
+    public void testDeleteValidationPassedRepoFailed() throws ServiceException, SQLException {
+        when(recordValidator.validateArtistDeleteMethod(artist)).thenReturn(true);
+        List<Artist> returnedArtists = new ArrayList<>();
+        returnedArtists.add(artist);
+        when(classToTest.getByName(artist)).thenReturn(returnedArtists);
+        when(classToTest.updateArtistID(artist)).thenReturn(artist);
+        when(albumService.deleteAlbumsForArtist(artist)).thenThrow(ArtistNotFoundException.class);
+        ServiceException e = assertThrows(ArtistNotFoundException.class, () -> classToTest.delete(artist));
+        assertEquals("Such artist does not exist", e.getMessage());
+    }
+
+
+
+
 
 
     private ArtistService initializeServices() {
