@@ -2,6 +2,7 @@ package com.musicLib.services;
 
 import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
+import com.musicLib.exceptions.ArtistNotFoundException;
 import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.ArtistRepository;
 
@@ -65,7 +66,7 @@ public class ArtistServiceImpl implements ArtistService {
             List<Artist> artists = artistRepo.getByName(artist.getName());
             return artists;
         } catch (SQLException e) {
-            throw new ServiceException("Issue with getting all Artists", e);
+            throw new ServiceException("Failed to get Artist by Name", e);
         }
     }
 
@@ -88,11 +89,11 @@ public class ArtistServiceImpl implements ArtistService {
             artist = updateArtistID(artist);
             if (recordValidator.hasDependantAlbums(artist)) {
                 System.out.println("Artist has dependant albums");
-                artist = updateAlbums(artist);
+                artist = updateAlbumsForArtist(artist);
                 albumService.deleteAlbumsForArtist(artist);
             }
             return artistRepo.delete(artist.getName());
-        } catch (SQLException e) {
+        } catch (ArtistNotFoundException | SQLException e) {
             throw new ServiceException("Unable to delete artist: " + artist.getName(), e);
         }
     }
@@ -104,7 +105,7 @@ public class ArtistServiceImpl implements ArtistService {
      * @return Artist
      * @throws ServiceException
      */
-    private Artist updateAlbums(Artist artist) throws ServiceException {
+    private Artist updateAlbumsForArtist(Artist artist) throws ServiceException {
         try {
             List<Album> foundAlbums = albumService.getByArtist(artist);
             artist.setAlbums(foundAlbums);
