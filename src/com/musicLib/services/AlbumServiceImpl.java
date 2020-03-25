@@ -48,9 +48,13 @@ public class AlbumServiceImpl implements AlbumService {
     private Album updateAlbumWithArtistID(Album album) throws ServiceException {
         Artist artistFromAlbum = album.getArtist();
         List<Artist> foundArtists = artistService.getByName(album.getArtist());
-        artistFromAlbum.setId(foundArtists.get(0).getId());
-        album.setArtist(artistFromAlbum);
-        return album;
+        if(foundArtists.size() == 1) {
+            int idFromDB = foundArtists.get(0).getId();
+            artistFromAlbum.setId(idFromDB);
+            album.setArtist(artistFromAlbum);
+            return album;
+        }
+        throw new ServiceException("Unable to update Album with Artist id");
     }
 
 
