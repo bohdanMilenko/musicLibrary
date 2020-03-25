@@ -73,9 +73,13 @@ public class RecordValidator {
         return true;
     }
 
-    private boolean validateRecordForNulls(Album album) throws ServiceException {
-        validateIfNotNull(album);
-        validateIfNotNull(album.getArtist());
+    public boolean validateRecordForNulls(Album album) throws ServiceException {
+        try {
+            validateIfNotNull(album);
+            validateIfNotNull(album.getArtist());
+        }catch (ServiceException e){
+            throw new ServiceException("Validation for nulls failed");
+        }
         return true;
     }
 
@@ -102,8 +106,6 @@ public class RecordValidator {
         throw new DuplicatedRecordException("Such song already exists");
     }
 
-    //TODO UPDATE ARTIST WITH ALBUMS WITHOUT RETURNING IT
-    //WRITE ABOUT LAZY INIT
     public boolean hasDependantAlbums(Artist artist) throws ServiceException {
         List<Album> dependantAlbums = albumService.getByArtist(artist);
         return dependantAlbums.size() > 0;
