@@ -4,19 +4,18 @@ import com.musicLib.entities.Album;
 import com.musicLib.entities.Artist;
 import com.musicLib.exceptions.ServiceException;
 import com.musicLib.repository.AlbumRepository;
-import com.musicLib.repository.ArtistRepository;
 import com.musicLib.services.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AlbumServiceUnitTests {
 
@@ -40,16 +39,68 @@ public class AlbumServiceUnitTests {
         artistServiceMock = mock(ArtistService.class);
         classToTest.setArtistService(artistServiceMock);
         album = mock(Album.class);
-//        artist = new Artist();
-//        artist.setName("Bob Dylan");
+        artist = mock(Artist.class);
+        album.setArtist(artist);
+    }
+
+    @Test
+    public void testAddMethodWorkedAsExpected() throws ServiceException, SQLException {
+        //Defining expected results for AlbumService: updateAlbumWithArtistID(album)
+        when(artistServiceMock.getByName(any())).thenReturn(Arrays.asList(artist, artist));
+        when(artist.getId()).thenReturn(52);
+        when(album.getArtist()).thenReturn(artist);
+        //Service method results defining
+        when(recordValidatorMock.validateAlbumAddMethod(album)).thenReturn(true);
+        when(albumRepoMock.add(album)).thenReturn(true);
+        //Tests
+        assertTrue(classToTest.add(album));
     }
 
 
-    //Index out of bounds
+    //Question: Should recordValidator throw ValidationException and then Service handle it?
     @Test
-    public void testAddMethodWorkedAsExpected() throws ServiceException, SQLException {
-        when(recordValidatorMock.validateAlbumAddMethod(album)).thenReturn(true);
+    public void testAddValidationFailed() throws ServiceException, SQLException {
+        //Defining expected results for AlbumService: updateAlbumWithArtistID(album)
+        when(artistServiceMock.getByName(any())).thenReturn(Arrays.asList(artist, artist));
+        when(artist.getId()).thenReturn(52);
+        when(album.getArtist()).thenReturn(artist);
+        //Service method results defining
+        when(recordValidatorMock.validateAlbumAddMethod(album)).thenThrow(ServiceException.class);
         when(albumRepoMock.add(album)).thenReturn(true);
-        assertTrue(classToTest.add(album));
+        //Tests
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.add(album));
+    }
+
+    @Test
+    public void testAddValidationPassedRepoFailed() throws ServiceException, SQLException {
+        //Defining expected results for AlbumService: updateAlbumWithArtistID(album)
+        when(artistServiceMock.getByName(any())).thenReturn(Arrays.asList(artist, artist));
+        when(artist.getId()).thenReturn(52);
+        when(album.getArtist()).thenReturn(artist);
+        //Service method results defining
+        when(recordValidatorMock.validateAlbumAddMethod(album)).thenReturn(true);
+        when(albumRepoMock.add(album)).thenThrow(SQLException.class);
+        //Tests
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.add(album));
+        assertEquals("Issue with adding album to db", e.getMessage());
+    }
+
+    @Test
+    public void testAddUpdateAlbumFailed() throws ServiceException, SQLException {
+        //Defining expected results for AlbumService: updateAlbumWithArtistID(album)
+        when(artistServiceMock.getByName(any())).thenReturn(new ArrayList<>());
+        //Service method results defining
+        when(recordValidatorMock.validateAlbumAddMethod(album)).thenReturn(true);
+        when(albumRepoMock.add(album)).thenThrow(SQLException.class);
+        //Tests
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.add(album));
+        assertEquals("Unable to update Album with Artist id", e.getMessage());
+    }
+
+
+    @Test
+    public void testGet() throws ServiceException, SQLException {
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.add(album));
+        assertEquals("Unable to update Album with Artist id", e.getMessage());
     }
 }
