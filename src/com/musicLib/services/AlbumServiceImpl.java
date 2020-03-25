@@ -61,6 +61,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     public List<Album> get(Album album) throws ServiceException {
         try {
+            recordValidator.validateRecordForNulls(album);
             return albumRepo.getByName(album.getName());
         } catch (SQLException e) {
             throw new ServiceException("Issue with db connectivity", e);
