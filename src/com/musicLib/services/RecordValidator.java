@@ -32,7 +32,6 @@ public class RecordValidator {
     public boolean validateAlbumAddMethod(Album album) throws ServiceException {
         validateRecordForNulls(album);
         validateNoSuchAlbumPresent(album);
-        validateIfNotNull(album.getArtist());
         validateArtistExistsAndUnique(album.getArtist());
         return true;
     }
