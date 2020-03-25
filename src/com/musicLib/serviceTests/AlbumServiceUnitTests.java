@@ -14,8 +14,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AlbumServiceUnitTests {
 
@@ -99,8 +98,17 @@ public class AlbumServiceUnitTests {
 
 
     @Test
-    public void testGet() throws ServiceException, SQLException {
-        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.add(album));
-        assertEquals("Unable to update Album with Artist id", e.getMessage());
+    public void testGetWorkedAsExpected() throws ServiceException, SQLException {
+        when(recordValidatorMock.validateRecordForNulls(album)).thenReturn(true);
+        when(albumRepoMock.getByName(any())).thenReturn(Arrays.asList(album,album));
+        assertEquals( 2 ,classToTest.get(album).size());
+    }
+
+    //Create ValidationException and then catch it and wrap it as ServiceException?
+    @Test
+    public void testGetValidationFailed() throws ServiceException {
+        when(recordValidatorMock.validateRecordForNulls(album)).thenThrow(ServiceException.class);
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.get(album));
+        assertEquals("Validation for nulls failed", e.getMessage());
     }
 }
