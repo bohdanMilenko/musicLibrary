@@ -26,6 +26,7 @@ public class AlbumServiceUnitTests {
     private AlbumService classToTest;
     private Artist artist;
     private Album album;
+    private List<Album> albumsOneItem;
 
 
     @BeforeEach
@@ -41,6 +42,9 @@ public class AlbumServiceUnitTests {
         album = mock(Album.class);
         artist = mock(Artist.class);
         album.setArtist(artist);
+        albumsOneItem = mock(ArrayList.class);
+        albumsOneItem.add(album);
+
     }
 
 
@@ -169,12 +173,22 @@ public class AlbumServiceUnitTests {
         when(albumRepoMock.getAlbumsByArtistID(anyInt())).thenThrow(SQLException.class);
         //Actual Test
         ServiceException e = assertThrows(ServiceException.class, () -> classToTest.getByArtist(artist));
-        assertEquals("Unable to get albums by artist:\n\t" + artist.toString() ,e.getMessage());
+        assertEquals("Unable to get albums by artist:\n\t" + artist.toString(), e.getMessage());
     }
 
     //TESTING Delete Method
+    //Unable to test as delete method depends on methods
+    // inside of AlbumService and I cannot predefine their behaviour
     @Test
     void testDelete() throws ServiceException, SQLException {
+        //Setting up the behavior
+        when(recordValidatorMock.validateAlbumDeleteMethod(any(Album.class))).thenReturn(true);
+        when(classToTest.get(album)).thenReturn(Arrays.asList(album));
+        when(album.getName()).thenReturn("anyString()");
+        when(albumRepoMock.getByName(anyString())).thenReturn(new ArrayList<>());
+        when(recordValidatorMock.hasDependantSongs(anyList())).thenReturn(true);
+        when(albumRepoMock.delete(anyInt(), anyInt())).thenReturn(true);
 
+        assertTrue(classToTest.delete(album));
     }
 }
