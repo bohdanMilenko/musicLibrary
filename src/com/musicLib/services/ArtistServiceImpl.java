@@ -124,8 +124,12 @@ public class ArtistServiceImpl implements ArtistService {
     public Artist updateArtistID(Artist artist) throws ServiceException {
         if(artist.getId() == 0) {
             List<Artist> foundArtists = getByName(artist);
-            int artistId = foundArtists.get(0).getId();
-            artist.setId(artistId);
+            if(foundArtists != null && !foundArtists.isEmpty()) {
+                if(foundArtists.get(0) != null) {
+                    int artistId = foundArtists.get(0).getId();
+                    artist.setId(artistId);
+                }
+            }
         }
         return artist;
     }
