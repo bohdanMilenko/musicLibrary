@@ -42,10 +42,11 @@ public class ArtistServiceImplUnitTests {
     public void setUp() {
         artistRepositoryMock = mock(ArtistRepository.class);
         recordValidator = mock(RecordValidator.class);
-        classToTest = new ArtistServiceImpl(artistRepositoryMock);
+        classToTest = spy(new ArtistServiceImpl(artistRepositoryMock));
         classToTest.setRecordValidator(recordValidator);
         albumService = mock(AlbumService.class);
         classToTest.setAlbumService(albumService);
+
 
         artist = new Artist();
         artist.setName("Bob Dylan");
@@ -117,8 +118,8 @@ public class ArtistServiceImplUnitTests {
 
     @Test
     public void testGetByNameValidationNotPassed() throws ServiceException {
-        when(recordValidator.validateIfNotNull(any())).thenThrow(ServiceException.class);
-        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.getByName(artist));
+        when(recordValidator.validateIfNotNull(any())).thenCallRealMethod();
+        ServiceException e = assertThrows(ServiceException.class, () -> classToTest.getByName(null));
         assertEquals("Passed object is null" , e.getMessage());
     }
 
@@ -173,7 +174,9 @@ public class ArtistServiceImplUnitTests {
         when(recordValidator.validateArtistDeleteMethod(artist)).thenReturn(true);
         List<Artist> returnedArtists = new ArrayList<>();
         returnedArtists.add(artist);
-        when(classToTest.getByName(artist)).thenReturn(returnedArtists);
+        when(recordValidator.hasDependantAlbums(any(Artist.class))).thenReturn(true);
+        doReturn(returnedArtists).when(classToTest).getByName(artist);
+        //when(classToTest.getByName(artist)).thenReturn(returnedArtists);
         when(classToTest.updateArtistID(artist)).thenReturn(artist);
         when(albumService.deleteAlbumsForArtist(artist)).thenThrow(ArtistNotFoundException.class);
         ServiceException e = assertThrows(ArtistNotFoundException.class, () -> classToTest.delete(artist));
